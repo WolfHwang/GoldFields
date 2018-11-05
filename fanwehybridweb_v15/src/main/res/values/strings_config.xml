@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 区域版本 -->
+    <string name="config_region_version">config_region_version</string>
+
+    <!-- session_id -->
+    <string name="config_session_id">config_session_id</string>
+
+    <string name="config_user_id">config_user_id</string>
+
+    <!-- 保存登录用户名 -->
+    <string name="config_user_name">config_user_name</string>
+    <string name="config_user_pwd">config_user_pwd</string>
+
+    <!-- 推荐人id -->
+    <string name="config_ref_id">config_ref_id</string>
+
+    <!-- 图形验证码 -->
+    <string name="config_image_code">config_image_code</string>
+
+</resources>

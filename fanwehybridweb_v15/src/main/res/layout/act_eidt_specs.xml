@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/btn_save" android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_tip1"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/bg_act_fra"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:text="温馨提示：更多规格请到pc端创建"
+                android:textColor="@color/red"/>
+
+            <com.fanwe.hybrid.customview.CommonRowView
+                android:id="@+id/crv_name"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                app:crvLeftTxt="规格名称"
+                app:crvRightTvColor="@color/text_content"
+                app:crvShowBottomDivider="false"
+                app:crvRightTxt="请选择规格"/>
+
+            <LinearLayout
+                android:id="@+id/ll_spec1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <View
+                    android:id="@+id/view_divider1"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:background="@color/bg_act_fra"/>
+
+                <TextView
+                    android:id="@+id/tv_spec_name1"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/text_black_xx"
+                    tools:text="颜色"/>
+
+                <com.fanwe.library.customview.SDGridLinearLayout
+                    android:id="@+id/grid_list1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_spec2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <View
+                    android:id="@+id/view_divider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:background="@color/bg_act_fra"/>
+
+                <TextView
+                    android:id="@+id/tv_spec_name2"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/text_black_xx"
+                    tools:text="颜色"/>
+
+                <com.fanwe.library.customview.SDGridLinearLayout
+                    android:id="@+id/grid_list2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_spec3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <View
+                    android:id="@+id/view_divider3"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:background="@color/bg_act_fra"/>
+
+                <TextView
+                    android:id="@+id/tv_spec_name3"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/text_black_xx"
+                    tools:text="颜色"/>
+
+                <com.fanwe.library.customview.SDGridLinearLayout
+                    android:id="@+id/grid_list3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_tip"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/bg_act_fra"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:text="温馨提示:每个属性最多6个字"
+                android:textColor="@color/red"/>
+
+            <com.fanwe.library.customview.SDGridLinearLayout
+                android:id="@+id/list_composite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/red"
+        android:text="保存"
+        android:textColor="@color/white"/>
+</RelativeLayout>

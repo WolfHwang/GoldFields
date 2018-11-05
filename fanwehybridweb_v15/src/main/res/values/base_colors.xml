@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 主题颜色 -->
+    <color name="res_main_color">#444444</color>
+    <!-- 主题颜色按下颜色 -->
+    <color name="main_color_press">#444444</color>
+    <!--Activity背景底色-->
+    <color name="bg_activity">#f7f7f7</color>
+    <!-- 标题栏颜色 -->
+    <color name="title_bg_color">@color/res_main_color</color>
+    <!-- 主要字体颜色 -->
+    <color name="res_text_gray_l">#333333</color>
+    <color name="res_text_gray_m">#666666</color>
+    <color name="res_text_gray_s">#999999</color>
+
+    <!-- 透明 -->
+    <color name="transparent">#00000000</color>
+    <!-- 半透明 -->
+    <color name="half_transparent">#77000000</color>
+
+
+</resources>

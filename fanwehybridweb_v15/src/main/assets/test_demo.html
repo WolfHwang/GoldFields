@@ -1,0 +1,71 @@
+<html>
+
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="content-type">
+		<title>
+			js调用java
+		</title>
+	</head>
+
+	<body>
+		<p>
+			<xmp id="show">
+			</xmp>
+		</p>
+		<p>
+			<xmp id="init">
+			</xmp>
+		</p>
+
+		<p>
+			<input type="button" id="enter1" value="调用js_voiceRecord_permissions" style="height:100px;width:200px" onclick="app_js_voiceRecord_permissions();" />
+		</p>
+		<p>
+			<input type="button" id="enter2" value="调用js_voiceRecord_stopVoice" style="width: 200px; height: 100px;" onclick="app_js_voiceRecord_stopVoice();" />
+		</p>
+		<p>
+			<input type="button" id="enter3" value="调用js_voiceRecord_start_play" style="height:100px;width:200px" onclick="app_js_voiceRecord_start_play();" />
+		</p>
+		<p>
+			<input type="button" id="enter4" value="调用js_voiceRecord_stop_play" style="width: 200px; height: 100px;" onclick="app_js_voiceRecord_stop_play();" />
+		</p><p>
+			<input type="button" id="enter5" value="调用js_voiceRecord_again" style="height:100px;width:200px" onclick="app_js_voiceRecord_again();" />
+		</p>
+		<p>
+			<input type="button" id="enter6" value="调用js_voiceRecord_sender_start" style="width: 200px; height: 100px;" onclick="app_js_voiceRecord_sender_start();" />
+		</p>
+	</body>
+	<script>
+		function app_js_voiceRecord_permissions()
+		{
+			alert(1111111111111111);
+			App.js_voiceRecord_permissions();
+		}
+
+		function app_js_voiceRecord_stopVoice() 
+		{
+			App.js_voiceRecord_stopVoice();
+		}
+
+		function app_js_voiceRecord_start_play()
+		{
+		    App.js_voiceRecord_start_play();
+		}
+		
+		function app_js_voiceRecord_stop_play()
+		{
+			App.js_voiceRecord_stop_play();
+		}
+		
+		function app_js_voiceRecord_again()
+		{
+			App.js_voiceRecord_again();
+		}
+		
+		function app_js_voiceRecord_sender_start()
+		{
+			App.js_voiceRecord_sender_start();
+		}
+	</script>
+
+</html>

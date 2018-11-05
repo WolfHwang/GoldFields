@@ -1,0 +1,15 @@
+*.iml
+.gradle/
+fanwehybridweb_v15/build/
+local.properties
+.idea/
+*.apk
+apk/
+build/
+*.iws
+*.bat
+
+
+
+
+

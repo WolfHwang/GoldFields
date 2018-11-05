@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item>
+      <layer-list>
+          <item>
+              <shape>
+                  <gradient
+                      android:angle="0"
+                      android:centerColor="@color/pink_x"
+                      android:endColor="@color/pink_xx"
+                      android:startColor="@color/pink_x"/>
+
+                  <corners android:radius="5dp"/>
+
+              </shape>
+
+
+          </item>
+
+
+      </layer-list>
+
+
+  </item>
+</selector>

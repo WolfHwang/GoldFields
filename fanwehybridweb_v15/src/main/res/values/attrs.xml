@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CommonRowView">
+        <attr name="crvLeftTxt" format="string"/>
+        <attr name="crvRightTxt" format="string"/>
+        <attr name="crvShowLeftTxt" format="boolean"/>
+        <attr name="crvShowRightTxt" format="boolean"/>
+        <attr name="crvShowRightActionImg" format="boolean"/>
+        <attr name="crvShowBottomDivider" format="boolean"/>
+        <attr name="crvShowRightDra" format="boolean"/>
+        <attr name="crvRightDrawable" format="reference"/>
+        <attr name="crvRightActionImg" format="reference"/>
+        <attr name="crvBottomDivider" format="color"/>
+        <attr name="crvRightTvColor" format="color"/>
+        <attr name="crvLeftTvColor" format="color"/>
+    </declare-styleable>
+
+</resources>

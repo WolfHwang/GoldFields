@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name">来客</string>
+    <string name="tencent_appkey">EXLBZ-B7TH5-CTZIK-QNQFR-76OGO-GNFCS</string>
+    <!-- 友盟推送配置 -->
+    <string name="umeng_appkey">598c2c72f29d98106e000970</string>
+    <string name="umeng_message_secret_push">8d39ef324b286bb62ee6050debf8a684</string>
+
+    <!-- 启动页轮播广告是否开启  关闭 false 开启  true drawable 目录中adv_img_1 adv_img_2 adv_img_3 3张启动轮播广告图片 -->
+    <bool name="is_open_adv">false</bool>
+    <!-- 是否开启手势功能 -->
+    <bool name="is_open_gesture">false</bool>
+    <!-- 启动页轮播广告指示器 小圆点是否开启-->
+    <bool name="is_open_adv_points">true</bool>
+    <!-- 分享KEY配置 -->
+    <string name="wx_app_id">wx641209cab405e326</string>
+    <string name="wx_app_secret">7f9b0c6c9c77f9faaf28258058fedfc0</string>
+    <string name="qq_app_id">1105085027</string>
+    <string name="qq_app_key">KzDg3yOPAM9RRsrbk</string>
+    <string name="sina_app_key">712685892</string>
+    <string name="sina_app_secret">a9d19799e1c2544b3b764d5159c01a3b</string>
+
+    <!--百度语音合成-->
+    <string name="baidu_tts_app_id">10333842</string>
+    <string name="baidu_tts_app_key">HnONRjMA6jDGmpDvKIsUYVqe</string>
+    <string name="baidu_tts_app_secret">E63Bc8eIoiGq8yOV1gRw6gTSbkGUq6M6</string>
+
+</resources>

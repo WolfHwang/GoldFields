@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--重写LibraryFanwe里的colors-->
+
+    <!-- 主题颜色 -->
+    <color name="main_color">#ff2244</color>
+    <!--&lt;!&ndash; 主题颜色按下颜色 &ndash;&gt;-->
+    <!--<color name="main_color_press">#eee</color>-->
+    <!-- 预售按钮 -->
+    <color name="bg_pre_sell_btn">#ff7573</color>
+    <!-- 预售标题 -->
+    <color name="bg_pre_sell_title">#ff9d1e</color>
+    <!-- 预售提示 -->
+    <color name="bg_pre_sell_prompt">#ffbe00</color>
+
+    <!-- activity或者fragment等通用背景颜色 -->
+    <color name="bg_act_fra">#F3F6F5</color>
+    <!--<color name="bg_activity">@color/white</color>-->
+    <!-- 标题栏颜色 -->
+    <color name="bg_title_bar">@color/white</color>
+
+    <color name="white70">#b2ffffff</color>
+    <!-- 标题栏按下颜色 -->
+    <color name="bg_title_bar_pressed">@color/gray_press</color>
+
+    <!-- 标题栏文字颜色 -->
+    <color name="text_title_bar">@color/text_title</color>
+
+    <!-- 标题文字颜色 -->
+    <color name="text_title">#353d44</color>
+    <!-- 内容文字颜色 -->
+    <color name="text_content">#999</color>
+    <color name="bg_order_btn">#dedede</color>
+    <!-- 内容文字深的颜色 -->
+    <color name="text_content_deep">#666</color>
+    <!--浅蓝色-->
+    <color name="blue_light">#96f2fd</color>
+    <color name="blue_light_x">#048ff2</color>
+    <!--浅黄色-->
+    <color name="yellow_light">#FFFBEB</color>
+    <color name="yellow_x">#E6CA40</color>
+
+
+    <!-- item标题文字颜色 -->
+    <color name="text_item_title">@color/text_title</color>
+    <!-- item内容文字颜色 -->
+    <color name="text_item_content">@color/text_content</color>
+    <!-- item内容文字深的颜色 -->
+    <color name="text_item_content_deep">@color/text_content_deep</color>
+
+    <!-- 输入框hint颜色 -->
+    <color name="text_hint">#cbcbcb</color>
+
+    <!-- 分割线颜色 -->
+    <color name="stroke">#e3e5e9</color>
+    <!-- 分割线颜色 深 -->
+    <color name="stroke_deep">#cacaca</color>
+    <!-- 灰色按下颜色 -->
+    <color name="gray_press">#eee</color>
+    <color name="gray_bg">#F7F8F8</color>
+    <color name="gray_light">#f0f0f0</color>
+    <color name="gray_light_x">#EEEEEE</color>
+    <color name="gray_light_xx">#ffd1d1</color>
+
+    <color name="add_count_number_gray1">#fbfbfb</color>
+    <color name="add_count_number_gray2">#f5f5f5</color>
+    <color name="text_orange">#f42</color>
+    <color name="gray_deep">#999999</color>
+    <!-- 选择器被选择字体颜色-->
+    <color name="text_picker_selected">#e60012</color>
+
+    <color name="black50">#7f000000</color>
+    <color name="black30">#4f000000</color>
+    <color name="black_alpha30">#4c000000</color>
+    <color name="text_black_x">#666666</color>
+    <color name="text_black_xx">#333333</color>
+    <color name="orange_x">#ffa800</color>
+    <color name="orange_xx">#FF9D1E</color>
+    <color name="bg_collect">#fff3e9</color>
+    <color name="white_x">#fff3e7</color>
+    <color name="green_x">#47BD81</color>
+
+    <color name="pink_l">#f3aba7</color>
+    <color name="pink_x">#ff9478</color>
+    <color name="pink_xx">#fe7875</color>
+
+    <!--文字-->
+    <color name="pink_xxx">#ff7575</color>
+
+    <color name="pink_xxx_alpha80">#64ff2244</color>
+
+
+
+</resources>

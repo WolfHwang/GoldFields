@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>wap页面</title>
+		<script type="text/javascript">
+			//剪切图片
+			function app_CutPhoto(width, height) {
+				if (typeof(width) != "number" || width <= 0) {
+					alert("width参数错误");
+					return false;
+				}
+				if (typeof(height) != "number" || height <= 0) {
+					alert("height参数错误");
+					return false;
+				}
+				var obj = new Object();
+				obj.w = width;
+				obj.h = height;
+				var json = JSON.stringify(obj);
+				App.CutPhoto(json);
+			}
+		</script>
+		
+	
+	</head>
+
+	<body style="background:#ff0000">
+		<p>
+			<xmp id="show">
+			</xmp>
+		</p>
+		<p>
+			<xmp id="init">
+			</xmp>
+		</p>
+		
+		<p>
+			<input type="button" id="enter" value="图片裁剪使用APP" style="width:200px;height:200px;" onclick="app_CutPhoto(400,400);" />
+		</p>
+		<p>
+			<input type="file"  value="打开文件" />
+		</p>
+	</body>
+
+</html>
