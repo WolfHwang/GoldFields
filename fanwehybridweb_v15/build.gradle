@@ -18,19 +18,18 @@ android {
         minSdkVersion 15
         targetSdkVersion 26
 //        flavorDimensions "versionCode"
-        versionCode 2
-        versionName "1.0.9"
+        versionCode 4
+        versionName "1.1.4"
     }
 
-
-    /*splits {
+    splits {
         abi {
             enable true
             reset()
             include 'x86', 'armeabi-v7a'
             universalApk true
         }
-    }*/
+    }
 
     lintOptions {
         abortOnError false
@@ -45,9 +44,7 @@ android {
         }
     }
 
-
     buildTypes {
-
         release {
             minifyEnabled false
             zipAlignEnabled false
@@ -62,37 +59,7 @@ android {
         }
     }
 
-//    freeline {
-//        hack true
-//        productFlavor 'fanwetest'
-//    }
-
-//    productFlavors {
-//        tc {
-//
-//            buildConfigField 'String', 'SERVER_URL_DOMAIN', '"www.fields.gold"'
-//            buildConfigField 'String', 'SERVER_URL_PATH', '""'
-//            buildConfigField 'String', 'SERVER_URL_INIT_URL', '"www.fields.gold/init"'
-//            buildConfigField 'String', 'SERVER_URL_MAPI_URL', '""'
-//        }
-//    }
-
-//    buildTypes {
-//        debug {
-//            zipAlignEnabled false
-//            minifyEnabled false
-//            signingConfig signingConfigs.release
-//        }
-//        release {
-//            zipAlignEnabled true
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-//            signingConfig signingConfigs.release
-//        }
-//    }
-
-
-    applicationVariants.all { variant ->
+  /*  applicationVariants.all { variant ->
         variant.outputs.all {
             def fileName = "GoldFields-${defaultConfig.versionCode}-${defaultConfig.versionName}-${releaseTime()}"
             if (variant.buildType.name == 'release') {
@@ -105,39 +72,7 @@ android {
             outputFileName = fileName
             variant.packageApplication.outputDirectory = new File("./apk")
         }
-    }
-
-//    android.applicationVariants.all { variant ->
-//        variant.outputs.all {
-//            outputFileName = "${variant.name}-${variant.versionName}.apk"
-//        }
-//    }
-
-//     applicationVariants.all { variant ->
-//            variant.outputs.each { output ->
-//                def name = buildType.name=="release"?"ParkingToll":"ParkingToll_debug"
-//                output.outputFile = new File(output.outputFile.parent, name + "_v" +
-//                        defaultConfig.versionName + "_" + defaultConfig.versionCode + "_" + releaseTime() + ".apk")
-//            }
-//        }
-
-//    android.applicationVariants.all { variant ->
-//        variant.outputs.all {
-//            outputFileName = "小袋快借${defaultConfig.versionName}_${releaseTime()}.apk"
-//        }
-//    }
-    /*applicationVariants.all { variant ->
-        if (variant.buildType.name.equals('release')) {
-            variant.outputs.all { output ->
-                def buildName = "Downloader"
-                def type = variant.buildType.name
-                def releaseApkName = buildName + '_' + type + "_" + versionName + '_' + releaseTime() + '.apk'
-                outputFileName = releaseApkName
-                variant.packageApplication.outputDirectory = new File("./apk")
-            }
-        }
     }*/
-
 }
 repositories {
     flatDir {
@@ -150,33 +85,18 @@ allprojects {
         maven { url "https://jitpack.io" }
     }
 }
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-
-    //    compile 'com.jakewharton:butterknife:8.5.1'
-    //    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:support-v4:26.1.0'
     compile(name: 'library_gesture-release', ext: 'aar')
-    //    compile(name: 'library_adapter_http-release', ext: 'aar')
-    compile(name: 'library_iapppay_openid_plugin_res-release', ext: 'aar')
-    compile(name: 'library_iapppay_plugin-release', ext: 'aar')
     compile(name: 'library_jubaosdk-release', ext: 'aar')
     compile(name: 'library_PhotoViewmastercrop-release', ext: 'aar')
-    compile(name: 'library_qrcode_zxing-release', ext: 'aar')
-    //    compile(name: 'library_PushSDK-release', ext: 'aar')
-    compile(name: 'PushSDK-release', ext: 'aar')
-    compile(name: 'library_pay_baofoo-release', ext: 'aar')
-    compile(name: 'library_map_tencent-release', ext: 'aar')
     compile(name: 'library_xml_drawable_o2o-release', ext: 'aar')
-    compile(name: 'library_social_umeng_v512-release', ext: 'aar')
-//    compile project(':library')
-//    compile project(':xrichtext')
-    //富文本
-//    compile project(':pickerview')
-    //时间选择器
     compile 'com.alibaba:fastjson:1.1.45.android'
-    implementation 'com.orhanobut:logger:1.15'
 
+    implementation 'com.orhanobut:logger:1.15'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation 'com.google.code.gson:gson:2.8.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
@@ -201,6 +121,4 @@ dependencies {
     compile 'com.github.zj565061763:adapter:1.0.3'
     compile 'com.github.zj565061763:poper:1.0.35'
     //----------com.fanwe.android end----------
-    compile files('libs/tbs_sdk_thirdapp_v3.6.0.1234_43608_sharewithdownload_withoutGame_obfs_20180510_111111.jar')
-    compile 'com.android.support:support-v4:26.1.0'
 }

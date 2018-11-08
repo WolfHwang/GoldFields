@@ -90,6 +90,7 @@
 
     <color name="pink_xxx_alpha80">#64ff2244</color>
 
+    <color name="black_overlay">#66000000</color>
 
 
 </resources>

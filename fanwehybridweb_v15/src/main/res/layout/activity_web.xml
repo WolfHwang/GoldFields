@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f00"
+    tools:context="com.fanwe.hybrid.activity.WebActivity">
+
+
+ <!--   <TextView
+        android:id="@+id/text"
+        android:textColor="#000"
+        android:background="#00f"
+        android:text="999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>-->
+
+<!--
+    <WebView
+        android:id="@+id/webview"
+        android:background="#ffff00"
+        android:layout_width="match_parent"
+        android:layout_height="350dp" />-->
+
+        <!--android:clipToPadding="true"-->
+        <!--android:fitsSystemWindows="true"-->
+    <com.fanwe.hybrid.webview.CustomWebView
+        android:id="@+id/cus_webview1"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:scrollbars="horizontal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <Button
+        android:text="按钮"
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"/>
+<Button
+        android:text="按钮1"
+        android:id="@+id/btn1"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"/>
+<Button
+        android:text="按钮2"
+        android:id="@+id/btn2"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"/>
+
+    </LinearLayout>
+</LinearLayout>

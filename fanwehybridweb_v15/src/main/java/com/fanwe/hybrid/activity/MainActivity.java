@@ -1,6 +1,7 @@
 package com.fanwe.hybrid.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.DialogInterface;
@@ -9,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -19,7 +21,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.widget.FrameLayout;
@@ -29,10 +31,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.fanwe.hybrid.activity.gesture.CreateGesturePasswordActivity;
 import com.fanwe.hybrid.bean.MyContacts;
-import com.fanwe.hybrid.common.CommonOpenLoginSDK;
 import com.fanwe.hybrid.constant.ApkConstant;
 import com.fanwe.hybrid.constant.Constant.JsFunctionName;
-import com.fanwe.hybrid.constant.Constant.LoginSdkType;
 import com.fanwe.hybrid.dao.InitActModelDao;
 import com.fanwe.hybrid.dao.LoginSuccessModelDao;
 import com.fanwe.hybrid.dialog.BotPhotoPopupView;
@@ -43,7 +43,6 @@ import com.fanwe.hybrid.model.CutPhotoModel;
 import com.fanwe.hybrid.model.InitActModel;
 import com.fanwe.hybrid.model.LoginSuccessModel;
 import com.fanwe.hybrid.netstate.TANetWorkUtil;
-import com.fanwe.hybrid.service.AppUpgradeService;
 import com.fanwe.hybrid.utils.ContactUtils;
 import com.fanwe.hybrid.utils.IntentUtil;
 import com.fanwe.hybrid.utils.SDImageUtil;
@@ -71,7 +70,6 @@ import static com.fanwe.hybrid.event.EventTag.EVENT_CLIPBOARDTEXT;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CLOSE_POPWINDOW;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CUTPHOTO;
 import static com.fanwe.hybrid.event.EventTag.EVENT_IS_EXIST_INSTALLED;
-import static com.fanwe.hybrid.event.EventTag.EVENT_LOGIN_SDK;
 import static com.fanwe.hybrid.event.EventTag.EVENT_LOGIN_SUCCESS;
 import static com.fanwe.hybrid.event.EventTag.EVENT_LOGOUT_SUCCESS;
 import static com.fanwe.hybrid.event.EventTag.EVENT_ONPEN_NETWORK;
@@ -159,19 +157,24 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     }
 
 
+    public static void setTranslucent(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // 设置状态栏透明
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            // 设置根布局的参数
+//            ViewGroup rootView = (ViewGroup) ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
+//            rootView.setFitsSystemWindows(true);
+//            rootView.setClipToPadding(true);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.act_main);
 
-        //检查版本更新
-//        updateApp();
-//        Log.d("获取IMEI", getIMEI(this));
-//        Intent intent = new Intent(MainActivity.this, AdImgActivity.class);
-//        intent.putExtra(AdImgActivity.EXTRA_URL, "https://shanshanchenme.files.wordpress.com/2018/06/splash-screen-e5b7b2e681a2e5a48d-02.png?w=768&h=1365");
-//        startActivity(intent);
-
+        setTranslucent(this);
 
         mIsExitApp = true;
         x.view().inject(this);
@@ -276,11 +279,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         initWebView();
     }
 
-    private void checkVersion() {
-        Intent updateIntent = new Intent(this, AppUpgradeService.class);
-        startService(updateIntent);
-    }
-
     private void getIntentInfo() {
         if (getIntent().hasExtra(EXTRA_URL)) {
             mCurrentUrl = getIntent().getExtras().getString(EXTRA_URL);
@@ -309,6 +307,9 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 }
             }
         }
+
+        Logger.i(url);
+
         final String versionName = FPackageUtil.getPackageInfo().versionName;
         DefaultWebViewClient defaultWebViewClient = new DefaultWebViewClient();
 
@@ -527,18 +528,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             case EVENT_CLIPBOARDTEXT:
                 String text = (String) event.data;
                 mWebViewCustom.loadJsFunction(JsFunctionName.GET_CLIP_BOARD, text);
-                break;
-
-            case EVENT_LOGIN_SDK:
-                String type = (String) event.data;
-                showDialog();
-                if (LoginSdkType.WXLOGIN.equals(type)) {
-                    CommonOpenLoginSDK.loginWx(this);
-                } else if (LoginSdkType.QQLOGIN.equals(type)) {
-                    CommonOpenLoginSDK.loginQQ(this, mWebViewCustom);
-                } else if (LoginSdkType.SINAWEIBO.equals(type)) {
-                    CommonOpenLoginSDK.loginSina(this, mWebViewCustom);
-                }
                 break;
 
             case EVENT_IS_EXIST_INSTALLED:

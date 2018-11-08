@@ -36,6 +36,7 @@ import com.fanwe.lib.utils.context.FPackageUtil;
 import com.fanwe.lib.utils.extend.FActivityStack;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.utils.SDToast;
+import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.util.Calendar;
@@ -187,6 +188,7 @@ public class AppJsHandler extends BaseJsHandler {
 
     @JavascriptInterface
     public void CutPhoto(String json) {
+        Logger.i("CutPhoto");
         CutPhotoModel model = JSON.parseObject(json, CutPhotoModel.class);
         FEventBus.getDefault().post(new SDBaseEvent(model, EventTag.EVENT_CUTPHOTO));
     }

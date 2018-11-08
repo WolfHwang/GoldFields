@@ -1,33 +1,26 @@
 package com.fanwe.hybrid.activity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.fanwe.hybrid.app.App;
-import com.fanwe.hybrid.dao.InitActModelDao;
 import com.fanwe.hybrid.dialog.SDProgressDialog;
 import com.fanwe.hybrid.event.SDBaseEvent;
-import com.fanwe.hybrid.model.InitActModel;
 import com.fanwe.lib.eventbus.FEventObserver;
-import com.fanwe.library.activity.SDBaseActivity;
 import com.fanwe.library.utils.LogUtil;
 import com.fanwe.library.utils.SDToast;
-import com.fanwe.library.utils.SDViewUtil;
-import com.umeng.socialize.UMShareAPI;
 
 import org.xutils.x;
 
-import cn.fanwe.yi.R;
-
 import static com.fanwe.hybrid.event.EventTag.EVENT_EXIT_APP;
 
-public class BaseActivity extends SDBaseActivity
+public class BaseActivity extends FanBaseActivity
 {
     /**
      * 触摸返回键是否退出App
@@ -65,15 +58,36 @@ public class BaseActivity extends SDBaseActivity
     {
     }
 
+
+    public static void setTranslucent(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // 设置状态栏透明
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            // 设置根布局的参数
+//            ViewGroup rootView = (ViewGroup) ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
+//            rootView.setFitsSystemWindows(true);
+//            rootView.setClipToPadding(true);
+        }
+    }
+
     @Override
     public void setContentView(View view)
     {
         super.setContentView(view);
+
+
+//        setTranslucent(this);
+
+
+
         x.view().inject(this);
     }
     @Override
     public void setContentView(int resViewId)
     {
+
+
+      /*
         if (mIsShowStatusBar)
         {
             InitActModel model = InitActModelDao.query( );
@@ -90,8 +104,13 @@ public class BaseActivity extends SDBaseActivity
         if (mIsShowStatusBar)
         {
             view.setFitsSystemWindows(true);
-        }
+        }*/
         super.setContentView(resViewId);
+
+
+        setTranslucent(BaseActivity.this);
+
+
         x.view().inject(this);
     }
 
@@ -167,7 +186,6 @@ public class BaseActivity extends SDBaseActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
     }
     public void onMainEvent(SDBaseEvent event){}
 }
