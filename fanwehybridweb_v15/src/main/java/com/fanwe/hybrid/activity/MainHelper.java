@@ -12,9 +12,11 @@ import android.text.TextUtils;
 import android.webkit.CookieManager;
 
 import com.fanwe.hybrid.app.App;
+import com.fanwe.hybrid.bean.CheckContactsInfo;
 import com.fanwe.hybrid.bean.QuitAppInfo;
 import com.fanwe.hybrid.bean.UpdateAppInfo;
 import com.fanwe.hybrid.utils.AppInnerDownLoder;
+import com.fanwe.hybrid.utils.CheckContactsUtils;
 import com.fanwe.hybrid.utils.CheckQuitUtils;
 import com.fanwe.hybrid.utils.CheckUpdateUtils;
 import com.fanwe.hybrid.utils.IntentUtil;
@@ -36,11 +38,30 @@ public class MainHelper {
 
     }
 
-    public static MainHelper getInstance (){
+    public static MainHelper getInstance() {
         if (sMainHelper == null) {
             sMainHelper = new MainHelper();
         }
         return sMainHelper;
+    }
+
+    public void postContacts(Context context, String data, String user_token) {
+        final String _user_token = user_token;
+        if (MainHelper.getInstance().isNetworkAvailable(context)) {
+            CheckContactsUtils.CheckContacts(data, _user_token, new CheckContactsUtils.checkCallBack() {
+                @Override
+                public void onSuccess(CheckContactsInfo checkContactsInfo) {
+                    Logger.i("通讯录" + checkContactsInfo.toString());
+                }
+
+                @Override
+                public void onError() {
+                    Logger.i("lhqqq" + "错误");
+                }
+            });
+        } else {
+            Logger.i("网络连接失败，获取不到通讯录");
+        }
     }
 
     /**
@@ -102,7 +123,6 @@ public class MainHelper {
             }
         });
     }
-
 
 
     /**
@@ -173,7 +193,6 @@ public class MainHelper {
     }
 
 
-
     private boolean canDownloadState(Context context) {
         try {
             int state = context.getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");
@@ -195,13 +214,13 @@ public class MainHelper {
         String packageName = "com.android.providers.downloads";
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.parse("package:" + packageName));
-        if (intentAvailable(context,intent)) {
+        if (intentAvailable(context, intent)) {
             context.startActivity(intent);
         }
     }
 
 
-    private boolean intentAvailable(Context context,Intent intent) {
+    private boolean intentAvailable(Context context, Intent intent) {
         PackageManager packageManager = context.getPackageManager();
         List list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
@@ -211,7 +230,7 @@ public class MainHelper {
     /******************************  退出  ************************************/
 
 
-    public void quitApp(Context context,String user_token) {
+    public void quitApp(Context context, String user_token) {
         final String _user_token = user_token;
         Logger.i("拿到的token是:" + _user_token);
         if (MainHelper.getInstance().isNetworkAvailable(context)) {
@@ -252,7 +271,7 @@ public class MainHelper {
         return chooser;
     }
 
-    public interface OnCameraPathBack{
+    public interface OnCameraPathBack {
         void callback();
     }
 }

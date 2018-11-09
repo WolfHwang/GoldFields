@@ -1,6 +1,7 @@
 package com.fanwe.hybrid.http;
 
 
+import com.fanwe.hybrid.bean.CheckContactsInfo;
 import com.fanwe.hybrid.bean.QuitAppInfo;
 import com.fanwe.hybrid.bean.UpdateAppInfo;
 
@@ -30,4 +31,8 @@ public interface HttpUtilsApi {
     @FormUrlEncoded
     @POST("api/app.user/user/clearUserState")
     Observable<QuitAppInfo> quit(@Field("_user_token") String _user_token);
+
+    @FormUrlEncoded
+    @POST("api/app.apply/phonebook/makePbFromUser")
+    Observable<CheckContactsInfo> check(@Field("data") String data, @Field("_user_token") String _user_token);
 }
