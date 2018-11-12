@@ -73,7 +73,7 @@ public class ContactUtils {
             }
 
             contacts.add(temp);
-            setWhatHappen(context, contacts);
+//            setWhatHappen(context, contacts);
         }
         return contacts;
     }

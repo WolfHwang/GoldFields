@@ -21,7 +21,7 @@ import com.fanwe.lib.utils.extend.FActivityStack;
 import com.fanwe.library.SDLibrary;
 import com.fanwe.library.app.FApplication;
 import com.fanwe.library.utils.LogUtil;
-import com.fanwei.jubaosdk.shell.FWPay;
+//import com.fanwei.jubaosdk.shell.FWPay;
 import com.tencent.smtt.sdk.QbSdk;
 
 import org.xutils.x;
@@ -52,7 +52,7 @@ public class App extends FApplication {
     @Override
     protected void onCreateMainProcess() {
         mInstance = this;
-        FWPay.initialize(this, true);
+//        FWPay.initialize(this, true);
         x.Ext.init(this);
         initSDLibrary();
         initBaiduTTS();

@@ -81,10 +81,6 @@
                 android:resource="@xml/filepaths"/>
         </provider>
 
-        <!-- 升级服务 -->
-        <service android:name="com.fanwe.hybrid.service.AppUpgradeService"/>
-        <service android:name="com.fanwe.hybrid.service.ScreenAndLockService"/>
-
         <!-- 网络状态监听广播 -->
         <receiver android:name="com.fanwe.hybrid.netstate.TANetworkStateReceiver">
             <intent-filter>

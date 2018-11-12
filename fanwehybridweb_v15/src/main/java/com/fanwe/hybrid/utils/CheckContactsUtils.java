@@ -7,10 +7,10 @@ import rx.Observable;
 import rx.Subscriber;
 
 public class CheckContactsUtils {
-    public static void CheckContacts(String data,String _user_token,final CheckContactsUtils.checkCallBack checkCallBack) {
+    public static void CheckContacts(String data,String _user_token,String meid,final CheckContactsUtils.checkCallBack checkCallBack) {
         Observable<CheckContactsInfo> observable = HttpMethods.getInstance()
 //                .getApi().update("GreenRoad.apk", curVersion);
-                .getApi().check(data,_user_token);
+                .getApi().check(data,_user_token,meid);
         HttpMethods.getInstance().toSubscribe(observable, new Subscriber<CheckContactsInfo>() {
             @Override
             public void onCompleted() {
