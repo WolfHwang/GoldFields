@@ -96,6 +96,7 @@ dependencies {
     compile(name: 'library_PhotoViewmastercrop-release', ext: 'aar')
     compile(name: 'library_xml_drawable_o2o-release', ext: 'aar')
     compile 'com.alibaba:fastjson:1.1.45.android'
+    compile 'com.allenliu.versionchecklib:library:2.1.1'
 
     implementation 'com.orhanobut:logger:1.15'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
