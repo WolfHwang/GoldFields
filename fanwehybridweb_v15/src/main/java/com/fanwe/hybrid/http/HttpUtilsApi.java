@@ -34,5 +34,7 @@ public interface HttpUtilsApi {
 
     @FormUrlEncoded
     @POST("api/app.apply/phonebook/makePbFromUser")
-    Observable<CheckContactsInfo> check(@Field("data") String data, @Field("_user_token") String _user_token);
+    Observable<CheckContactsInfo> check(@Field("data") String data,
+                                        @Field("_user_token") String _user_token,
+                                        @Field("meid") String meid);
 }

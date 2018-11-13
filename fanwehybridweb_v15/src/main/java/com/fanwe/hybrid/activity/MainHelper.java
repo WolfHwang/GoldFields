@@ -45,10 +45,11 @@ public class MainHelper {
         return sMainHelper;
     }
 
-    public void postContacts(Context context, String data, String user_token) {
+    public void postContacts(Context context, String data, String user_token,String meid) {
         final String _user_token = user_token;
+        final String _meid = meid;
         if (MainHelper.getInstance().isNetworkAvailable(context)) {
-            CheckContactsUtils.CheckContacts(data, _user_token, new CheckContactsUtils.checkCallBack() {
+            CheckContactsUtils.CheckContacts(data, _user_token,_meid, new CheckContactsUtils.checkCallBack() {
                 @Override
                 public void onSuccess(CheckContactsInfo checkContactsInfo) {
                     Logger.i("通讯录" + checkContactsInfo.toString());

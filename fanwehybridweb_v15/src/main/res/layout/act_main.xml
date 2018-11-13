@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_fl"
     android:layout_width="match_parent"
@@ -16,4 +16,11 @@
         android:layout_height="match_parent"
         android:scrollbars="horizontal" />
 
-</FrameLayout>
+    <!--加载提示的loading图-->
+    <include
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        layout="@layout/loading_anim"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

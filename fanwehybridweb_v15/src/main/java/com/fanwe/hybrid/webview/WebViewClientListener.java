@@ -8,73 +8,62 @@ import android.view.KeyEvent;
 import com.tencent.smtt.export.external.interfaces.HttpAuthHandler;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.export.external.interfaces.WebResourceError;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
 import com.tencent.smtt.sdk.WebView;
 
-public abstract class WebViewClientListener
-{
+public abstract class WebViewClientListener {
 
-	public boolean shouldOverrideUrlLoading(WebView view, String url)
-	{
-		return false;
-	}
+    public void onReceivedError(WebView webView, WebResourceRequest webResourceRequest, WebResourceError webResourceError) {
+    };
 
-	public void onReceivedError(WebView view, int errorCode, String description, String failingUrl)
-	{
-	}
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        return false;
+    }
 
-	public void onPageStarted(WebView view, String url, Bitmap favicon)
-	{
-	}
+    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+    }
 
-	public void onPageFinished(WebView view, String url)
-	{
-	}
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+    }
 
-	public void onLoadResource(WebView view, String url)
-	{
-	}
+    public void onPageFinished(WebView view, String url) {
+    }
 
-	public WebResourceResponse shouldInterceptRequest(WebView view, String url)
-	{
-		return null;
-	}
+    public void onLoadResource(WebView view, String url) {
+    }
 
-	public void onTooManyRedirects(WebView view, Message cancelMsg, Message continueMsg)
-	{
-	}
+    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        return null;
+    }
 
-	public void onFormResubmission(WebView view, Message dontResend, Message resend)
-	{
-	}
+    public void onTooManyRedirects(WebView view, Message cancelMsg, Message continueMsg) {
+    }
 
-	public void doUpdateVisitedHistory(WebView view, String url, boolean isReload)
-	{
-	}
+    public void onFormResubmission(WebView view, Message dontResend, Message resend) {
+    }
 
-	public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error)
-	{
-	}
+    public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+    }
 
-	public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm)
-	{
-	}
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+    }
 
-	public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event)
-	{
-		return false;
-	}
+    public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+    }
 
-	public void onUnhandledKeyEvent(WebView view, KeyEvent event)
-	{
-	}
+    public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
+        return false;
+    }
 
-	public void onScaleChanged(WebView view, float oldScale, float newScale)
-	{
-	}
+    public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+    }
 
-	public void onReceivedLoginRequest(WebView view, String realm, String account, String args)
-	{
-	}
+    public void onScaleChanged(WebView view, float oldScale, float newScale) {
+    }
+
+    public void onReceivedLoginRequest(WebView view, String realm, String account, String args) {
+    }
 
 }

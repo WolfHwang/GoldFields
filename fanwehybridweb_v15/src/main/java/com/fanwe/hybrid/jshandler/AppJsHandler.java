@@ -88,28 +88,28 @@ public class AppJsHandler extends BaseJsHandler {
 
     @JavascriptInterface
     public void login_success(String json) {
-        App.getApplication().mLockPatternUtils.clearLock();
+//        App.getApplication().mLockPatternUtils.clearLock();
 
-        LoginSuccessModel model = JSON.parseObject(json, LoginSuccessModel.class);
-        model.setUserid(model.getId());
-        model.setIs_current(1);
-        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_session_id), model.getSess_id());
-        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_name), model.getUser_name());
-        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_id), model.getUserid());
-        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_pwd), model.getPatternpassword());
-        LoginSuccessModel loginSuccessModel = LoginSuccessModelDao.queryModelCurrentLogin();
-        if (loginSuccessModel != null) {
-            if (loginSuccessModel.getUserid() == model.getUserid()) {
-                model.setPatternpassword(loginSuccessModel.getPatternpassword());
-                LoginSuccessModelDao.insertOrUpdateModel2(model);
-            } else {
-                LoginSuccessModelDao.insertOrUpdateModel2(model);
-            }
-        } else {
-            LoginSuccessModelDao.insertOrUpdateModel2(model);
-        }
+//        LoginSuccessModel model = JSON.parseObject(json, LoginSuccessModel.class);
+//        model.setUserid(model.getId());
+//        model.setIs_current(1);
+//        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_session_id), model.getSess_id());
+//        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_name), model.getUser_name());
+//        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_id), model.getUserid());
+//        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_pwd), model.getPatternpassword());
+//        LoginSuccessModel loginSuccessModel = LoginSuccessModelDao.queryModelCurrentLogin();
+//        if (loginSuccessModel != null) {
+//            if (loginSuccessModel.getUserid() == model.getUserid()) {
+//                model.setPatternpassword(loginSuccessModel.getPatternpassword());
+//                LoginSuccessModelDao.insertOrUpdateModel2(model);
+//            } else {
+//                LoginSuccessModelDao.insertOrUpdateModel2(model);
+//            }
+//        } else {
+//            LoginSuccessModelDao.insertOrUpdateModel2(model);
+//        }
 
-        FEventBus.getDefault().post(new SDBaseEvent(model, EventTag.EVENT_LOGIN_SUCCESS));
+        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.EVENT_LOGIN_SUCCESS));
     }
 
     /**
