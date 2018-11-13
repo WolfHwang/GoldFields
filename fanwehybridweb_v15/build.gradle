@@ -18,18 +18,19 @@ android {
         minSdkVersion 15
         targetSdkVersion 26
 //        flavorDimensions "versionCode"
-        versionCode 4
-        versionName "1.1.4"
+        //noinspection HighAppVersionCode
+        versionCode 2018110901
+        versionName "1.0.9"
     }
 
-    /*splits {
+    splits {
         abi {
             enable true
             reset()
             include 'x86', 'armeabi-v7a'
             universalApk true
         }
-    }*/
+    }
 
     lintOptions {
         abortOnError false
@@ -59,7 +60,7 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
+/*    applicationVariants.all { variant ->
         variant.outputs.all {
             def fileName = "GoldFields-${defaultConfig.versionCode}-${defaultConfig.versionName}-${releaseTime()}"
             if (variant.buildType.name == 'release') {
@@ -72,7 +73,7 @@ android {
             outputFileName = fileName
             variant.packageApplication.outputDirectory = new File("./apk")
         }
-    }
+    }*/
 }
 repositories {
     flatDir {

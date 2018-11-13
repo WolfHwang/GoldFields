@@ -12,6 +12,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fanwe.hybrid.app.App;
 import com.fanwe.hybrid.common.AppInstanceConfig;
 import com.fanwe.hybrid.constant.ApkConstant;
@@ -29,7 +30,6 @@ import com.fanwe.hybrid.model.LoginSuccessModel;
 import com.fanwe.hybrid.model.OpenTypeModel;
 import com.fanwe.hybrid.model.StartAppPageJsonModel;
 import com.fanwe.hybrid.webview.CustomWebView;
-import com.fanwe.lib.cache.FDisk;
 import com.fanwe.lib.eventbus.FEventBus;
 import com.fanwe.lib.player.FMediaPlayer;
 import com.fanwe.lib.utils.context.FPackageUtil;
@@ -40,8 +40,6 @@ import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.util.Calendar;
-
-import cn.fanwe.yi.R;
 
 import static android.R.attr.text;
 
@@ -88,6 +86,23 @@ public class AppJsHandler extends BaseJsHandler {
 
     @JavascriptInterface
     public void login_success(String json) {
+
+        Logger.i(json);
+
+        JSONObject jsonObject = JSON.parseObject(json);
+
+        Logger.i(String.valueOf(jsonObject));
+
+        String token = (String) jsonObject.get("token");
+
+        Logger.i(token);
+
+        FEventBus.getDefault().post(new SDBaseEvent(jsonObject, EventTag.EVENT_LOGIN_SUCCESS));
+    }
+/*
+
+    @JavascriptInterface
+    public void login_success(String json) {
         App.getApplication().mLockPatternUtils.clearLock();
 
         LoginSuccessModel model = JSON.parseObject(json, LoginSuccessModel.class);
@@ -111,6 +126,7 @@ public class AppJsHandler extends BaseJsHandler {
 
         FEventBus.getDefault().post(new SDBaseEvent(model, EventTag.EVENT_LOGIN_SUCCESS));
     }
+*/
 
     /**
      * 大多数客户服务端退出登录用的是这个方法

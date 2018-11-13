@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="app_name">来客</string>
+    <string name="app_name">黄金原野</string>
     <string name="tencent_appkey">EXLBZ-B7TH5-CTZIK-QNQFR-76OGO-GNFCS</string>
     <!-- 友盟推送配置 -->
     <string name="umeng_appkey">598c2c72f29d98106e000970</string>

