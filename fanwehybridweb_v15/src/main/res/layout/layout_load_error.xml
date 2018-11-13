@@ -1,29 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/load_error_layout"
+<com.classic.common.MultipleStatusView
+    android:id="@+id/multiple_status_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    app:emptyView="@layout/custom_empty_view"
+    app:errorView="@layout/custom_error_view"
+    app:loadingView="@layout/custom_loading_view"
+    app:noNetworkView="@layout/custom_no_network_view"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--加载网页错误的提示图-->
     <ImageView
-        android:id="@+id/error_iv"
+        android:id="@+id/no_network_retry_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:contentDescription="@null"
-        android:src="@drawable/no_data" />
+        android:src="@drawable/ic_no_network"/>
 
-    <!--点击提示文字，重新加载网页-->
     <TextView
-        android:id="@+id/reload_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/error_iv"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:textSize="12dp"
-        android:gravity="center"
-        android:text="数据获取失败,\n  请检查网络后再重试 ~~~" />
-
-
-</RelativeLayout>
+        style="@style/Content"
+        android:id="@+id/no_network_view_tv"
+        android:layout_below="@id/no_network_retry_view"
+        android:text="@string/no_network_view_hint"/>
+</com.classic.common.MultipleStatusView>
