@@ -8,7 +8,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
@@ -20,7 +19,6 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
@@ -40,37 +38,27 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.classic.common.MultipleStatusView;
-import com.fanwe.hybrid.activity.gesture.CreateGesturePasswordActivity;
-import com.fanwe.hybrid.app.App;
-import com.fanwe.hybrid.bean.MyContacts;
 import com.fanwe.hybrid.constant.ApkConstant;
 import com.fanwe.hybrid.constant.Constant.JsFunctionName;
 import com.fanwe.hybrid.dao.InitActModelDao;
-import com.fanwe.hybrid.dao.LoginSuccessModelDao;
 import com.fanwe.hybrid.dialog.BotPhotoPopupView;
 import com.fanwe.hybrid.dialog.DialogCropPhoto.OnCropBitmapListner;
 import com.fanwe.hybrid.event.SDBaseEvent;
 import com.fanwe.hybrid.jshandler.AppJsHandler;
 import com.fanwe.hybrid.model.CutPhotoModel;
 import com.fanwe.hybrid.model.InitActModel;
-import com.fanwe.hybrid.model.LoginSuccessModel;
 import com.fanwe.hybrid.netstate.TANetWorkUtil;
-import com.fanwe.hybrid.service.PostContactsService;
 import com.fanwe.hybrid.utils.ContactUtils;
 import com.fanwe.hybrid.utils.IntentUtil;
+import com.fanwe.hybrid.utils.MultipleStatusView;
 import com.fanwe.hybrid.utils.SDImageUtil;
 import com.fanwe.hybrid.utils.SharedPreferencesUtils;
 import com.fanwe.hybrid.webview.CustomWebView;
 import com.fanwe.hybrid.webview.DefaultWebChromeClient;
-import com.fanwe.hybrid.webview.DefaultWebViewClient;
 import com.fanwe.hybrid.webview.WebChromeClientListener;
-import com.fanwe.hybrid.webview.WebViewClientListener;
 import com.fanwe.lib.utils.context.FPackageUtil;
 import com.fanwe.library.utils.LogUtil;
-import com.fanwe.library.utils.SDToast;
 import com.orhanobut.logger.Logger;
-import com.tencent.smtt.export.external.interfaces.HttpAuthHandler;
 import com.tencent.smtt.export.external.interfaces.WebResourceError;
 import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.sdk.WebView;
@@ -363,13 +351,16 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
     final View.OnClickListener mRetryClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Toast.makeText(getApplicationContext(), "网络连接出错", Toast.LENGTH_SHORT).show();
             loading();
+            mMultipleStatusView.destroyDrawingCache();
             if (MainHelper.getInstance().isNetworkAvailable(MainActivity.this)) {
                 webParentView.removeAllViews();
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
                 webParentView.addView(mWebViewCustom, layoutParams);
+                Toast.makeText(getApplicationContext(), "网络连接成功", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(getApplicationContext(), "网络连接出错", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -382,7 +373,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
                 Logger.i("加载中被执行");
                 mMultipleStatusView.showContent();
             }
-        }, 3000);
+        }, 1500);
     }
 
     private void getIntentInfo() {
@@ -433,7 +424,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
                 }
             }
         }
-
         Logger.i(url);
 
         final String versionName = getVersionName();

@@ -1,4 +1,4 @@
-<com.classic.common.MultipleStatusView
+<com.fanwe.hybrid.utils.MultipleStatusView
     android:id="@+id/multiple_status_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,4 +21,4 @@
         android:id="@+id/no_network_view_tv"
         android:layout_below="@id/no_network_retry_view"
         android:text="@string/no_network_view_hint"/>
-</com.classic.common.MultipleStatusView>
+</com.fanwe.hybrid.utils.MultipleStatusView>
