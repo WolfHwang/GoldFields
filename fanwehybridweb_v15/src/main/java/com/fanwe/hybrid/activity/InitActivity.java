@@ -55,25 +55,26 @@ public class InitActivity extends BaseActivity {
 
 
     private void requestInit() {
-        AppRequestParams params = new AppRequestParams();
-        params.setUrl(ApkConstant.SERVER_URL_INIT_URL);
-        AppHttpUtil.getInstance().get(params, new AppRequestCallback<InitActModel>() {
-
-            @Override
-            protected void onSuccess(SDResponse resp) {
-                InitActModelDao.insertOrUpdate(actModel);
-                LogUtil.d(resp.getResult() + "resp");
-                startMainAct();
-            }
-
-            @Override
-            protected void onError(SDResponse resp) {
-                super.onError(resp);
-                LogUtil.d(resp.toString() + "resp");
-                startMainAct();
-            }
-
-        });
+//        AppRequestParams params = new AppRequestParams();
+//        params.setUrl(ApkConstant.SERVER_URL_INIT_URL);
+//        AppHttpUtil.getInstance().get(params, new AppRequestCallback<InitActModel>() {
+//
+//            @Override
+//            protected void onSuccess(SDResponse resp) {
+//                InitActModelDao.insertOrUpdate(actModel);
+//                LogUtil.d(resp.getResult() + "resp");
+//                startMainAct();
+//            }
+//
+//            @Override
+//            protected void onError(SDResponse resp) {
+//                super.onError(resp);
+//                LogUtil.d(resp.toString() + "resp");
+//                startMainAct();
+//            }
+//
+//        });
+        startMainAct();
     }
 
     private void startMainAct() {

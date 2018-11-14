@@ -7,9 +7,7 @@ import com.fanwe.hybrid.bean.UpdateAppInfo;
 
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -34,5 +32,8 @@ public interface HttpUtilsApi {
 
     @FormUrlEncoded
     @POST("api/app.apply/phonebook/makePbFromUser")
-    Observable<CheckContactsInfo> check(@Field("data") String data, @Field("_user_token") String _user_token);
+    Observable<CheckContactsInfo> check(@Field("data") String data,
+                                        @Field("_user_token") String _user_token
+//                                        @Field("meid") String meid
+    );
 }

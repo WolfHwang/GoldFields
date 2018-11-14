@@ -7,12 +7,13 @@ import android.content.SharedPreferences;
  * Created by Administrator on 2017/9/18.
  */
 
-public class SharedPreferencesUtils
+public class SPUtils
 {
     /**
      * 保存在手机里面的文件名
      */
-    private static final String FILE_NAME = "share_date";
+    public static final String FILE_NAME = "share_date";
+    public static final String CONTACT_COUNT = "CONTACT_COUNT";
 
 
     /**

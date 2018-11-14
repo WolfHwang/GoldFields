@@ -71,7 +71,7 @@ public class AppUpgradeService extends Service {
         // mDownloadUrl =
         // "http://gdown.baidu.com/data/wisegame/90f1773d78335827/baidushoujizhushou_16786881.apk";
         initIntentData(intent);
-        testUpgrade();
+//        testUpgrade();
         return super.onStartCommand(intent, flags, startId);
     }
 

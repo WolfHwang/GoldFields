@@ -20,8 +20,13 @@ public class ApkConstant {
      * 域名
      */
 //	public static final String SERVER_URL_DOMAIN = "www.fields.gold";// （需要修改）
+
 //	public static final String SERVER_URL_DOMAIN = "192.168.2.172:8889";// （需要修改）
-	public static final String SERVER_URL_DOMAIN = "192.168.1.85:8889";// （需要修改）
+	public static final String SERVER_URL_DOMAIN = "192.168.1.101:8889";// （需要修改）
+
+//	public static final String SERVER_URL_DOMAIN = "192.168.2.172:8889";// （需要修改）
+//	public static final String SERVER_URL_DOMAIN = "192.168.10.142:8889";// （需要修改）
+
 //    public static final String SERVER_URL_DOMAIN = "192.168.2.208/r/8#";// （需要修改）
     /**
      * 首页路径
@@ -31,8 +36,13 @@ public class ApkConstant {
      * 初始化接口完整地址
      */
 //	public static final String SERVER_URL_INIT_URL = "www.fields.gold/init";// （需要修改）
+
 //	public static final String SERVER_URL_INIT_URL = "192.168.2.172:8889/init";// （需要修改）
-	public static final String SERVER_URL_INIT_URL = "192.168.1.85:8889/init";// （需要修改）
+	public static final String SERVER_URL_INIT_URL = "192.168.1.101:8889/init";// （需要修改）
+
+//	public static final String SERVER_URL_INIT_URL = "192.168.2.172:8889/init";// （需要修改）
+//	public static final String SERVER_URL_INIT_URL = "192.168.10.142:8889/init";// （需要修改）
+
 //    public static final String SERVER_URL_INIT_URL = "192.168.208/init";// （需要修改）
 
     /**

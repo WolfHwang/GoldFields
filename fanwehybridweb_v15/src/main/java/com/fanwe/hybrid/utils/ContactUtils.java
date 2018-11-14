@@ -3,10 +3,8 @@ package com.fanwe.hybrid.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
-import android.util.Log;
 
-import com.fanwe.hybrid.bean.MyContacts;
-import com.fanwe.library.utils.LogUtil;
+import com.fanwe.hybrid.activity.ContactBean;
 
 import java.util.ArrayList;
 
@@ -31,32 +29,45 @@ import java.util.ArrayList;
  */
 
 public class ContactUtils {
-    public static ArrayList<MyContacts> getAllContacts(Context context) {
-        ArrayList<MyContacts> contacts = new ArrayList<MyContacts>();
-
+    public static ArrayList<ContactBean> getAllContacts(Context context) {
         Cursor cursor = context.getContentResolver().query(
                 ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+
+        ArrayList<ContactBean> beanArrayList = new ArrayList<>();
+
         while (cursor.moveToNext()) {
-            //新建一个联系人实例
-            MyContacts temp = new MyContacts();
-            String contactId = cursor.getString(cursor
-                    .getColumnIndex(ContactsContract.Contacts._ID));
             //获取联系人姓名
             String name = cursor.getString(cursor
                     .getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-            temp.name = name;
 
-            //获取联系人电话号码
-            Cursor phoneCursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=" + contactId, null, null);
-            while (phoneCursor.moveToNext()) {
-                String phone = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                phone = phone.replace("-", "");
-                phone = phone.replace(" ", "");
-                temp.phone = phone;
+            if (name != null && !"".equals(name)) {  //保证此条通讯录即有姓名又有电话号码
+                //获取联系人电话号码
+                String contactId = cursor.getString(cursor
+                        .getColumnIndex(ContactsContract.Contacts._ID));
+                Cursor phoneCursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=" + contactId, null, null);
+
+
+                if (phoneCursor.moveToFirst()) {        //有只取第一条, 没有Pass
+                    String phone = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    phone = phone.replace("-", "");
+                    phone = phone.replace(" ", "");
+
+                    ContactBean contactBean = new ContactBean();
+                    contactBean.setName(name);
+                    contactBean.setPhone(phone);
+//                    Logger.i(contactBean.toString());
+                    beanArrayList.add(contactBean);
+                }
             }
+        }
 
-            //获取联系人备注信息
+        return beanArrayList;
+    }
+}
+
+
+          /*  //获取联系人备注信息
             Cursor noteCursor = context.getContentResolver().query(
                     ContactsContract.Data.CONTENT_URI,
                     new String[]{ContactsContract.Data._ID, ContactsContract.CommonDataKinds.Nickname.NAME},
@@ -70,23 +81,4 @@ public class ContactUtils {
                     temp.note = note;
                     Log.i("note:", note);
                 } while (noteCursor.moveToNext());
-            }
-
-            contacts.add(temp);
-            setWhatHappen(context, contacts);
-        }
-        return contacts;
-    }
-
-    private static void setWhatHappen(Context context, ArrayList<MyContacts> contacts) {
-        LogUtil.d("See What Happen!");
-        int contactsNum = contacts.size();
-        if (contactsNum != (Integer) SharedPreferencesUtils.getParam(context, "contactsNum", 0)) {
-            SharedPreferencesUtils.setParam(context, "isUpdate", true);
-            SharedPreferencesUtils.setParam(context, "contactsNum", contactsNum);
-        } else {
-            SharedPreferencesUtils.setParam(context, "isUpdate", false);
-            SharedPreferencesUtils.setParam(context, "contactsNum", contactsNum);
-        }
-    }
-}
+            }*/

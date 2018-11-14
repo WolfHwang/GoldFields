@@ -81,10 +81,6 @@
                 android:resource="@xml/filepaths"/>
         </provider>
 
-        <!-- 升级服务 -->
-        <service android:name="com.fanwe.hybrid.service.AppUpgradeService"/>
-        <service android:name="com.fanwe.hybrid.service.ScreenAndLockService"/>
-
         <!-- 网络状态监听广播 -->
         <receiver android:name="com.fanwe.hybrid.netstate.TANetworkStateReceiver">
             <intent-filter>
@@ -100,14 +96,17 @@
         <activity
             android:name="com.fanwe.hybrid.activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:launchMode="singleTask"
-            />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-            <!--android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"-->
+        <!--
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+        -->
 
-     <!--   <activity
+
+        <!--
+        <activity
             android:name="com.fanwe.hybrid.activity.FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen"
@@ -117,21 +116,28 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>-->
+        </activity>
+        -->
 
+        <activity
+            android:name="com.fanwe.hybrid.activity.WebActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="login"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-
-
-        <activity android:name="com.fanwe.hybrid.activity.WebActivity"
-                  android:configChanges="orientation|keyboardHidden|screenSize"
-                  android:label="login"
-                  android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-           <!-- <intent-filter>
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
+
+        <service
+            android:name="com.fanwe.hybrid.activity.ContactIntentService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

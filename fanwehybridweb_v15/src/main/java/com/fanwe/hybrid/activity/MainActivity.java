@@ -8,46 +8,39 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.ContactsContract;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fanwe.hybrid.bean.MyContacts;
 import com.fanwe.hybrid.constant.ApkConstant;
 import com.fanwe.hybrid.constant.Constant.JsFunctionName;
-import com.fanwe.hybrid.dao.InitActModelDao;
 import com.fanwe.hybrid.dialog.BotPhotoPopupView;
 import com.fanwe.hybrid.dialog.DialogCropPhoto.OnCropBitmapListner;
 import com.fanwe.hybrid.event.SDBaseEvent;
 import com.fanwe.hybrid.jshandler.AppJsHandler;
 import com.fanwe.hybrid.model.CutPhotoModel;
-import com.fanwe.hybrid.model.InitActModel;
 import com.fanwe.hybrid.netstate.TANetWorkUtil;
-import com.fanwe.hybrid.utils.ContactUtils;
 import com.fanwe.hybrid.utils.IntentUtil;
 import com.fanwe.hybrid.utils.SDImageUtil;
-import com.fanwe.hybrid.utils.SharedPreferencesUtils;
+import com.fanwe.hybrid.utils.SPUtils;
 import com.fanwe.hybrid.webview.CustomWebView;
 import com.fanwe.hybrid.webview.DefaultWebChromeClient;
 import com.fanwe.hybrid.webview.DefaultWebViewClient;
@@ -55,8 +48,9 @@ import com.fanwe.hybrid.webview.WebChromeClientListener;
 import com.fanwe.hybrid.webview.WebViewClientListener;
 import com.fanwe.lib.utils.context.FPackageUtil;
 import com.fanwe.library.utils.LogUtil;
-import com.fanwe.library.utils.SDToast;
 import com.orhanobut.logger.Logger;
+import com.tencent.smtt.export.external.interfaces.WebResourceError;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.sdk.WebView;
 
 import org.xutils.view.annotation.ViewInject;
@@ -67,10 +61,14 @@ import java.util.List;
 
 import cn.fanwe.yi.R;
 
+import static com.fanwe.hybrid.constant.Constant.PERMISS_ALL;
+import static com.fanwe.hybrid.constant.Constant.PERMISS_CAMERA;
+import static com.fanwe.hybrid.constant.Constant.PERMISS_CONTACT;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CLIPBOARDTEXT;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CLOSE_POPWINDOW;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CUTPHOTO;
 import static com.fanwe.hybrid.event.EventTag.EVENT_IS_EXIST_INSTALLED;
+import static com.fanwe.hybrid.event.EventTag.EVENT_LOAD_CONTACT;
 import static com.fanwe.hybrid.event.EventTag.EVENT_LOGIN_SUCCESS;
 import static com.fanwe.hybrid.event.EventTag.EVENT_LOGOUT_SUCCESS;
 import static com.fanwe.hybrid.event.EventTag.EVENT_ONPEN_NETWORK;
@@ -86,8 +84,6 @@ import static com.fanwe.hybrid.event.EventTag.UPDATE;
 @SuppressWarnings("deprecation")
 public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     public static final String SAVE_CURRENT_URL = "url";
-
-
     public static final String EXTRA_URL = "extra_url";
 
     public static final int FILECHOOSER_RESULTCODE = 1;// 选择照片
@@ -97,9 +93,14 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 //    public static final int REQUEST_CODE_WEB_ACTIVITY = 2;// WEB回调
 
     @ViewInject(R.id.ll_fl)
-    private FrameLayout mll_fl;
+    private RelativeLayout mll_fl;
     @ViewInject(R.id.cus_webview)
     private CustomWebView mWebViewCustom;
+    @ViewInject(R.id.loading_layout)
+    private FrameLayout loadingLayout;
+    private RelativeLayout webParentView;
+    private View mErrorView; //加载错误的视图
+
 
     private BotPhotoPopupView mBotPhotoPopupView;
     private ValueCallback<Uri> mUploadMessage;
@@ -114,10 +115,15 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     private JSONArray json;
     private String data;
     private ArrayList<MyContacts> contactsArrayList;
-    private int MY_PERMISSIONS_REQUEST = 0;
+
+
+
+    //    public  int PERMISS_CONTACT = 0;          //添加通讯录权限成功后的回调request
+    public static int MY_PERMISSIONS_REQUEST = 0;          //添加通讯录权限成功后的回调request
     String[] permissions = {
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -126,7 +132,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
     private boolean isLogout = false;
     ContentResolver resolver = null;
-    Observer observer = null;
+
+    private String meid;
 
     /**
      * 销毁保存当前URL
@@ -182,76 +189,11 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         x.view().inject(this);
 
         init();
-        checkPermissions();
+
 
     }
 
-    /**
-     * 动态权限
-     */
-    private void checkPermissions() {
-        mPermissionList.clear();
-        //这里开始做动态权限管理(API23以上采用，所以请保证targetSdkVersion > 23)
-        //判断权限组：[READ_CONTACTS，READ_CALL_LOG] 是否在清单文件重注册
-        for (int i = 0; i < permissions.length; i++) {
-            if (ContextCompat.checkSelfPermission(MainActivity.this, permissions[i])
-                    != PackageManager.PERMISSION_GRANTED) {
-                mPermissionList.add(permissions[i]);
-            }
-        }
-        if (mPermissionList.isEmpty()) {
-            //未授予的权限为空，表示都授予了
-            //Toast.makeText(MainActivity.this, "已经授权", Toast.LENGTH_LONG).show();
-            LogUtil.d("已经授权");
-            //权限请求成功 TAGHere
-        } else {
-            //请求权限方法
-            String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);//将List转为数组
-            ActivityCompat.requestPermissions(MainActivity.this, permissions, MY_PERMISSIONS_REQUEST);
 
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkContactsChange() {
-        System.out.println("1111111" + Build.VERSION.SDK_INT);
-//        System.out.println("2222222" + checkSelfPermission(Manifest.permission.READ_CONTACTS));
-        // Check the SDK version and whether the permission is already granted or not.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST);
-            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
-        } else {
-            /**
-             * //通讯录发生变化后的处理
-             */
-            //实例化Observer
-            observer = new Observer(new Handler());
-            //获取resolver
-            resolver = getContentResolver();
-            Uri uri = ContactsContract.Contacts.CONTENT_URI;
-
-            //注册Observer
-            resolver.registerContentObserver(uri, true, observer);
-            LogUtil.e("onPageStartedEnd：" + System.currentTimeMillis());
-        }
-    }
-
-    class Observer extends ContentObserver {
-
-        public Observer(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-//            Toast.makeText(MainActivity.this,
-//                    "联系人列表发生变化", Toast.LENGTH_SHORT).show();
-            Logger.i("联系人列表发生变化");
-            //onchange 方法中添加Toast便于观察
-            SharedPreferencesUtils.setParam(MainActivity.this, "isUpdate", true);
-        }
-    }
 
     /**
      * requestPermissions的回调
@@ -260,73 +202,64 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         boolean hasAllGranted = true;
-        for (int i = 0; i < grantResults.length; ++i) {
+
+        //判断是否拒绝  拒绝后要怎么处理 以及取消再次提示的处理
+        for (int i = 0; i < grantResults.length; i++) {
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 hasAllGranted = false;
-                //在用户已经拒绝授权的情况下，如果shouldShowRequestPermissionRationale返回false
-                //则可以推断出用户选择了“不在提示”选项，在这种情况下需要引导用户至设置页手动授权
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
-                    //解释原因，并且引导用户至设置页手动授权
-                    new AlertDialog.Builder(this)
-                            .setMessage("【提示】\r\n" +
-                                    "当前缺少必要权限\r\n" +
-                                    "请点击“设置”-“权限”-打开所需权限\r\n" +
-                                    "最后点击两次后退按钮，即可返回")
-                            .setPositiveButton("去授权", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //引导用户至设置页手动授权
-                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                    Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                    intent.setData(uri);
-                                    startActivity(intent);
-                                }
-                            })
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //引导用户手动授权，权限请求失败
-                                }
-                            }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            //引导用户手动授权，权限请求失败
-                        }
-                    }).show();
-
-                } else {
-                    //权限请求失败，但未选中“不再提示”选项
-                }
                 break;
             }
         }
-        if (hasAllGranted) {
-            //权限请求成功
-            for (int i = 0; i < permissions.length; i++) {
-                Logger.i(permissions[i]);
-                if (permissions[i].contains("READ_CONTACTS")) {
-                    contactsArrayList = ContactUtils.getAllContacts(MainActivity.this);
-                    json = new JSONArray();
-                    json.addAll(contactsArrayList);
-                    jsonString = JSON.toJSONString(contactsArrayList);
-                    System.out.println("lsyyy" + json);
+
+        //同意权限的处理
+        switch (requestCode) {
+            case PERMISS_CONTACT:
+                Logger.i("通讯录");
+
+                if (hasAllGranted) {        //同意权限做的处理,开启服务提交通讯录
+                    ContactIntentService.startActionContact(MainActivity.this);
+                } else {                    //拒绝权限且权限被手动不再提示做的处理,打开权限
+                    MainHelper.getInstance().dealwithPermiss(MainActivity.this, permissions[0]);
                 }
-            }
+
+                break;
+            case  PERMISS_CAMERA:
+
+                if (!hasAllGranted) {
+                    MainHelper.getInstance().dealwithPermiss(MainActivity.this, permissions[0]);
+                }
+                break;
+
+            case PERMISS_ALL:
+                Logger.i("所有权限");
+                break;
+
+            default:
+                Logger.i("其他");
+
+                break;
+
         }
+
     }
 
-    private Handler mHandler;
 
     private void init() {
-        mHandler = new Handler();
         mWebViewCustom.addJavascriptInterface(new AppJsHandler(this, mWebViewCustom));
-//        checkVersion();
-//        final InitActModel initActModel = InitActModelDao.query();
-//        InitUpgradeModel model = initActModel.getVersion();
-//        Log.d("modelll", model.getServerVersion());
         getIntentInfo();
+        initErrorPage();
         initWebView();
+    }
+
+    /***
+     * 显示加载失败时自定义的网页
+     */
+    private void initErrorPage() {
+        if (mErrorView == null) {
+            mErrorView = View.inflate(this, R.layout.layout_load_error, null);
+        }
     }
 
     private void getIntentInfo() {
@@ -337,41 +270,44 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
 
     private void initWebView() {
-        String url;
-        String SERVER_URL_VERSION = ApkConstant.SERVER_URL + "?version=" + FPackageUtil.getPackageInfo().versionCode;
+        String url = ApkConstant.SERVER_URL + "?version=" + MainHelper.getInstance().getVersionCode(this);
 
-        if (!TextUtils.isEmpty(mCurrentUrl)) {
-            url = mCurrentUrl;
-        } else {
-            InitActModel model = InitActModelDao.query();
-            if (model == null) {
-//                url = ApkConstant.SERVER_URL_SHOW_ANIM;
-                url = SERVER_URL_VERSION;
-            } else {
-                String site_url = model.getSite_url();
-                if (!TextUtils.isEmpty(site_url)) {
-                    url = site_url;
-                } else {
-//                    url = ApkConstant.SERVER_URL_SHOW_ANIM;
-                    url = SERVER_URL_VERSION;
-                }
-            }
-        }
-
-        Logger.i(url);
-
-        final String versionName = FPackageUtil.getPackageInfo().versionName;
         DefaultWebViewClient defaultWebViewClient = new DefaultWebViewClient();
 
         //实现交互监听
         defaultWebViewClient.setListener(new WebViewClientListener() {
             @Override
             public void onReceivedError(com.tencent.smtt.sdk.WebView view, int errorCode, String description, String failingUrl) {
-                LogUtil.e(failingUrl + "hzmd");
-                failingUrl = failLocationUrl;
+//                failingUrl = failLocationUrl;
+//                super.onReceivedError(view, errorCode, description, failingUrl);
                 super.onReceivedError(view, errorCode, description, failingUrl);
+                //6.0以下执行
+                Logger.i("onReceivedError: ------->errorCode" + errorCode + ":" + description);
+                //网络未连接
+                showErrorPage();
+            }
+
+
+            @Override
+            public void onReceivedError(WebView webView, WebResourceRequest webResourceRequest, WebResourceError webResourceError) {
+                super.onReceivedError(webView, webResourceRequest, webResourceError);
+                //6.0以上执行
+                Logger.i("onReceivedError: ");
+                showErrorPage();//显示错误页面
 
             }
+
+            //刷新后WebView退出不了,重定向的解决方法
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                WebView.HitTestResult hitTestResult = webView.getHitTestResult();
+                //hitTestResult==null解决重定向问题(刷新后不能退出的bug)
+                if (!TextUtils.isEmpty(url) && hitTestResult == null) {
+                    return true;
+                }
+                return super.shouldOverrideUrlLoading(webView, url);
+            }
+
 
             @Override
             public void onPageStarted(com.tencent.smtt.sdk.WebView view, String url, Bitmap favicon) {
@@ -386,56 +322,36 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
             @Override
             public void onPageFinished(final com.tencent.smtt.sdk.WebView view, String url) {
-                LogUtil.e("onPageFinished：" + url);
                 if (!failLocationUrl.equals(url)) {
                     mCurrentUrl = url;
                 }
-
-                if (url.contains("apply/renmai")) {
-                    //有权限
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                        Logger.i("53123");
-                        if ((Boolean) SharedPreferencesUtils.getParam(MainActivity.this, "isUpdate", true)) {
-                            //Toast.makeText(MainActivity.this, "已经授权", Toast.LENGTH_LONG).show();
-                            SharedPreferencesUtils.setParam(MainActivity.this, "isUpdate", false);
-                            LogUtil.d("已经授权");
-                            //权限请求成功 TAGHere
-                            contactsArrayList = ContactUtils.getAllContacts(MainActivity.this);
-                            json = new JSONArray();
-                            json.addAll(contactsArrayList);
-                            data = JSON.toJSONString(contactsArrayList);
-                            System.out.println("lsyyydata" + data);
-                            //加个""的处理交给后台
-                            MainHelper.getInstance().postContacts(MainActivity.this, data, user_token);
-                        }
-                    }
+                String[] split = url.split("/");
+                String endUrl = "/";
+                if (split.length > 2) {
+                    endUrl = endUrl + split[split.length - 2] + "/" + split[split.length - 1];
                 }
+                Logger.i(endUrl);
 
-//                int versionCode = FPackageUtil.getPackageInfo().versionCode;
+                switch (endUrl) {
+                    case "/user/setup":
+                        String json = "{'version':'" + MainHelper.getInstance().getVersionName(MainActivity.this) + "'}";
+                        view.evaluateJavascript("javascript:getVersionName(" + json + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String s) {
+                                Logger.i(s);
+                            }
+                        });
 
-                String json = "{'version':'" + versionName + "'}";
-                Logger.i("JSONNN：" + json);
-                view.evaluateJavascript("javascript:getVersionName(" + json + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String s) {
-                        System.out.println("successVersionName" + s);
-                    }
-                });
+                        break;
 
-                view.evaluateJavascript("javascript:getToken()", new com.tencent.smtt.sdk.ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String s) {
-                        Logger.i("token:" + s);
-                        user_token = s;
-                    }
-                });
+                    default:
+                        break;
 
+                }
                 dimissDialog();
-                MainHelper.getInstance().putCookieSP(url);
+//                MainHelper.getInstance().putCookieSP(url);
             }
         });
-
 
         DefaultWebChromeClient defaultWebChromeClient = new DefaultWebChromeClient();
         defaultWebChromeClient.setListener(new WebChromeClientListener() {
@@ -480,23 +396,25 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
+                if (title.contains("404")) {
+                    showErrorPage();
+                }
             }
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
+                if (newProgress == 100) {
+                    loadingLayout.setVisibility(View.GONE);
+                }
                 System.out.println("onProgressChanged" + view.getUrl());
-                view.evaluateJavascript("javascript:getPhoneBook()", new com.tencent.smtt.sdk.ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String s) {
-                        System.out.println("successPhoneInfo2:" + s);
-                    }
-                });
+
             }
         });
 
         mWebViewCustom.setWebViewClient(defaultWebViewClient);
         mWebViewCustom.setWebChromeClient(defaultWebChromeClient);
+        webParentView = (RelativeLayout) mWebViewCustom.getParent(); //获取父容器
 
         if (MainHelper.getInstance().isNetworkAvailable(this)) {
             mWebViewCustom.get(url);
@@ -505,6 +423,11 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         }
     }
 
+    private void showErrorPage() {
+        webParentView.removeAllViews(); //移除加载网页错误时，默认的提示信息
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        webParentView.addView(mErrorView, 0, layoutParams); //添加自定义的错误提示的View
+    }
 
     @Override
     public void onMainEvent(SDBaseEvent event) {
@@ -513,6 +436,15 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             case EVENT_ONPEN_NETWORK:
                 IntentUtil.openNetwork(this);
                 break;
+
+            case EVENT_LOAD_CONTACT:
+                //只是发送一个讯息 , 做权限的处理
+                String[] permissList = {Manifest.permission.READ_CONTACTS,Manifest.permission.READ_PHONE_STATE};
+
+                MainHelper.getInstance().addPermissByPermissionList(MainActivity.this, permissList, PERMISS_CONTACT);
+
+                break;
+
             case SHOW_TOAST:
                 toast = (String) event.data;
                 Toast.makeText(getActivity(), toast, Toast.LENGTH_SHORT).show();
@@ -523,27 +455,28 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 break;
             case EVENT_REFRESH_RELOAD:
                 if (TANetWorkUtil.isNetworkConnected(getApplicationContext())) {
-                    SDToast.showToast("重新加载成功");
+                    Toast.makeText(MainActivity.this, "重新加载成功", Toast.LENGTH_SHORT).show();
                     mWebViewCustom.get("http://fields.gold/?v=1.0.187.1");
                 } else {
-                    SDToast.showToast("请检查网络连接");
+                    Toast.makeText(MainActivity.this, "请检查网络连接", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case EVENT_LOGIN_SUCCESS:
+                //登陆成功的时候添加权限
+                MainHelper.getInstance().addPermissByPermissionList(this,permissions,PERMISS_ALL);
 
-                Logger.i("登陆成功");
-                Logger.i(String.valueOf(event.data));
-//                Logger.i(event.data[token]);
-                isLogout = false;
-//                boolean is_open_adv = getResources().getBoolean(R.bool.is_open_gesture);
-//                LoginSuccessModel loginSuccessModel = LoginSuccessModelDao.queryModelCurrentLogin();
-//                if (loginSuccessModel != null) {
-//                    if (is_open_adv && TextUtils.isEmpty(loginSuccessModel.getPatternpassword())) {
-//                        Intent intent = new Intent(MainActivity.this, CreateGesturePasswordActivity.class);
-//                        intent.putExtra(CreateGesturePasswordActivity.EXTRA_CODE, CreateGesturePasswordActivity.ExtraCodel.EXTRA_CODE_1);
-//                        startActivity(intent);
-//                    }
-//                }
+                Logger.i("通讯录这块");
+
+                JSONObject jsonObject = (JSONObject) event.data;
+
+                String token = (String) jsonObject.get("token");
+
+                Logger.i(token);
+
+                SPUtils.setParam(MainActivity.this, "token", token);
+
+                ContactIntentService.startActionContact(this);
+
                 break;
             case EVENT_LOGOUT_SUCCESS: //退出登录成功
                 isLogout = true;
@@ -552,7 +485,19 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
             case EVENT_CUTPHOTO:
                 mCut_model = (CutPhotoModel) event.data;
-                clickll_head();
+
+                String[] permissCamera = {Manifest.permission.CAMERA,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+                MainHelper.getInstance().addPermissByPermissionList(this, permissCamera, PERMISS_CAMERA, new MainHelper.OnHasPermiss() {
+                    @Override
+                    public void callback() {
+                        clickll_head();
+                    }
+                });
+
+
                 break;
             case EVENT_CLIPBOARDTEXT:
                 String text = (String) event.data;
@@ -651,6 +596,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             case KeyEvent.KEYCODE_BACK:
                 String url = mWebViewCustom.getOriginalUrl();
                 System.out.println("urlll:" + url);
+
                 if (!url.isEmpty()) {
                     if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate")) {
                         if (mWebViewCustom.canGoBack()) {
@@ -667,7 +613,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                         //清除用户登录状态及信息
                         if (this instanceof MainActivity) {
                             if (System.currentTimeMillis() - mExitTime > 2000) {
-                                SDToast.showToast("再按一次退出");
+//                                SDToast.showToast("再按一次退出");
+                                Toast.makeText(MainActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
                             } else {
                                 LogUtil.d("已经双击退出exit");
                                 MainHelper.getInstance().quitApp(MainActivity.this, user_token);
@@ -698,3 +645,72 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     }
 
 }
+
+
+/**
+ * private void getMEID() {
+ * try {
+ * //获取MEID
+ * //实例化TelephonyManager对象
+ * TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+ * Method method = null;
+ * method = telephonyManager.getClass().getMethod("getDeviceId", int.class);
+ * if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+ * return;
+ * }
+ * //获取IMEI号
+ * <p>
+ * //            String imei1 = telephonyManager.getDeviceId();
+ * //            String imei2 = (String) method.invoke(telephonyManager, 1);
+ * //获取MEID号
+ * meid = (String) method.invoke(telephonyManager, 2);
+ * //            Logger.i("imei1:" + imei1);
+ * //            Logger.i("imei2:" + imei2);
+ * Logger.i("meid:" + meid);
+ * } catch (Exception e) {
+ * e.printStackTrace();
+ * }
+ * }
+ * <p>
+ * <p>
+ * Observer observer = null;
+ *
+ * @RequiresApi(api = Build.VERSION_CODES.M)
+ * private void checkContactsChange() {
+ * System.out.println("1111111" + Build.VERSION.SDK_INT);
+ * //        System.out.println("2222222" + checkSelfPermission(Manifest.permission.READ_CONTACTS));
+ * // Check the SDK version and whether the permission is already granted or not.
+ * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+ * requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST);
+ * //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+ * } else {
+ * <p>
+ * //
+ * // //通讯录发生变化后的处理
+ * //
+ * //实例化Observer
+ * observer = new Observer(new Handler());
+ * //获取resolver
+ * resolver = getContentResolver();
+ * Uri uri = ContactsContract.Contacts.CONTENT_URI;
+ * <p>
+ * //注册Observer
+ * resolver.registerContentObserver(uri, true, observer);
+ * }
+ * }
+ * <p>
+ * class Observer extends ContentObserver {
+ * <p>
+ * public Observer(Handler handler) {
+ * super(handler);
+ * }
+ * @Override public void onChange(boolean selfChange) {
+ * super.onChange(selfChange);
+ * //            Toast.makeText(MainActivity.this,
+ * //                    "联系人列表发生变化", Toast.LENGTH_SHORT).show();
+ * Logger.i("联系人列表发生变化");
+ * //onchange 方法中添加Toast便于观察
+ * SPUtils.setParam(MainActivity.this, "isUpdate", true);
+ * }
+ * }
+ */
