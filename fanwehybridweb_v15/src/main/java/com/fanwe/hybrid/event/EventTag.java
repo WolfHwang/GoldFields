@@ -38,6 +38,11 @@ public class EventTag {
      * 登录成功
      */
     public static final int EVENT_LOGIN_SUCCESS = 6;
+  /**
+     * 加载通讯录
+   *
+     */
+    public static final int EVENT_LOAD_CONTACT = 101;
 
     /**
      * 关闭Activiti并刷新url

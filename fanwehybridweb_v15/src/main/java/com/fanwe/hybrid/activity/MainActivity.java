@@ -5,23 +5,20 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.ContactsContract;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -35,24 +32,33 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
+import com.fanwe.hybrid.bean.MyContacts;
+import com.fanwe.hybrid.constant.ApkConstant;
+import com.fanwe.hybrid.constant.Constant.JsFunctionName;
+
 import com.fanwe.hybrid.constant.ApkConstant;
 import com.fanwe.hybrid.constant.Constant.JsFunctionName;
 import com.fanwe.hybrid.dao.InitActModelDao;
+
 import com.fanwe.hybrid.dialog.BotPhotoPopupView;
 import com.fanwe.hybrid.dialog.DialogCropPhoto.OnCropBitmapListner;
 import com.fanwe.hybrid.event.SDBaseEvent;
 import com.fanwe.hybrid.jshandler.AppJsHandler;
 import com.fanwe.hybrid.model.CutPhotoModel;
+
+import com.fanwe.hybrid.netstate.TANetWorkUtil;
+
 import com.fanwe.hybrid.model.InitActModel;
 import com.fanwe.hybrid.netstate.TANetWorkUtil;
 import com.fanwe.hybrid.utils.ContactUtils;
+
 import com.fanwe.hybrid.utils.IntentUtil;
 import com.fanwe.hybrid.utils.MultipleStatusView;
 import com.fanwe.hybrid.utils.SDImageUtil;
-import com.fanwe.hybrid.utils.SharedPreferencesUtils;
+import com.fanwe.hybrid.utils.SPUtils;
 import com.fanwe.hybrid.webview.CustomWebView;
 import com.fanwe.hybrid.webview.DefaultWebChromeClient;
 import com.fanwe.hybrid.webview.WebChromeClientListener;
@@ -67,16 +73,19 @@ import com.tencent.smtt.sdk.WebViewClient;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.fanwe.yi.R;
 
+import static com.fanwe.hybrid.constant.Constant.PERMISS_ALL;
+import static com.fanwe.hybrid.constant.Constant.PERMISS_CAMERA;
+import static com.fanwe.hybrid.constant.Constant.PERMISS_CONTACT;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CLIPBOARDTEXT;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CLOSE_POPWINDOW;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CUTPHOTO;
 import static com.fanwe.hybrid.event.EventTag.EVENT_IS_EXIST_INSTALLED;
+import static com.fanwe.hybrid.event.EventTag.EVENT_LOAD_CONTACT;
 import static com.fanwe.hybrid.event.EventTag.EVENT_LOGIN_SUCCESS;
 import static com.fanwe.hybrid.event.EventTag.EVENT_LOGOUT_SUCCESS;
 import static com.fanwe.hybrid.event.EventTag.EVENT_ONPEN_NETWORK;
@@ -121,7 +130,16 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
     private String jsonString;
     private JSONArray json;
     private String data;
+
+    private ArrayList<MyContacts> contactsArrayList;
+
+
+
+    //    public  int PERMISS_CONTACT = 0;          //添加通讯录权限成功后的回调request
+    public static int MY_PERMISSIONS_REQUEST = 0;          //添加通讯录权限成功后的回调request
+
     private int MY_PERMISSIONS_REQUEST = 0;
+
     String[] permissions = {
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_CALL_LOG,
@@ -134,7 +152,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
 
     private boolean isLogout = false;
     ContentResolver resolver = null;
-    Observer observer = null;
+
     private String meid;
     private MultipleStatusView mMultipleStatusView;
 
@@ -185,6 +203,13 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
         x.view().inject(this);
 
         init();
+
+
+
+    }
+
+
+
         checkPermissions();
         checkContactsChange();
     }
@@ -273,10 +298,46 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         boolean hasAllGranted = true;
-        for (int i = 0; i < grantResults.length; ++i) {
+
+        //判断是否拒绝  拒绝后要怎么处理 以及取消再次提示的处理
+        for (int i = 0; i < grantResults.length; i++) {
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 hasAllGranted = false;
+
+                break;
+            }
+        }
+
+        //同意权限的处理
+        switch (requestCode) {
+            case PERMISS_CONTACT:
+                Logger.i("通讯录");
+
+                if (hasAllGranted) {        //同意权限做的处理,开启服务提交通讯录
+                    ContactIntentService.startActionContact(MainActivity.this);
+                } else {                    //拒绝权限且权限被手动不再提示做的处理,打开权限
+                    MainHelper.getInstance().dealwithPermiss(MainActivity.this, permissions[0]);
+                }
+
+                break;
+            case  PERMISS_CAMERA:
+
+                if (!hasAllGranted) {
+                    MainHelper.getInstance().dealwithPermiss(MainActivity.this, permissions[0]);
+                }
+                break;
+
+            case PERMISS_ALL:
+                Logger.i("所有权限");
+                break;
+
+            default:
+                Logger.i("其他");
+
+                break;
+
                 //在用户已经拒绝授权的情况下，如果shouldShowRequestPermissionRationale返回false
                 //则可以推断出用户选择了“不在提示”选项，在这种情况下需要引导用户至设置页手动授权
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
@@ -316,13 +377,13 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
         if (hasAllGranted) {
             //权限请求成功
 
+
         }
+
     }
 
-    private Handler mHandler;
 
     private void init() {
-        mHandler = new Handler();
         mWebViewCustom.addJavascriptInterface(new AppJsHandler(this, mWebViewCustom));
         getIntentInfo();
 
@@ -382,29 +443,93 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
         }
     }
 
-    private int getVersionCode() {
-        try {
-            PackageManager p = getPackageManager();
-            int versionCode = p.getPackageInfo(this.getPackageName(), 0).versionCode;
-            return versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    private String getVersionName() {
-        try {
-            PackageManager p = getPackageManager();
-            String versionName = p.getPackageInfo(this.getPackageName(), 0).versionName;
-            return versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     private void initWebView() {
+
+        String url = ApkConstant.SERVER_URL + "?version=" + MainHelper.getInstance().getVersionCode(this);
+
+        DefaultWebViewClient defaultWebViewClient = new DefaultWebViewClient();
+
+        //实现交互监听
+        defaultWebViewClient.setListener(new WebViewClientListener() {
+            @Override
+            public void onReceivedError(com.tencent.smtt.sdk.WebView view, int errorCode, String description, String failingUrl) {
+//                failingUrl = failLocationUrl;
+//                super.onReceivedError(view, errorCode, description, failingUrl);
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                //6.0以下执行
+                Logger.i("onReceivedError: ------->errorCode" + errorCode + ":" + description);
+                //网络未连接
+                showErrorPage();
+            }
+
+
+            @Override
+            public void onReceivedError(WebView webView, WebResourceRequest webResourceRequest, WebResourceError webResourceError) {
+                super.onReceivedError(webView, webResourceRequest, webResourceError);
+                //6.0以上执行
+                Logger.i("onReceivedError: ");
+                showErrorPage();//显示错误页面
+
+            }
+
+            //刷新后WebView退出不了,重定向的解决方法
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                WebView.HitTestResult hitTestResult = webView.getHitTestResult();
+                //hitTestResult==null解决重定向问题(刷新后不能退出的bug)
+                if (!TextUtils.isEmpty(url) && hitTestResult == null) {
+                    return true;
+                }
+                return super.shouldOverrideUrlLoading(webView, url);
+            }
+
+
+            @Override
+            public void onPageStarted(com.tencent.smtt.sdk.WebView view, String url, Bitmap favicon) {
+                LogUtil.e("onPageStarted：" + url);
+                LogUtil.e("onPageStartedStart：" + System.currentTimeMillis());
+//                if (AppConfigParam.isShowingConfig() == 1) {
+//                    showDialog();
+//                } else if (url.contains("show_prog=1")) {
+//                    showDialog();
+//                }
+            }
+
+            @Override
+            public void onPageFinished(final com.tencent.smtt.sdk.WebView view, String url) {
+                if (!failLocationUrl.equals(url)) {
+                    mCurrentUrl = url;
+                }
+                String[] split = url.split("/");
+                String endUrl = "/";
+                if (split.length > 2) {
+                    endUrl = endUrl + split[split.length - 2] + "/" + split[split.length - 1];
+                }
+                Logger.i(endUrl);
+
+                switch (endUrl) {
+                    case "/user/setup":
+                        String json = "{'version':'" + MainHelper.getInstance().getVersionName(MainActivity.this) + "'}";
+                        view.evaluateJavascript("javascript:getVersionName(" + json + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String s) {
+                                Logger.i(s);
+                            }
+                        });
+
+                        break;
+
+                    default:
+                        break;
+
+                }
+                dimissDialog();
+//                MainHelper.getInstance().putCookieSP(url);
+            }
+        });
+
+
         String url;
         String SERVER_URL_VERSION = ApkConstant.SERVER_URL + "?version=" + getVersionCode();
         if (!TextUtils.isEmpty(mCurrentUrl)) {
@@ -427,6 +552,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
         Logger.i(url);
 
         final String versionName = getVersionName();
+
         DefaultWebChromeClient defaultWebChromeClient = new DefaultWebChromeClient();
         defaultWebChromeClient.setListener(new WebChromeClientListener() {
             @Override
@@ -482,12 +608,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
                     loadingLayout.setVisibility(View.GONE);
                 }
                 System.out.println("onProgressChanged" + view.getUrl());
-                view.evaluateJavascript("javascript:getPhoneBook()", new com.tencent.smtt.sdk.ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String s) {
-                        System.out.println("successPhoneInfo2:" + s);
-                    }
-                });
+
             }
         });
 
@@ -564,11 +685,21 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
             case EVENT_ONPEN_NETWORK:
                 IntentUtil.openNetwork(this);
                 break;
+
+            case EVENT_LOAD_CONTACT:
+                //只是发送一个讯息 , 做权限的处理
+                String[] permissList = {Manifest.permission.READ_CONTACTS,Manifest.permission.READ_PHONE_STATE};
+
+                MainHelper.getInstance().addPermissByPermissionList(MainActivity.this, permissList, PERMISS_CONTACT);
+
+                break;
+
             case SHOW_TOAST:
                 toast = (String) event.data;
                 Toast.makeText(getActivity(), toast, Toast.LENGTH_SHORT).show();
                 break;
             case UPDATE:
+                Logger.i("更新App----ZEROwolf");
                 MainHelper.getInstance().updateApp(MainActivity.this);
                 break;
             case EVENT_REFRESH_RELOAD:
@@ -580,6 +711,23 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
                 }
                 break;
             case EVENT_LOGIN_SUCCESS:
+
+                //登陆成功的时候添加权限
+                MainHelper.getInstance().addPermissByPermissionList(this,permissions,PERMISS_ALL);
+
+                Logger.i("通讯录这块");
+
+                JSONObject jsonObject = (JSONObject) event.data;
+
+                String token = (String) jsonObject.get("token");
+
+                Logger.i(token);
+
+                SPUtils.setParam(MainActivity.this, "token", token);
+
+                ContactIntentService.startActionContact(this);
+
+
                 //获取需要解析的字符串并解析JSON
                 String token_json = (String) event.data;
                 JSONObject object = JSONObject.parseObject(token_json);
@@ -596,6 +744,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
                         System.out.println("lsyyydata" + data);
                     }
                 }
+
                 break;
             case EVENT_LOGOUT_SUCCESS: //退出登录成功
                 isLogout = true;
@@ -603,7 +752,19 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
                 break;
             case EVENT_CUTPHOTO: //拍照裁剪回调
                 mCut_model = (CutPhotoModel) event.data;
-                clickll_head();
+
+                String[] permissCamera = {Manifest.permission.CAMERA,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+                MainHelper.getInstance().addPermissByPermissionList(this, permissCamera, PERMISS_CAMERA, new MainHelper.OnHasPermiss() {
+                    @Override
+                    public void callback() {
+                        clickll_head();
+                    }
+                });
+
+
                 break;
             case EVENT_CLIPBOARDTEXT:
                 String text = (String) event.data;
@@ -743,3 +904,72 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, V
         super.onStop();
     }
 }
+
+
+/**
+ * private void getMEID() {
+ * try {
+ * //获取MEID
+ * //实例化TelephonyManager对象
+ * TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+ * Method method = null;
+ * method = telephonyManager.getClass().getMethod("getDeviceId", int.class);
+ * if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+ * return;
+ * }
+ * //获取IMEI号
+ * <p>
+ * //            String imei1 = telephonyManager.getDeviceId();
+ * //            String imei2 = (String) method.invoke(telephonyManager, 1);
+ * //获取MEID号
+ * meid = (String) method.invoke(telephonyManager, 2);
+ * //            Logger.i("imei1:" + imei1);
+ * //            Logger.i("imei2:" + imei2);
+ * Logger.i("meid:" + meid);
+ * } catch (Exception e) {
+ * e.printStackTrace();
+ * }
+ * }
+ * <p>
+ * <p>
+ * Observer observer = null;
+ *
+ * @RequiresApi(api = Build.VERSION_CODES.M)
+ * private void checkContactsChange() {
+ * System.out.println("1111111" + Build.VERSION.SDK_INT);
+ * //        System.out.println("2222222" + checkSelfPermission(Manifest.permission.READ_CONTACTS));
+ * // Check the SDK version and whether the permission is already granted or not.
+ * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+ * requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST);
+ * //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+ * } else {
+ * <p>
+ * //
+ * // //通讯录发生变化后的处理
+ * //
+ * //实例化Observer
+ * observer = new Observer(new Handler());
+ * //获取resolver
+ * resolver = getContentResolver();
+ * Uri uri = ContactsContract.Contacts.CONTENT_URI;
+ * <p>
+ * //注册Observer
+ * resolver.registerContentObserver(uri, true, observer);
+ * }
+ * }
+ * <p>
+ * class Observer extends ContentObserver {
+ * <p>
+ * public Observer(Handler handler) {
+ * super(handler);
+ * }
+ * @Override public void onChange(boolean selfChange) {
+ * super.onChange(selfChange);
+ * //            Toast.makeText(MainActivity.this,
+ * //                    "联系人列表发生变化", Toast.LENGTH_SHORT).show();
+ * Logger.i("联系人列表发生变化");
+ * //onchange 方法中添加Toast便于观察
+ * SPUtils.setParam(MainActivity.this, "isUpdate", true);
+ * }
+ * }
+ */

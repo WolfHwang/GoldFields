@@ -1,5 +1,7 @@
 package com.fanwe.hybrid.activity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,16 +9,17 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
 
 import com.fanwe.hybrid.app.App;
-import com.fanwe.hybrid.bean.CheckContactsInfo;
 import com.fanwe.hybrid.bean.QuitAppInfo;
 import com.fanwe.hybrid.bean.UpdateAppInfo;
 import com.fanwe.hybrid.utils.AppInnerDownLoder;
-import com.fanwe.hybrid.utils.CheckContactsUtils;
 import com.fanwe.hybrid.utils.CheckQuitUtils;
 import com.fanwe.hybrid.utils.CheckUpdateUtils;
 import com.fanwe.hybrid.utils.IntentUtil;
@@ -24,6 +27,7 @@ import com.fanwe.lib.cache.FDisk;
 import com.fanwe.lib.utils.context.FPackageUtil;
 import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,24 +49,10 @@ public class MainHelper {
         return sMainHelper;
     }
 
-    public void postContacts(Context context, String data, String user_token,String meid) {
+    public void postContacts(Context context, String data, String user_token, String meid) {
         final String _user_token = user_token;
         final String _meid = meid;
-        if (MainHelper.getInstance().isNetworkAvailable(context)) {
-            CheckContactsUtils.CheckContacts(data, _user_token,_meid, new CheckContactsUtils.checkCallBack() {
-                @Override
-                public void onSuccess(CheckContactsInfo checkContactsInfo) {
-                    Logger.i("通讯录" + checkContactsInfo.toString());
-                }
 
-                @Override
-                public void onError() {
-                    Logger.i("lhqqq" + "错误");
-                }
-            });
-        } else {
-            Logger.i("网络连接失败，获取不到通讯录");
-        }
     }
 
     /**
@@ -272,7 +262,112 @@ public class MainHelper {
         return chooser;
     }
 
+
+    public int getVersionCode(Context context) {
+        try {
+            PackageManager p = context.getPackageManager();
+            int versionCode = p.getPackageInfo(context.getPackageName(), 0).versionCode;
+            return versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public String getVersionName(Context context) {
+        try {
+            PackageManager p = context.getPackageManager();
+            String versionName = p.getPackageInfo(context.getPackageName(), 0).versionName;
+            return versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+
+    /**
+     * 动态权限
+     */
+    public void addPermissByPermissionList(Activity activity, String[] permissions, int request, OnHasPermiss onHasPermiss) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ArrayList<String> mPermissionList = new ArrayList<>();
+            for (int i = 0; i < permissions.length; i++) {
+                if (ContextCompat.checkSelfPermission(activity, permissions[i])
+                        != PackageManager.PERMISSION_GRANTED) {
+                    mPermissionList.add(permissions[i]);
+                }
+            }
+            if (mPermissionList.isEmpty()) {
+                Logger.i("已授权");
+                //相当于判断是否授权,授权成功做的操作回调
+                onHasPermiss.callback();
+            } else {
+                //请求权限方法
+                String[] permissionsNew = mPermissionList.toArray(new String[mPermissionList.size()]);//将List转为数组
+                ActivityCompat.requestPermissions(activity, permissionsNew, request);
+            }
+        }
+    }
+/**
+     * 动态权限
+     */
+    public void addPermissByPermissionList(Activity activity, String[] permissions, int request) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ArrayList<String> mPermissionList = new ArrayList<>();
+            for (int i = 0; i < permissions.length; i++) {
+                if (ContextCompat.checkSelfPermission(activity, permissions[i])
+                        != PackageManager.PERMISSION_GRANTED) {
+                    mPermissionList.add(permissions[i]);
+                }
+            }
+            if (mPermissionList.isEmpty()) {
+                Logger.i("已授权");
+            } else {
+                //请求权限方法
+                String[] permissionsNew = mPermissionList.toArray(new String[mPermissionList.size()]);//将List转为数组
+                ActivityCompat.requestPermissions(activity, permissionsNew, request);
+            }
+        }
+    }
+
+    public void dealwithPermiss(final Activity context,String permission) {
+
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(context, permission)) {
+            new AlertDialog.Builder(context)
+                    .setMessage("【提示】\r\n" +
+                            "当前缺少必要权限\r\n" +
+                            "请点击“设置”-“权限”-打开所需权限\r\n" +
+                            "最后点击两次后退按钮，即可返回")
+                    .setPositiveButton("去授权", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //引导用户至设置页手动授权
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", context.getApplicationContext().getPackageName(), null);
+                            intent.setData(uri);
+                            context.startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //引导用户手动授权，权限请求失败
+                        }
+                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    //引导用户手动授权，权限请求失败
+                }
+            }).show();
+        }
+    }
+
+
     public interface OnCameraPathBack {
+        void callback();
+    }
+    public interface OnHasPermiss {
         void callback();
     }
 }

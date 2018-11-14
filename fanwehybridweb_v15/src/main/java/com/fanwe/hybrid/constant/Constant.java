@@ -2,6 +2,9 @@ package com.fanwe.hybrid.constant;
 
 public class Constant {
     public static final boolean IS_DEBUG = false;
+    public static final int PERMISS_ALL = 0;          //添加通讯录权限成功后的回调request
+    public static final int PERMISS_CONTACT = 1;          //添加通讯录权限成功后的回调request
+    public static final int PERMISS_CAMERA = 2;          //添加拍摄存储权限成功后的回调request
 
     public static final String APK_AES_KEY = "FANWE5LMUQC889ZC";
 

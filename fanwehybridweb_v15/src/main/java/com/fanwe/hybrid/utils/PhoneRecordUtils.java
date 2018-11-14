@@ -71,12 +71,12 @@ public class PhoneRecordUtils {
         Collections.sort(phoneRecordBeans, comparator2);
 
         long lastest = phoneRecordBeans.get(phoneRecordBeans.size() - 1).time;
-        if (lastest != (Long) SharedPreferencesUtils.getParam(context, "latest", 0L)) {
-            SharedPreferencesUtils.setParam(context, "latest", phoneRecordBeans.get(phoneRecordBeans.size() - 1).time);
-            SharedPreferencesUtils.setParam(context, "update", true);
+        if (lastest != (Long) SPUtils.getParam(context, "latest", 0L)) {
+            SPUtils.setParam(context, "latest", phoneRecordBeans.get(phoneRecordBeans.size() - 1).time);
+            SPUtils.setParam(context, "update", true);
         } else {
-            SharedPreferencesUtils.setParam(context, "latest", phoneRecordBeans.get(phoneRecordBeans.size() - 1).time);
-            SharedPreferencesUtils.setParam(context, "update", false);
+            SPUtils.setParam(context, "latest", phoneRecordBeans.get(phoneRecordBeans.size() - 1).time);
+            SPUtils.setParam(context, "update", false);
         }
         return phoneRecordBeans;
     }
