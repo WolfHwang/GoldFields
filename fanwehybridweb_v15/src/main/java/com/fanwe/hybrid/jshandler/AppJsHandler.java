@@ -85,6 +85,7 @@ public class AppJsHandler extends BaseJsHandler {
 
 
     @JavascriptInterface
+
     public void login_success(String json) {
 
         Logger.i(json);
@@ -129,7 +130,9 @@ public class AppJsHandler extends BaseJsHandler {
         }
 
         FEventBus.getDefault().post(new SDBaseEvent(model, EventTag.EVENT_LOGIN_SUCCESS));
-=======
+
+    public void login_success(String token) {
+
 //        App.getApplication().mLockPatternUtils.clearLock();
 
 //        LoginSuccessModel model = JSON.parseObject(json, LoginSuccessModel.class);
@@ -151,8 +154,10 @@ public class AppJsHandler extends BaseJsHandler {
 //            LoginSuccessModelDao.insertOrUpdateModel2(model);
 //        }
 
+
         FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.EVENT_LOGIN_SUCCESS));
->>>>>>> 5c0179873adb288bc172bdff49f0ef26768b6513
+
+        FEventBus.getDefault().post(new SDBaseEvent(token, EventTag.EVENT_LOGIN_SUCCESS));
     }
 */
 

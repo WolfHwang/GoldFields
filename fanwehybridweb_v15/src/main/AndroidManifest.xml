@@ -91,9 +91,9 @@
 
         <!-- 广告轮播页面 -->
 
-
         <!-- 主页面 -->
         <activity
+            android:screenOrientation="portrait"
             android:name="com.fanwe.hybrid.activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
@@ -113,9 +113,9 @@
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
         -->
 
@@ -127,6 +127,15 @@
 
             <!--
             <intent-filter>
+
+        </activity>-->
+
+        <activity android:name="com.fanwe.hybrid.activity.WebActivity"
+                  android:configChanges="orientation|keyboardHidden|screenSize"
+                  android:label="login"
+                  android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+           <!-- <intent-filter>
+
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>

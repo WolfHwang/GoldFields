@@ -11,6 +11,7 @@ import android.os.Message;
 import android.view.KeyEvent;
 
 import com.fanwe.library.utils.SDToast;
+import com.orhanobut.logger.Logger;
 import com.tencent.smtt.export.external.interfaces.HttpAuthHandler;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
@@ -86,6 +87,7 @@ public class DefaultWebViewClient extends WebViewClient {
     @Override
     public void onReceivedError(WebView webView, WebResourceRequest webResourceRequest, WebResourceError webResourceError) {
         super.onReceivedError(webView, webResourceRequest, webResourceError);
+        Logger.i("onReceivedError: ");
     }
 
     @Override
@@ -156,6 +158,7 @@ public class DefaultWebViewClient extends WebViewClient {
             listener.onReceivedHttpAuthRequest(view, handler, host, realm);
         }
         super.onReceivedHttpAuthRequest(view, handler, host, realm);
+        Logger.i("onReceivedError: ");
     }
 
     @Override
