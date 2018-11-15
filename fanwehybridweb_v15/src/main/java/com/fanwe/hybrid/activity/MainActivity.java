@@ -624,6 +624,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             case KeyEvent.KEYCODE_BACK:
                 String url = mWebViewCustom.getOriginalUrl();
                 System.out.println("urlll:" + url);
+                System.out.println("urllllength:" + url.length());
 
                 if (!url.isEmpty()) {
                     if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate")) {
@@ -637,7 +638,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                         }
                         return false;
                     }
-                    if (url.contains("mine/center") || url.contains("mine/apply") || url.contains("user/center") || url.contains("login")) {
+                    if (url.contains("mine/center") || url.contains("mine/apply") || url.contains("user/center") || url.contains("login")
+                            | url.length() <= 42) {
                         //清除用户登录状态及信息
                         if (this instanceof MainActivity) {
                             if (System.currentTimeMillis() - mExitTime > 2000) {

@@ -19,8 +19,8 @@ android {
         targetSdkVersion 26
 //        flavorDimensions "versionCode"
         //noinspection HighAppVersionCode
-        versionCode 2018111501
-        versionName "1.0.11"
+        versionCode 2018111502
+        versionName "1.0.12"
     }
 
     splits {
@@ -96,9 +96,7 @@ dependencies {
     compile(name: 'library_PhotoViewmastercrop-release', ext: 'aar')
     compile(name: 'library_xml_drawable_o2o-release', ext: 'aar')
     compile 'com.alibaba:fastjson:1.1.45.android'
-    compile 'com.allenliu.versionchecklib:library:2.1.1'
     compile 'com.wang.avi:library:2.1.3'
-
     implementation 'com.classic.common:multiple-status-view:1.5.1'
     implementation 'com.orhanobut:logger:1.15'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
@@ -108,7 +106,6 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.3.0'
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
-
     //----------com.fanwe.android start----------
     compile 'com.github.zj565061763:libcore:f195636c5e'
     compile 'com.github.zj565061763:dialog:1.0.15'
