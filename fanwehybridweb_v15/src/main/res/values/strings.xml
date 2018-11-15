@@ -1,11 +1,9 @@
 <resources>
-    <!--<string name="app_name">黄金原野</string>-->
-    <string name="str_cb">创贝抵扣 :</string>
-    <string name="str_title_left">返回</string>
-
+    <string name="app_name">黄金原野</string>
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="please_wait">请稍后....</string>
     <string name="no_network_view_hint">网络异常</string>
+    <string name="click_retry">请点击重试</string>
 </resources>
