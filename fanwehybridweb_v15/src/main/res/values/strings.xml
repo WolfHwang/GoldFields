@@ -1,8 +1,11 @@
 <resources>
     <!--<string name="app_name">黄金原野</string>-->
     <string name="title_activity_fullscreen">FullscreenActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="dummy_button">短信</string>
+    <string name="dummy_button2">电话</string>
+    <string name="dummy_button3">日历+</string>
+    <string name="dummy_button4">日历-</string>
+    <string name="dummy_content">For DemoTest</string>
     <string name="please_wait">请稍后....</string>
     <string name="no_network_view_hint">网络异常</string>
     <string name="click_retry">请点击重试</string>

@@ -14,7 +14,6 @@ import com.fanwe.hybrid.dao.LoginSuccessModelDao;
 import com.fanwe.hybrid.event.EventTag;
 import com.fanwe.hybrid.event.SDBaseEvent;
 import com.fanwe.hybrid.model.LoginSuccessModel;
-import com.fanwe.hybrid.utils.BaiDuTTSUtils;
 import com.fanwe.lib.cache.FDisk;
 import com.fanwe.lib.eventbus.FEventBus;
 import com.fanwe.lib.utils.extend.FActivityStack;
@@ -32,6 +31,7 @@ import cn.fanwe.yi.R;
 
 public class App extends FApplication {
     private static App mInstance;
+    public static Context sContext;
     public LockPatternUtils mLockPatternUtils;
     private static long lastJump2LoginTime = 0L;
 
@@ -45,6 +45,7 @@ public class App extends FApplication {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
         }
+        sContext = this;
         super.onCreate();
         init();
     }
@@ -55,7 +56,6 @@ public class App extends FApplication {
 //        FWPay.initialize(this, true);
         x.Ext.init(this);
         initSDLibrary();
-        initBaiduTTS();
         initLockConfig();
 //        SDTencentMapManager.getInstance().init(this);
         FDisk.init(this);
@@ -84,10 +84,6 @@ public class App extends FApplication {
         }
     }
 
-    private void initBaiduTTS() {
-        BaiDuTTSUtils.getInstance().init(this); //初始化语音对象
-
-    }
 
     private void initUmengPush() {
     }
