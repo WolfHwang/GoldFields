@@ -1,37 +1,37 @@
 package com.fanwe.hybrid.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
+import android.telephony.PhoneNumberUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
+import com.fanwe.hybrid.bean.EventModel;
+import com.fanwe.hybrid.dialog.EventDialog;
+import com.fanwe.hybrid.utils.CalendarEventUtils;
+import com.orhanobut.logger.Logger;
 
 import cn.fanwe.yi.R;
 
+import static com.fanwe.hybrid.constant.Constant.PERMISS_ALL;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 public class FullscreenActivity extends Activity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
+    private String[] permission = {Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.CALL_PHONE, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
+    };
     private static final boolean AUTO_HIDE = true;
-
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
@@ -39,11 +39,6 @@ public class FullscreenActivity extends Activity {
         @SuppressLint("InlinedApi")
         @Override
         public void run() {
-            // Delayed removal of status and navigation bar
-
-            // Note that some of these constants are new as of API 16 (Jelly Bean)
-            // and API 19 (KitKat). It is safe to use them, as they are inlined
-            // at compile-time and do nothing on earlier devices.
             mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -56,7 +51,6 @@ public class FullscreenActivity extends Activity {
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
-            // Delayed display of UI elements
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
                 actionBar.show();
@@ -71,31 +65,106 @@ public class FullscreenActivity extends Activity {
             hide();
         }
     };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
+
     private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (AUTO_HIDE) {
                 delayedHide(AUTO_HIDE_DELAY_MILLIS);
             }
+            doSendSMSTo("18818778694", "520");
             return false;
         }
     };
+
+    private final View.OnTouchListener mDelayHideTouchListener2 = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            doCallPhone("18818778694");
+            return false;
+        }
+    };
+
+    private final View.OnClickListener mDelayHideTouchListener3 = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            EventDialog dialog = new EventDialog(FullscreenActivity.this, null);
+            dialog.show();
+            dialog.setOnUpdateListener(new EventDialog.OnUpdateListener() {
+                @Override
+                public void onUpdate(boolean isNew, EventModel eventModel) {
+                    CalendarEventUtils.insertEvent(eventModel);
+                }
+            });
+        }
+    };
+
+    private final View.OnTouchListener mDelayHideTouchListener4 = new View.OnTouchListener() {
+        @SuppressLint("MissingPermission")
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            getContentResolver().delete(CalendarContract.Events.CONTENT_URI,
+                    CalendarContract.Events.DESCRIPTION + "=?", new String[]{"去实验室见研究生导师"});
+            Toast.makeText(FullscreenActivity.this, "删除日程成功！", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    };
+    /**
+     * requestPermissions的回调
+     * 一个或多个权限请求结果回调
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        boolean hasAllGranted = true;
+        //判断是否拒绝  拒绝后要怎么处理 以及取消再次提示的处理
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                hasAllGranted = false;
+                break;
+            }
+        }
+        Logger.i("所有权限");
+    }
+    /**
+     * 调起系统发短信功能
+     *
+     * @param phoneNumber
+     * @param message
+     */
+    public void doSendSMSTo(String phoneNumber, String message) {
+        if (PhoneNumberUtils.isGlobalPhoneNumber(phoneNumber)) {
+            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phoneNumber));
+            intent.putExtra("sms_body", message);
+            startActivity(intent);
+        }
+    }
+    /**
+     * 调起系统打电话功能
+     *
+     * @param phone
+     */
+    private void doCallPhone(String phone) {
+        Uri uri = Uri.parse("tel:" + phone);
+        Intent it = new Intent(Intent.ACTION_DIAL, uri);
+        startActivity(it);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_fullscreen);
-
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -105,19 +174,19 @@ public class FullscreenActivity extends Activity {
             }
         });
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.dummy_button2).setOnTouchListener(mDelayHideTouchListener2);
+//        findViewById(R.id.dummy_button3).setOnTouchListener(mDelayHideTouchListener3);
+        findViewById(R.id.dummy_button3).setOnClickListener(mDelayHideTouchListener3);
+        findViewById(R.id.dummy_button4).setOnTouchListener(mDelayHideTouchListener4);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            MainHelper.getInstance().addPermissByPermissionList(FullscreenActivity.this, permission, PERMISS_ALL);
+        }
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
         delayedHide(100);
     }
 
@@ -138,7 +207,6 @@ public class FullscreenActivity extends Activity {
         mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
-        // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
     }
@@ -149,16 +217,10 @@ public class FullscreenActivity extends Activity {
         mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
-
-        // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
     }
 
-    /**
-     * Schedules a call to hide() in delay milliseconds, canceling any
-     * previously scheduled calls.
-     */
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);

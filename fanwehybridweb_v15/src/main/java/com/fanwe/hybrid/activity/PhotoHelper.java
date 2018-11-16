@@ -70,17 +70,17 @@ public class PhotoHelper {
         Uri uri = Uri.fromFile(new File(file_path));
 
         uploadMessage.onReceiveValue(uri);
-            onCallBack.callBack();
+        onCallBack.callBack();
 //        uploadMessage = null;
 
     }
 
 
-    public void requestCodeTakePhoto(Activity context,Intent data, int resultCode,BotPhotoPopupView mBotPhotoPopupView,CutPhotoModel mCut_model) {
+    public void requestCodeTakePhoto(Activity context, Intent data, int resultCode, BotPhotoPopupView mBotPhotoPopupView, CutPhotoModel mCut_model) {
         if (resultCode == RESULT_OK) {
             String path = BotPhotoPopupView.getmTakePhotoPath();
             Bitmap bitmap = BitmapFactory.decodeFile(path);
-            dealImageSize(context,bitmap,mBotPhotoPopupView,mCut_model);
+            dealImageSize(context, bitmap, mBotPhotoPopupView, mCut_model);
         }
     }
 
@@ -94,7 +94,7 @@ public class PhotoHelper {
         onDismissPop(mBotPhotoPopupView);
     }
 
-    public void requestCodeSelectPhoto(Activity context,Intent data, int resultCode,BotPhotoPopupView mBotPhotoPopupView,CutPhotoModel mCut_model) {
+    public void requestCodeSelectPhoto(Activity context, Intent data, int resultCode, BotPhotoPopupView mBotPhotoPopupView, CutPhotoModel mCut_model) {
         if (resultCode == RESULT_OK) {
             String path = SDImageUtil.getImageFilePathFromIntent(data, context);
             DialogCropPhoto dialog = new DialogCropPhoto(context, path, (DialogCropPhoto.OnCropBitmapListner) context, mCut_model);
@@ -113,11 +113,9 @@ public class PhotoHelper {
     /******************************  图片处理  ************************************/
 
 
-
-
     /******************************  回调  ************************************/
 
-    public  interface OnCallBack{
+    public interface OnCallBack {
         void callBack();
     }
 

@@ -1,24 +1,30 @@
-<com.fanwe.hybrid.utils.MultipleStatusView
+<com.classic.common.MultipleStatusView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/multiple_status_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
     app:emptyView="@layout/custom_empty_view"
     app:errorView="@layout/custom_error_view"
     app:loadingView="@layout/custom_loading_view"
-    app:noNetworkView="@layout/custom_no_network_view"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    app:noNetworkView="@layout/custom_no_network_view">
 
     <ImageView
         android:id="@+id/no_network_retry_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/ic_no_network"/>
+        android:src="@drawable/ic_no_network" />
 
     <TextView
-        style="@style/Content"
         android:id="@+id/no_network_view_tv"
+        style="@style/Content"
         android:layout_below="@id/no_network_retry_view"
-        android:text="@string/no_network_view_hint"/>
-</com.fanwe.hybrid.utils.MultipleStatusView>
+        android:text="@string/no_network_view_hint" />
+
+    <TextView
+        android:id="@+id/click_retry"
+        style="@style/Content"
+        android:layout_below="@id/no_network_view_tv"
+        android:text="@string/click_retry" />
+</com.classic.common.MultipleStatusView>
