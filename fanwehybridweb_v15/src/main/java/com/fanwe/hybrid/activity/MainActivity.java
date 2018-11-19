@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.classic.common.MultipleStatusView;
+import com.fanwe.hybrid.bean.LoginBackData;
 import com.fanwe.hybrid.constant.ApkConstant;
 import com.fanwe.hybrid.constant.Constant.JsFunctionName;
 import com.fanwe.hybrid.dialog.BotPhotoPopupView;
@@ -60,6 +62,7 @@ import cn.fanwe.yi.R;
 import static com.fanwe.hybrid.constant.Constant.PERMISS_ALL;
 import static com.fanwe.hybrid.constant.Constant.PERMISS_CAMERA;
 import static com.fanwe.hybrid.constant.Constant.PERMISS_CONTACT;
+import static com.fanwe.hybrid.constant.Constant.PERMISS_SMS;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CLIPBOARDTEXT;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CLOSE_POPWINDOW;
 import static com.fanwe.hybrid.event.EventTag.EVENT_CUTPHOTO;
@@ -70,8 +73,11 @@ import static com.fanwe.hybrid.event.EventTag.EVENT_LOGOUT_SUCCESS;
 import static com.fanwe.hybrid.event.EventTag.EVENT_ONPEN_NETWORK;
 import static com.fanwe.hybrid.event.EventTag.EVENT_REFRESH_RELOAD;
 import static com.fanwe.hybrid.event.EventTag.EVENT_RELOAD_WEBVIEW;
+import static com.fanwe.hybrid.event.EventTag.LOADING;
+import static com.fanwe.hybrid.event.EventTag.PHONE_INVITE;
 import static com.fanwe.hybrid.event.EventTag.SHOW_TOAST;
 import static com.fanwe.hybrid.event.EventTag.UPDATE;
+import static com.fanwe.hybrid.event.EventTag.SMS_INVITE;
 
 public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     public static final String SAVE_CURRENT_URL = "url";
@@ -104,9 +110,14 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             Manifest.permission.READ_CALL_LOG,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.CAMERA,
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.CALL_PHONE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
+    private String phone;
+    private String username;
+
     /**
      * 销毁保存当前URL
      */
@@ -189,7 +200,11 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     MainHelper.getInstance().dealwithPermiss(MainActivity.this, permissions[0]);
                 }
                 break;
-
+            case PERMISS_SMS:
+                if (!hasAllGranted) {
+                    MainHelper.getInstance().dealwithPermiss(MainActivity.this, permissions[0]);
+                }
+                break;
             case PERMISS_ALL:
                 Logger.i("所有权限");
                 break;
@@ -289,6 +304,13 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 if (!failLocationUrl.equals(url)) {
                     mCurrentUrl = url;
                 }
+                username = (String) SPUtils.getParam(MainActivity.this, "username", "");
+                view.evaluateJavascript("javascript:rememberUsername(" + username + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String s) {
+                        Logger.i("大病" + s);
+                    }
+                });
                 String[] split = url.split("/");
                 String endUrl = "/";
                 if (split.length > 2) {
@@ -382,7 +404,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 String[] permissList = {Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_STATE};
 
                 MainHelper.getInstance().addPermissByPermissionList(MainActivity.this, permissList, PERMISS_CONTACT);
-
                 break;
 
             case SHOW_TOAST:
@@ -398,9 +419,25 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     @Override
                     public void run() {
                         MainHelper.getInstance().updateApp(MainActivity.this);
-                        dialog.hide();
+                        dialog.dismiss();
                     }
                 }, 1500);
+                break;
+            case SMS_INVITE:
+                phone = (String) event.data;
+                Logger.i("phonesms:" + phone);
+                if (PhoneNumberUtils.isGlobalPhoneNumber(phone)) {
+                    Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phone));
+                    intent.putExtra("sms_body", "我的好友你好，现邀请你和我一起加入黄金原野，一起创造价值吧！^-^");
+                    startActivity(intent);
+                }
+                break;
+            case PHONE_INVITE:
+                phone = (String) event.data;
+                Logger.i("phonesms:" + phone);
+                Uri uri = Uri.parse("tel:" + phone);
+                Intent it = new Intent(Intent.ACTION_DIAL, uri);
+                startActivity(it);
                 break;
             case EVENT_REFRESH_RELOAD:
                 if (TANetWorkUtil.isNetworkConnected(getApplicationContext())) {
@@ -414,12 +451,14 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 //登陆成功的时候添加权限
                 MainHelper.getInstance().addPermissByPermissionList(this, permissions, PERMISS_ALL);
                 Logger.i("通讯录这块");
+                LoginBackData data = (LoginBackData) event.data;
 
-                JSONObject jsonObject = (JSONObject) event.data;
+                JSONObject jsonObject = data.getJsonObject();
                 String token = (String) jsonObject.get("token");
-                Logger.i(token);
+                String phoneNum = data.getPhone();
 
                 SPUtils.setParam(MainActivity.this, "token", token);
+                SPUtils.setParam(MainActivity.this, "username", phoneNum);
                 ContactIntentService.startActionContact(this);
                 break;
             case EVENT_LOGOUT_SUCCESS: //退出登录成功
@@ -457,9 +496,11 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 }
                 mWebViewCustom.loadJsFunction(JsFunctionName.JS_IS_EXIST_INSTALLED, is_exist_sdk, is_exist);
                 break;
-
             case EVENT_RELOAD_WEBVIEW:
                 mWebViewCustom.reload();
+                break;
+            case LOADING:
+                loading();
                 break;
             case EVENT_CLOSE_POPWINDOW:
                 //调用JS方法
@@ -470,6 +511,19 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 break;
         }
     }
+
+    private void loading() {
+        final Dialog dialog = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle);
+        dialog.show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Logger.i("回调成功");
+                dialog.dismiss();
+            }
+        }, 1000);
+    }
+
     /**
      * 裁剪图片
      */
@@ -534,7 +588,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 String url = mWebViewCustom.getOriginalUrl();
-                System.out.println("urlll:" + url+" -- urllllength:"+ url.length());
+                System.out.println("urlll:" + url + " -- urllllength:" + url.length());
 
                 if (!url.isEmpty()) {   //获取Webview中的一些特殊页面，作物理回退键的处理
                     if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate")) {

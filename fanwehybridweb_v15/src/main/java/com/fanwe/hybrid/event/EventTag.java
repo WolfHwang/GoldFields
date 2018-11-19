@@ -111,9 +111,13 @@ public class EventTag {
     /**
      * 商品编辑，分类选择
      */
-    public static final int EVENT_CATE_EDIT = 22;
+    public static final int LOADING = 22;
 
     public static final int SHOW_TOAST = 25;
 
     public static final int UPDATE = 26;
+
+    public static final int SMS_INVITE = 27;
+
+    public static final int PHONE_INVITE = 28;
 }

@@ -14,6 +14,7 @@ import android.webkit.ValueCallback;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fanwe.hybrid.app.App;
+import com.fanwe.hybrid.bean.LoginBackData;
 import com.fanwe.hybrid.common.AppInstanceConfig;
 import com.fanwe.hybrid.constant.ApkConstant;
 import com.fanwe.hybrid.dao.LoginSuccessModelDao;
@@ -40,6 +41,8 @@ import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.R.attr.text;
 
@@ -82,26 +85,34 @@ public class AppJsHandler extends BaseJsHandler {
         FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.EVENT_REFRESH_RELOAD));
     }
 
+    @JavascriptInterface
+    public void loading() {
+        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.LOADING));
+    }
 
 
     @JavascriptInterface
 
-    public void login_success(String json) {
+    public void login_success(String json, String phone) {
 
-        Logger.i(json);
+        Logger.i("login_successJSON:" + json);
+        Logger.i("login_successPHONE:" + phone);
 
         JSONObject jsonObject = JSON.parseObject(json);
 
+        LoginBackData data = new LoginBackData();
+        data.setJsonObject(jsonObject);
+        data.setPhone(phone);
         Logger.i(String.valueOf(jsonObject));
 
 //        String token = (String) jsonObject.get("token");
 //        Logger.i(token);
 
-        FEventBus.getDefault().post(new SDBaseEvent(jsonObject, EventTag.EVENT_LOGIN_SUCCESS));
+        FEventBus.getDefault().post(new SDBaseEvent(data, EventTag.EVENT_LOGIN_SUCCESS));
     }
+
     @JavascriptInterface
     public void loadContacts() {
-
         FEventBus.getDefault().post(new SDBaseEvent("", EventTag.EVENT_LOAD_CONTACT));
     }
 /*
@@ -245,6 +256,16 @@ public class AppJsHandler extends BaseJsHandler {
     @JavascriptInterface
     public void updateApp() {
         FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.UPDATE));
+    }
+
+    @JavascriptInterface
+    public void smsInvite(String phone) {
+        FEventBus.getDefault().post(new SDBaseEvent(phone, EventTag.SMS_INVITE));
+    }
+
+    @JavascriptInterface
+    public void phoneInvite(String phone) {
+        FEventBus.getDefault().post(new SDBaseEvent(phone, EventTag.PHONE_INVITE));
     }
 
     @JavascriptInterface
