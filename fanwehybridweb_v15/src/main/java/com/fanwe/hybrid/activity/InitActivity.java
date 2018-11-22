@@ -24,7 +24,7 @@ public class InitActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().hide();
+//        getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
 //        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE//状态栏显示处于低能显示状态(low profile模式)，状态栏上一些图标显示会被隐藏。
 //                | View.SYSTEM_UI_FLAG_FULLSCREEN//Activity全屏显示，且状态栏被隐藏覆盖掉。
