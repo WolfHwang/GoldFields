@@ -57,6 +57,8 @@ import com.tencent.smtt.sdk.WebView;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.math.BigDecimal;
+
 import cn.fanwe.yi.R;
 
 import static com.fanwe.hybrid.constant.Constant.PERMISS_ALL;
@@ -157,7 +159,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().hide();
+//        getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.act_main);
@@ -456,9 +458,11 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 JSONObject jsonObject = data.getJsonObject();
                 String token = (String) jsonObject.get("token");
                 String phoneNum = data.getPhone();
+                Logger.i("phoneNum:" + phoneNum);
 
                 SPUtils.setParam(MainActivity.this, "token", token);
                 SPUtils.setParam(MainActivity.this, "username", phoneNum);
+
                 ContactIntentService.startActionContact(this);
                 break;
             case EVENT_LOGOUT_SUCCESS: //退出登录成功
