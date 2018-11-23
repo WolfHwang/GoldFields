@@ -19,9 +19,9 @@ public class ApkConstant {
     /**
      * 域名
      */
-	public static final String SERVER_URL_DOMAIN = "www.fields.gold";// （线上）
+//	public static final String SERVER_URL_DOMAIN = "www.fields.gold";// （线上）
 //    public static final String SERVER_URL_DOMAIN = "192.168.2.172:8889";// （同事）
-//	public static final String SERVER_URL_DOMAIN = "192.168.10.142:8889";// （公司）
+	public static final String SERVER_URL_DOMAIN = "192.168.10.142:8889";// （公司）
 //    public static final String SERVER_URL_DOMAIN = "192.168.1.102:8889";// （家里）
     /**
      * 首页路径
@@ -54,7 +54,8 @@ public class ApkConstant {
     /**
      * 首页完整地址
      */
-    public static final String SERVER_URL = SERVER_URL_SCHEMES + SERVER_URL_DOMAIN + SERVER_URL_PATH;
+//    public static  String SERVER_URL = SERVER_URL_SCHEMES + SERVER_URL_DOMAIN + SERVER_URL_PATH;
+    public static  String SERVER_URL = "";
 
 
     /**
