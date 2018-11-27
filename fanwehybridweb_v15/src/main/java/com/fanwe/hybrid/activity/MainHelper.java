@@ -23,6 +23,7 @@ import com.fanwe.hybrid.utils.AppInnerDownLoder;
 import com.fanwe.hybrid.utils.CheckQuitUtils;
 import com.fanwe.hybrid.utils.CheckUpdateUtils;
 import com.fanwe.hybrid.utils.IntentUtil;
+import com.fanwe.hybrid.utils.SPUtils;
 import com.fanwe.lib.cache.FDisk;
 import com.fanwe.lib.utils.context.FPackageUtil;
 import com.orhanobut.logger.Logger;
@@ -93,7 +94,6 @@ public class MainHelper {
                     Logger.i("进来了updateApp这个方法");
                     Logger.i(isForce + "------" + downUrl + " -----"
                             + updateinfo + " -----" + appName);
-
                     if (("1".equals(isForce)) && !TextUtils.isEmpty(updateinfo)) {//强制更新
                         Logger.i("强制更新");
                         forceUpdate(context, appName, downUrl, updateinfo);
@@ -110,6 +110,41 @@ public class MainHelper {
             @Override
             public void onError() {
                 noneUpdate(context);
+                Logger.i("返回信息为空,更新错误!");
+            }
+        });
+    }
+
+    public void updateApp2(final Context context) {
+        final int versionCode = FPackageUtil.getPackageInfo().versionCode;
+        CheckUpdateUtils.checkUpdate(versionCode, new CheckUpdateUtils.CheckCallBack() {
+            @Override
+            public void onSuccess(UpdateAppInfo updateInfo) {
+                String isForce = updateInfo.getData().getLastfalse();//是否需要强制更新
+                String downUrl = "http://fields.gold/" + updateInfo.getData().getDownloadurl();//apk下载地址
+                String updateinfo = updateInfo.getData().getUpdateinfo();//apk更新详情
+                String appName = updateInfo.getData().getAppname();
+                String version_code = updateInfo.getData().getVersion_code();
+
+                if (versionCode < Integer.parseInt(version_code)) { //需要更新
+                    SPUtils.setParam(context, "needUpgrade", false);
+                    Logger.i("进来了updateApp这个方法");
+                    Logger.i(isForce + "------" + downUrl + " -----"
+                            + updateinfo + " -----" + appName);
+                    if (("1".equals(isForce)) && !TextUtils.isEmpty(updateinfo)) {//强制更新
+                        Logger.i("强制更新");
+                        forceUpdate(context, appName, downUrl, updateinfo);
+                    } else {//非强制更新
+                        //正常升级
+                        Logger.i("正常升级");
+                        normalUpdate(context, appName, downUrl, updateinfo);
+                    }
+                } else {
+                }
+            }
+
+            @Override
+            public void onError() {
                 Logger.i("返回信息为空,更新错误!");
             }
         });
@@ -136,8 +171,9 @@ public class MainHelper {
     }
 
     private void normalUpdate(final Context context, final String appName, final String downUrl, final String updateinfo) {
+        Logger.i("弹框出现!");
         mDialog = new android.support.v7.app.AlertDialog.Builder(context);
-        mDialog.setTitle(appName + "又更新咯！");
+        mDialog.setTitle("检测到有新版本：" + appName);
         mDialog.setMessage(updateinfo);
         mDialog.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
             @Override
@@ -309,7 +345,8 @@ public class MainHelper {
             }
         }
     }
-/**
+
+    /**
      * 动态权限
      */
     public void addPermissByPermissionList(Activity activity, String[] permissions, int request) {
@@ -331,7 +368,7 @@ public class MainHelper {
         }
     }
 
-    public void dealwithPermiss(final Activity context,String permission) {
+    public void dealwithPermiss(final Activity context, String permission) {
 
         if (!ActivityCompat.shouldShowRequestPermissionRationale(context, permission)) {
             new AlertDialog.Builder(context)
@@ -367,6 +404,7 @@ public class MainHelper {
     public interface OnCameraPathBack {
         void callback();
     }
+
     public interface OnHasPermiss {
         void callback();
     }

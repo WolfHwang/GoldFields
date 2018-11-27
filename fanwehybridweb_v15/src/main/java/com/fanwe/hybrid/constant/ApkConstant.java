@@ -55,7 +55,7 @@ public class ApkConstant {
      * 首页完整地址
      */
 //    public static  String SERVER_URL = SERVER_URL_SCHEMES + SERVER_URL_DOMAIN + SERVER_URL_PATH;
-    public static  String SERVER_URL = "";
+    public static  String SERVER_URL = "http://www.fields.gold";
 
 
     /**
