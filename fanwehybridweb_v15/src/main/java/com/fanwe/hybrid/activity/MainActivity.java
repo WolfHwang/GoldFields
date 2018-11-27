@@ -40,6 +40,7 @@ import com.fanwe.hybrid.event.SDBaseEvent;
 import com.fanwe.hybrid.jshandler.AppJsHandler;
 import com.fanwe.hybrid.model.CutPhotoModel;
 import com.fanwe.hybrid.netstate.TANetWorkUtil;
+import com.fanwe.hybrid.service.AppUpgradeService;
 import com.fanwe.hybrid.utils.IntentUtil;
 import com.fanwe.hybrid.utils.LoadingDialog;
 import com.fanwe.hybrid.utils.SDImageUtil;
@@ -167,9 +168,12 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
         mIsExitApp = true;
         x.view().inject(this);
-
+        if ((Boolean) SPUtils.getParam(MainActivity.this, "needUpgrade", true)) {
+            MainHelper.getInstance().updateApp2(MainActivity.this);
+        }
         init();
     }
+
 
     /**
      * requestPermissions的回调

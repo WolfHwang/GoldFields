@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.fanwe.hybrid.constant.ApkConstant;
+import com.fanwe.hybrid.service.AppUpgradeService;
 
 import cn.fanwe.yi.R;
 
@@ -24,6 +25,8 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
+        AppUpgradeService.startUpgradeService(TestActivity.this, true);
+//        MainHelper.getInstance().updateApp(TestActivity.this);
         initView();
     }
 
@@ -53,7 +56,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.btn_url_company:
-                ApkConstant.SERVER_URL = "http://192.168.10.142:8889";
+                ApkConstant.SERVER_URL = "http://192.168.2.154:8889";
                 intent = new Intent(TestActivity.this, MainActivity.class);
                 startActivity(intent);
                 break;
