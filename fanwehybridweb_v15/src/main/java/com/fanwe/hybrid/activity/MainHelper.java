@@ -15,10 +15,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
+import android.widget.Toast;
 
 import com.fanwe.hybrid.app.App;
 import com.fanwe.hybrid.bean.QuitAppInfo;
 import com.fanwe.hybrid.bean.UpdateAppInfo;
+import com.fanwe.hybrid.dialog.CustomDialog;
 import com.fanwe.hybrid.utils.AppInnerDownLoder;
 import com.fanwe.hybrid.utils.CheckQuitUtils;
 import com.fanwe.hybrid.utils.CheckUpdateUtils;
@@ -156,41 +158,46 @@ public class MainHelper {
      *
      * @param context
      */
-    private void noneUpdate(Context context) {
-        mDialog = new android.support.v7.app.AlertDialog.Builder(context);
-        mDialog.setTitle("版本更新")
+    private void noneUpdate(final Context context) {
+        final CustomDialog mCDialog = new CustomDialog(context);
+        mCDialog.setTitle("版本更新")
                 .setMessage("当前已是最新版本无需更新")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,
-                                        int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setCancelable(false).create().show();
+                .setSingle(true).setOnClickBottomListener(new CustomDialog.OnClickBottomListener() {
+            @Override
+            public void onPositiveClick() {
+                mCDialog.dismiss();
+            }
+
+            @Override
+            public void onNegtiveClick() {
+                mCDialog.dismiss();
+            }
+        }).show();
     }
 
     private void normalUpdate(final Context context, final String appName, final String downUrl, final String updateinfo) {
         Logger.i("弹框出现!");
-        mDialog = new android.support.v7.app.AlertDialog.Builder(context);
-        mDialog.setTitle("检测到有新版本：" + appName);
-        mDialog.setMessage(updateinfo);
-        mDialog.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
+        final CustomDialog mCDialog = new CustomDialog(context);
+        mCDialog.setTitle("检测到有新版本：" + appName)
+                .setMessage(updateinfo)
+                .setPositive("立即更新")
+                .setNegtive("暂不更新")
+                .setSingle(false).setOnClickBottomListener(new CustomDialog.OnClickBottomListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onPositiveClick() {
                 if (!canDownloadState(context)) {
                     showDownloadSetting(context);
                     return;
                 }
                 AppInnerDownLoder.downLoadApk(context, downUrl, appName);
-//                  DownLoadApk.download(MainActivity.this,downUrl,updateinfo,appName);
+                mCDialog.dismiss();
             }
-        }).setNegativeButton("暂不更新", new DialogInterface.OnClickListener() {
+
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+            public void onNegtiveClick() {
+                mCDialog.dismiss();
             }
-        }).setCancelable(false).create().show();
+        }).show();
     }
 
     /**
@@ -202,21 +209,27 @@ public class MainHelper {
      * @param updateinfo
      */
     private void forceUpdate(final Context context, final String appName, final String downUrl, final String updateinfo) {
-        mDialog = new android.support.v7.app.AlertDialog.Builder(context);
-        mDialog.setTitle(appName + "又更新咯！");
-        mDialog.setMessage(updateinfo);
-        mDialog.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
+        final CustomDialog mCDialog = new CustomDialog(context);
+        mCDialog.setTitle(appName + "又更新咯！")
+                .setMessage(updateinfo)
+                .setPositive("立即更新")
+                .setSingle(true).setOnClickBottomListener(new CustomDialog.OnClickBottomListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onPositiveClick() {
                 if (!canDownloadState(context)) {
                     Logger.i("立即更新,,,,当前手机状态是否为可下载状态");
                     showDownloadSetting(context);
                     return;
                 }
-                //   DownLoadApk.download(MainActivity.this,downUrl,updateinfo,appName);
                 AppInnerDownLoder.downLoadApk(context, downUrl, appName);
+                mCDialog.dismiss();
             }
-        }).setCancelable(false).create().show();
+
+            @Override
+            public void onNegtiveClick() {
+                mCDialog.dismiss();
+            }
+        }).show();
     }
 
 
@@ -371,32 +384,28 @@ public class MainHelper {
     public void dealwithPermiss(final Activity context, String permission) {
 
         if (!ActivityCompat.shouldShowRequestPermissionRationale(context, permission)) {
-            new AlertDialog.Builder(context)
-                    .setMessage("【提示】\r\n" +
-                            "当前缺少必要权限\r\n" +
+            new CustomDialog(context).setTitle("操作提示").
+                    setMessage("注意：当前缺少必要权限！\r\n" +
                             "请点击“设置”-“权限”-打开所需权限\r\n" +
                             "最后点击两次后退按钮，即可返回")
-                    .setPositiveButton("去授权", new DialogInterface.OnClickListener() {
+                    .setSingle(false)
+                    .setPositive("去授权")
+                    .setNegtive("取消")
+                    .setOnClickBottomListener(new CustomDialog.OnClickBottomListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onPositiveClick() {
                             //引导用户至设置页手动授权
                             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             Uri uri = Uri.fromParts("package", context.getApplicationContext().getPackageName(), null);
                             intent.setData(uri);
                             context.startActivity(intent);
                         }
-                    })
-                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //引导用户手动授权，权限请求失败
+                        public void onNegtiveClick() {
+
                         }
-                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    //引导用户手动授权，权限请求失败
-                }
-            }).show();
+                    }).show();
         }
     }
 
