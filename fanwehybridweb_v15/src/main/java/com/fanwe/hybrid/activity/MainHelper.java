@@ -273,7 +273,7 @@ public class MainHelper {
     public void quitApp(Context context, String user_token) {
         final String _user_token = user_token;
         Logger.i("拿到的token是:" + _user_token);
-        if (MainHelper.getInstance().isNetworkAvailable(context)) {
+        if (isNetworkAvailable(context)) {
             CheckQuitUtils.checkQuit(_user_token, new CheckQuitUtils.quitCallBack() {
                 @Override
                 public void onSuccess(QuitAppInfo quitAppInfo) {
@@ -292,14 +292,20 @@ public class MainHelper {
         }
     }
 
+    public void checkNormalQuit(Context context,String user_token){
+        final String _user_token = user_token;
+        if (isNetworkAvailable(context)){
+            CheckQuitUtils.checkQuit(_user_token, new CheckQuitUtils.quitCallBack() {
+                @Override
+                public void onSuccess(QuitAppInfo quitAppInfo) {
+                    Logger.i("lhqqq" + _user_token + ":" + quitAppInfo.toString());
+                }
 
-    public void putCookieSP(String url) {
-        CookieManager cookieManager = CookieManager.getInstance();
-        String cookie = cookieManager.getCookie(url);
-        if (!TextUtils.isEmpty(cookie)) {
-            FDisk.openInternalCache().cacheString().put("cookie", cookie);
-        } else {
-            FDisk.openInternalCache().cacheString().put("cookie", "");
+                @Override
+                public void onError() {
+                    Logger.i("lhqqq" + "错误");
+                }
+            });
         }
     }
 

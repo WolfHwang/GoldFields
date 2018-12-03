@@ -107,6 +107,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     private String failLocationUrl = "file:///android_asset/new_no_network.html";
 
     private String user_token;
+    private boolean isNormalQuit;
     private boolean isLogout = false;
     String[] permissions = {
             Manifest.permission.READ_CONTACTS,
@@ -165,6 +166,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
         setContentView(R.layout.act_main);
         setTranslucent(this);
+        checkNormalQuit();
 
         mIsExitApp = true;
         x.view().inject(this);
@@ -172,6 +174,15 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             MainHelper.getInstance().updateApp2(MainActivity.this);
         }
         init();
+    }
+
+    //检查是否有异常登录情况
+    private void checkNormalQuit() {
+        isNormalQuit = (boolean) SPUtils.getParam(MainActivity.this, "isNormalQuit", false);
+        user_token = (String) SPUtils.getParam(MainActivity.this, "token", "");
+        if (!user_token.equals("")) {
+            MainHelper.getInstance().checkNormalQuit(MainActivity.this, user_token);
+        }
     }
 
 
@@ -249,7 +260,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                                 webParentView.removeAllViews();
                                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                                         LinearLayout.LayoutParams.MATCH_PARENT);
-                                webParentView.addView(mWebViewCustom, layoutParams);
+//                                webParentView.addView(mWebViewCustom, layoutParams);
+                                mWebViewCustom.get("http://fields.gold/?v=1.0.187.1");
                                 dialog.dismiss();
                                 Toast.makeText(getApplicationContext(), "网络连接成功", Toast.LENGTH_SHORT).show();
                             } else {
@@ -599,7 +611,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 System.out.println("urlll:" + url + " -- urllllength:" + url.length());
 
                 if (!url.isEmpty()) {   //获取Webview中的一些特殊页面，作物理回退键的处理
-                    if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate")) {
+                    if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate") | url.contains("info/index")) {
                         if (mWebViewCustom.canGoBack()) {
                             mWebViewCustom.evaluateJavascript("javascript:jumpJs()", new com.tencent.smtt.sdk.ValueCallback<String>() {
                                 @Override
@@ -621,6 +633,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                             } else {
                                 LogUtil.d("已经双击退出exit");
                                 user_token = (String) SPUtils.getParam(MainActivity.this, "token", "");
+                                SPUtils.setParam(MainActivity.this, "isNormalQuit", true);
                                 MainHelper.getInstance().quitApp(MainActivity.this, user_token);
                             }
                             mExitTime = System.currentTimeMillis();
