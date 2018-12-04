@@ -19,8 +19,8 @@ android {
         targetSdkVersion 26
 //        flavorDimensions "versionCode"
         //noinspection HighAppVersionCode
-        versionCode 2018112001
-        versionName "1.0.13"
+        versionCode 2018113001
+        versionName "1.0.15"
     }
 
     splits {

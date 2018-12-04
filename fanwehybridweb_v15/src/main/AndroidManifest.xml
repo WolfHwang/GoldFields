@@ -141,12 +141,11 @@
 
         <service
             android:name="com.fanwe.hybrid.activity.ContactIntentService"
-            android:exported="false">
-        </service>
+            android:exported="false"></service>
 
-        <service android:name="com.fanwe.hybrid.service.AppUpgradeService"
-            android:exported="false">
-        </service>
+        <service
+            android:name="com.fanwe.hybrid.service.AppUpgradeService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
