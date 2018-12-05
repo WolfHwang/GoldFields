@@ -1,4 +1,4 @@
-package com.fanwe.hybrid.utils;
+package com.szruito.goldfields.utils;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;

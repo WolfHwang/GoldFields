@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#f00"
-    tools:context="com.fanwe.hybrid.activity.WebActivity">
+    tools:context="com.szruito.goldfields.activity.WebActivity">
 
 
  <!--   <TextView
@@ -29,7 +29,7 @@
 
         <!--android:clipToPadding="true"-->
         <!--android:fitsSystemWindows="true"-->
-    <com.fanwe.hybrid.webview.CustomWebView
+    <com.szruito.goldfields.webview.CustomWebView
         android:id="@+id/cus_webview1"
         android:layout_width="match_parent"
         android:layout_height="400dp"

@@ -1,11 +1,8 @@
-package com.fanwe.hybrid.activity;
+package com.szruito.goldfields.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Service;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -22,7 +19,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -31,26 +27,32 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.classic.common.MultipleStatusView;
-import com.fanwe.hybrid.bean.LoginBackData;
-import com.fanwe.hybrid.constant.ApkConstant;
-import com.fanwe.hybrid.constant.Constant.JsFunctionName;
-import com.fanwe.hybrid.dialog.BotPhotoPopupView;
-import com.fanwe.hybrid.dialog.DialogCropPhoto.OnCropBitmapListner;
-import com.fanwe.hybrid.event.SDBaseEvent;
-import com.fanwe.hybrid.jshandler.AppJsHandler;
-import com.fanwe.hybrid.model.CutPhotoModel;
-import com.fanwe.hybrid.netstate.TANetWorkUtil;
-import com.fanwe.hybrid.service.AppUpgradeService;
-import com.fanwe.hybrid.utils.IntentUtil;
-import com.fanwe.hybrid.utils.LoadingDialog;
-import com.fanwe.hybrid.utils.SDImageUtil;
-import com.fanwe.hybrid.utils.SPUtils;
-import com.fanwe.hybrid.webview.CustomWebView;
-import com.fanwe.hybrid.webview.DefaultWebChromeClient;
-import com.fanwe.hybrid.webview.WebChromeClientListener;
+import com.szruito.goldfields.bean.LoginBackData;
+import com.szruito.goldfields.constant.ApkConstant;
+import com.szruito.goldfields.constant.Constant.JsFunctionName;
+import com.szruito.goldfields.dialog.BotPhotoPopupView;
+import com.szruito.goldfields.dialog.DialogCropPhoto.OnCropBitmapListner;
+import com.szruito.goldfields.event.SDBaseEvent;
+import com.szruito.goldfields.jshandler.AppJsHandler;
+import com.szruito.goldfields.model.CutPhotoModel;
+import com.szruito.goldfields.netstate.TANetWorkUtil;
+import com.szruito.goldfields.service.AppUpgradeService;
+import com.szruito.goldfields.utils.IntentUtil;
+import com.szruito.goldfields.utils.LoadingDialog;
+import com.szruito.goldfields.utils.SDImageUtil;
+import com.szruito.goldfields.utils.SPUtils;
+import com.szruito.goldfields.webview.CustomWebView;
+import com.szruito.goldfields.webview.DefaultWebChromeClient;
+import com.szruito.goldfields.webview.WebChromeClientListener;
 import com.fanwe.lib.utils.context.FPackageUtil;
 import com.fanwe.library.utils.LogUtil;
 import com.orhanobut.logger.Logger;
+import com.szruito.goldfields.bean.LoginBackData;
+import com.szruito.goldfields.event.EventTag;
+import com.szruito.goldfields.event.SDBaseEvent;
+import com.szruito.goldfields.model.CutPhotoModel;
+import com.szruito.goldfields.utils.IntentUtil;
+import com.szruito.goldfields.utils.LoadingDialog;
 import com.tencent.smtt.export.external.interfaces.WebResourceError;
 import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.sdk.WebView;
@@ -58,29 +60,27 @@ import com.tencent.smtt.sdk.WebView;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
-import java.math.BigDecimal;
-
 import cn.fanwe.yi.R;
 
-import static com.fanwe.hybrid.constant.Constant.PERMISS_ALL;
-import static com.fanwe.hybrid.constant.Constant.PERMISS_CAMERA;
-import static com.fanwe.hybrid.constant.Constant.PERMISS_CONTACT;
-import static com.fanwe.hybrid.constant.Constant.PERMISS_SMS;
-import static com.fanwe.hybrid.event.EventTag.EVENT_CLIPBOARDTEXT;
-import static com.fanwe.hybrid.event.EventTag.EVENT_CLOSE_POPWINDOW;
-import static com.fanwe.hybrid.event.EventTag.EVENT_CUTPHOTO;
-import static com.fanwe.hybrid.event.EventTag.EVENT_IS_EXIST_INSTALLED;
-import static com.fanwe.hybrid.event.EventTag.EVENT_LOAD_CONTACT;
-import static com.fanwe.hybrid.event.EventTag.EVENT_LOGIN_SUCCESS;
-import static com.fanwe.hybrid.event.EventTag.EVENT_LOGOUT_SUCCESS;
-import static com.fanwe.hybrid.event.EventTag.EVENT_ONPEN_NETWORK;
-import static com.fanwe.hybrid.event.EventTag.EVENT_REFRESH_RELOAD;
-import static com.fanwe.hybrid.event.EventTag.EVENT_RELOAD_WEBVIEW;
-import static com.fanwe.hybrid.event.EventTag.LOADING;
-import static com.fanwe.hybrid.event.EventTag.PHONE_INVITE;
-import static com.fanwe.hybrid.event.EventTag.SHOW_TOAST;
-import static com.fanwe.hybrid.event.EventTag.UPDATE;
-import static com.fanwe.hybrid.event.EventTag.SMS_INVITE;
+import static com.szruito.goldfields.constant.Constant.PERMISS_ALL;
+import static com.szruito.goldfields.constant.Constant.PERMISS_CAMERA;
+import static com.szruito.goldfields.constant.Constant.PERMISS_CONTACT;
+import static com.szruito.goldfields.constant.Constant.PERMISS_SMS;
+import static com.szruito.goldfields.event.EventTag.EVENT_CLIPBOARDTEXT;
+import static com.szruito.goldfields.event.EventTag.EVENT_CLOSE_POPWINDOW;
+import static com.szruito.goldfields.event.EventTag.EVENT_CUTPHOTO;
+import static com.szruito.goldfields.event.EventTag.EVENT_IS_EXIST_INSTALLED;
+import static com.szruito.goldfields.event.EventTag.EVENT_LOAD_CONTACT;
+import static com.szruito.goldfields.event.EventTag.EVENT_LOGIN_SUCCESS;
+import static com.szruito.goldfields.event.EventTag.EVENT_LOGOUT_SUCCESS;
+import static com.szruito.goldfields.event.EventTag.EVENT_ONPEN_NETWORK;
+import static com.szruito.goldfields.event.EventTag.EVENT_REFRESH_RELOAD;
+import static com.szruito.goldfields.event.EventTag.EVENT_RELOAD_WEBVIEW;
+import static com.szruito.goldfields.event.EventTag.LOADING;
+import static com.szruito.goldfields.event.EventTag.PHONE_INVITE;
+import static com.szruito.goldfields.event.EventTag.SHOW_TOAST;
+import static com.szruito.goldfields.event.EventTag.UPDATE;
+import static com.szruito.goldfields.event.EventTag.SMS_INVITE;
 
 public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     public static final String SAVE_CURRENT_URL = "url";
@@ -260,7 +260,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                                 webParentView.removeAllViews();
                                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                                         LinearLayout.LayoutParams.MATCH_PARENT);
-//                                webParentView.addView(mWebViewCustom, layoutParams);
+                                webParentView.addView(mWebViewCustom, layoutParams);
                                 mWebViewCustom.get("http://fields.gold/?v=1.0.187.1");
                                 dialog.dismiss();
                                 Toast.makeText(getApplicationContext(), "网络连接成功", Toast.LENGTH_SHORT).show();
@@ -413,22 +413,22 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     public void onMainEvent(SDBaseEvent event) {
         super.onMainEvent(event);
         switch (event.getTagInt()) {
-            case EVENT_ONPEN_NETWORK:
+            case EventTag.EVENT_ONPEN_NETWORK:
                 IntentUtil.openNetwork(this);
                 break;
 
-            case EVENT_LOAD_CONTACT:
+            case EventTag.EVENT_LOAD_CONTACT:
                 //只是发送一个讯息 , 做权限的处理
                 String[] permissList = {Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_STATE};
 
                 MainHelper.getInstance().addPermissByPermissionList(MainActivity.this, permissList, PERMISS_CONTACT);
                 break;
 
-            case SHOW_TOAST:
+            case EventTag.SHOW_TOAST:
                 toast = (String) event.data;
                 Toast.makeText(getActivity(), toast, Toast.LENGTH_SHORT).show();
                 break;
-            case UPDATE:
+            case EventTag.UPDATE:
                 Logger.i("更新App----ZEROwolf");
 //                MainHelper.getInstance().updateApp(MainActivity.this);
                 final Dialog dialog = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle);
@@ -441,7 +441,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     }
                 }, 1500);
                 break;
-            case SMS_INVITE:
+            case EventTag.SMS_INVITE:
                 phone = (String) event.data;
                 Logger.i("phonesms:" + phone);
                 if (PhoneNumberUtils.isGlobalPhoneNumber(phone)) {
@@ -450,14 +450,14 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     startActivity(intent);
                 }
                 break;
-            case PHONE_INVITE:
+            case EventTag.PHONE_INVITE:
                 phone = (String) event.data;
                 Logger.i("phonesms:" + phone);
                 Uri uri = Uri.parse("tel:" + phone);
                 Intent it = new Intent(Intent.ACTION_DIAL, uri);
                 startActivity(it);
                 break;
-            case EVENT_REFRESH_RELOAD:
+            case EventTag.EVENT_REFRESH_RELOAD:
                 if (TANetWorkUtil.isNetworkConnected(getApplicationContext())) {
                     Toast.makeText(MainActivity.this, "重新加载成功", Toast.LENGTH_SHORT).show();
                     mWebViewCustom.get("http://fields.gold/?v=1.0.187.1");
@@ -465,7 +465,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     Toast.makeText(MainActivity.this, "请检查网络连接", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case EVENT_LOGIN_SUCCESS:
+            case EventTag.EVENT_LOGIN_SUCCESS:
                 //登陆成功的时候添加权限
                 MainHelper.getInstance().addPermissByPermissionList(this, permissions, PERMISS_ALL);
                 Logger.i("通讯录这块");
@@ -481,12 +481,12 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
                 ContactIntentService.startActionContact(this);
                 break;
-            case EVENT_LOGOUT_SUCCESS: //退出登录成功
+            case EventTag.EVENT_LOGOUT_SUCCESS: //退出登录成功
                 isLogout = true;
                 mWebViewCustom.clearHistory();
                 break;
 
-            case EVENT_CUTPHOTO:
+            case EventTag.EVENT_CUTPHOTO:
                 mCut_model = (CutPhotoModel) event.data;
 
                 String[] permissCamera = {Manifest.permission.CAMERA,
@@ -501,12 +501,12 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 });
 
                 break;
-            case EVENT_CLIPBOARDTEXT:
+            case EventTag.EVENT_CLIPBOARDTEXT:
                 String text = (String) event.data;
                 mWebViewCustom.loadJsFunction(JsFunctionName.GET_CLIP_BOARD, text);
                 break;
 
-            case EVENT_IS_EXIST_INSTALLED:
+            case EventTag.EVENT_IS_EXIST_INSTALLED:
                 String is_exist_sdk = (String) event.data;
                 int is_exist;
                 if (FPackageUtil.isAppInstalled(is_exist_sdk)) {
@@ -516,13 +516,13 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 }
                 mWebViewCustom.loadJsFunction(JsFunctionName.JS_IS_EXIST_INSTALLED, is_exist_sdk, is_exist);
                 break;
-            case EVENT_RELOAD_WEBVIEW:
+            case EventTag.EVENT_RELOAD_WEBVIEW:
                 mWebViewCustom.reload();
                 break;
-            case LOADING:
+            case EventTag.LOADING:
                 loading();
                 break;
-            case EVENT_CLOSE_POPWINDOW:
+            case EventTag.EVENT_CLOSE_POPWINDOW:
                 //调用JS方法
                 String jumpUrl = (String) event.data;
                 mWebViewCustom.loadJsFunction("onClosePopWindow", jumpUrl);//调用JS方法
@@ -592,7 +592,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        AudioManager audio = (AudioManager) getSystemService(Service.AUDIO_SERVICE);
+        AudioManager audio = (AudioManager) getSystemService(AUDIO_SERVICE);
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
                 audio.adjustStreamVolume(

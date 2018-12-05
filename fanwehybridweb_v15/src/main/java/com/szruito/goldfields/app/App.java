@@ -1,4 +1,4 @@
-package com.fanwe.hybrid.app;
+package com.szruito.goldfields.app;
 
 import android.content.Context;
 import android.os.Build;
@@ -9,11 +9,6 @@ import android.webkit.CookieManager;
 
 import com.fanwe.gesture.customview.LockPatternView.Cell;
 import com.fanwe.gesture.utils.LockPatternUtils;
-import com.fanwe.hybrid.dao.InitActModelDao;
-import com.fanwe.hybrid.dao.LoginSuccessModelDao;
-import com.fanwe.hybrid.event.EventTag;
-import com.fanwe.hybrid.event.SDBaseEvent;
-import com.fanwe.hybrid.model.LoginSuccessModel;
 import com.fanwe.lib.cache.FDisk;
 import com.fanwe.lib.eventbus.FEventBus;
 import com.fanwe.lib.utils.extend.FActivityStack;
@@ -21,6 +16,13 @@ import com.fanwe.library.SDLibrary;
 import com.fanwe.library.app.FApplication;
 import com.fanwe.library.utils.LogUtil;
 //import com.fanwei.jubaosdk.shell.FWPay;
+import com.szruito.goldfields.dao.InitActModelDao;
+import com.szruito.goldfields.dao.LoginSuccessModelDao;
+import com.szruito.goldfields.event.EventTag;
+import com.szruito.goldfields.event.SDBaseEvent;
+import com.szruito.goldfields.model.LoginSuccessModel;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.smtt.sdk.QbSdk;
 
 import org.xutils.x;
@@ -34,6 +36,18 @@ public class App extends FApplication {
     public static Context sContext;
     public LockPatternUtils mLockPatternUtils;
     private static long lastJump2LoginTime = 0L;
+    // APP_ID 替换为你的应用从官方网站申请到的合法appID
+    private final String APP_ID = "wx9695411753c04965";
+    // IWXAPI 是第三方app和微信通信的openApi接口
+    private IWXAPI api;
+
+    private void regToWx() {
+        // 通过WXAPIFactory工厂，获取IWXAPI的实例
+        api = WXAPIFactory.createWXAPI(this, APP_ID, true);
+
+        // 将应用的appId注册到微信
+//        api.registerApp(APP_ID);
+    }
 
     public static App getApplication() {
         return mInstance;
@@ -45,6 +59,7 @@ public class App extends FApplication {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
         }
+        regToWx();
         sContext = this;
         super.onCreate();
         init();

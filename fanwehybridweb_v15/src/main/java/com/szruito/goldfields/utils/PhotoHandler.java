@@ -1,4 +1,4 @@
-package com.fanwe.hybrid.utils;
+package com.szruito.goldfields.utils;
 
 import android.app.Activity;
 import android.content.Context;

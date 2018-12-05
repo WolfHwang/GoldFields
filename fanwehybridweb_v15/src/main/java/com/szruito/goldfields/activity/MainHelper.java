@@ -1,9 +1,7 @@
-package com.fanwe.hybrid.activity;
+package com.szruito.goldfields.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -14,21 +12,23 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.webkit.CookieManager;
-import android.widget.Toast;
 
-import com.fanwe.hybrid.app.App;
-import com.fanwe.hybrid.bean.QuitAppInfo;
-import com.fanwe.hybrid.bean.UpdateAppInfo;
-import com.fanwe.hybrid.dialog.CustomDialog;
-import com.fanwe.hybrid.utils.AppInnerDownLoder;
-import com.fanwe.hybrid.utils.CheckQuitUtils;
-import com.fanwe.hybrid.utils.CheckUpdateUtils;
-import com.fanwe.hybrid.utils.IntentUtil;
-import com.fanwe.hybrid.utils.SPUtils;
-import com.fanwe.lib.cache.FDisk;
+import com.szruito.goldfields.app.App;
+import com.szruito.goldfields.bean.QuitAppInfo;
+import com.szruito.goldfields.bean.UpdateAppInfo;
+import com.szruito.goldfields.dialog.CustomDialog;
+import com.szruito.goldfields.utils.AppInnerDownLoder;
+import com.szruito.goldfields.utils.CheckQuitUtils;
+import com.szruito.goldfields.utils.CheckUpdateUtils;
+import com.szruito.goldfields.utils.IntentUtil;
+import com.szruito.goldfields.utils.SPUtils;
 import com.fanwe.lib.utils.context.FPackageUtil;
 import com.orhanobut.logger.Logger;
+import com.szruito.goldfields.app.App;
+import com.szruito.goldfields.bean.QuitAppInfo;
+import com.szruito.goldfields.bean.UpdateAppInfo;
+import com.szruito.goldfields.utils.CheckUpdateUtils;
+import com.szruito.goldfields.utils.IntentUtil;
 
 import java.util.ArrayList;
 import java.util.List;

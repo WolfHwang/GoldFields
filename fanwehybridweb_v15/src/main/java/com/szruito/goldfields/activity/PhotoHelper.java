@@ -1,4 +1,4 @@
-package com.fanwe.hybrid.activity;
+package com.szruito.goldfields.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,11 +9,12 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.ValueCallback;
 
-import com.fanwe.hybrid.dialog.BotPhotoPopupView;
-import com.fanwe.hybrid.dialog.DialogCropPhoto;
-import com.fanwe.hybrid.model.CutPhotoModel;
-import com.fanwe.hybrid.utils.FileUtils;
-import com.fanwe.hybrid.utils.SDImageUtil;
+import com.szruito.goldfields.dialog.BotPhotoPopupView;
+import com.szruito.goldfields.dialog.DialogCropPhoto;
+import com.szruito.goldfields.model.CutPhotoModel;
+import com.szruito.goldfields.utils.FileUtils;
+import com.szruito.goldfields.utils.SDImageUtil;
+import com.szruito.goldfields.model.CutPhotoModel;
 
 import java.io.File;
 
