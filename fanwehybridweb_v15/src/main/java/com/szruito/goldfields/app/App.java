@@ -16,6 +16,7 @@ import com.fanwe.library.SDLibrary;
 import com.fanwe.library.app.FApplication;
 import com.fanwe.library.utils.LogUtil;
 //import com.fanwei.jubaosdk.shell.FWPay;
+import com.mob.MobSDK;
 import com.szruito.goldfields.dao.InitActModelDao;
 import com.szruito.goldfields.dao.LoginSuccessModelDao;
 import com.szruito.goldfields.event.EventTag;
@@ -60,9 +61,14 @@ public class App extends FApplication {
             StrictMode.setVmPolicy(builder.build());
         }
         regToWx();
+        regToShareSDK();
         sContext = this;
         super.onCreate();
         init();
+    }
+
+    private void regToShareSDK() {
+        MobSDK.init(this);
     }
 
     @Override

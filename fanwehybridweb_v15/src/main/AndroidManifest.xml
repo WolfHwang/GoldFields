@@ -56,7 +56,7 @@
 
         <!-- android:name="com.szruito.goldfields.activity.TestActivity" -->
         <activity
-            android:name="com.szruito.goldfields.wxapi.WXEntryActivity"
+            android:name="com.szruito.goldfields.activity.MainActivity"
             android:exported="true"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:label="黄金原野"
@@ -95,38 +95,44 @@
             </intent-filter>
         </receiver>
 
-        <!-- 广告轮播页面 -->
+        <!-- 广告轮播页面 InitActivity-->
+        <!-- 全屏测试页面 FullsreenActivity-->
 
 
-        <!-- 主页面 -->
+        <!--&lt;!&ndash; 主页面 &ndash;&gt;-->
+        <!--<activity-->
+            <!--android:name="com.szruito.goldfields.activity.MainActivity"-->
+            <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
+            <!--android:launchMode="singleTask"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />-->
+
+        <!-- shareSDK begin -->
         <activity
-            android:name="com.szruito.goldfields.activity.MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:launchMode="singleTask"
+            android:name="com.mob.tools.MobUIShell"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-
-
-
-        <!--
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
-        -->
-
-
-        <!--
-        <activity
-            android:name="com.szruito.goldfields.activity.FullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_fullscreen"
-            android:theme="@style/FullscreenTheme">
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <data android:scheme="tencent1104646053" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        -->
+        <!-- shareSDK end -->
+
+
+
+        <activity
+            android:name="com.szruito.goldfields.wxapi.WXEntryActivity"
+            android:exported="true">
+
+        </activity>
+
 
         <activity
             android:name="com.szruito.goldfields.activity.WebActivity"

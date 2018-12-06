@@ -270,6 +270,11 @@ public class AppJsHandler extends BaseJsHandler {
     }
 
     @JavascriptInterface
+    public void share(){
+        FEventBus.getDefault().post(new SDBaseEvent(null,EventTag.SHARE));
+    }
+
+    @JavascriptInterface
     public void smsInvite(String phone) {
         FEventBus.getDefault().post(new SDBaseEvent(phone, EventTag.SMS_INVITE));
     }

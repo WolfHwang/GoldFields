@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+//ShareSDK配置第二步
+apply plugin: 'com.mob.sdk'
 //apply plugin: 'com.antfortune.freeline'
 
 def releaseTime() {
@@ -19,8 +21,8 @@ android {
         targetSdkVersion 26
 //        flavorDimensions "versionCode"
         //noinspection HighAppVersionCode
-        versionCode 2018113001
-        versionName "1.0.15"
+        versionCode 2018120601
+        versionName "1.0.16"
     }
 
     splits {
@@ -75,6 +77,47 @@ android {
         }
     }*/
 }
+
+MobSDK {
+    appKey "292251efc9b4e"
+    appSecret "f294dc252dda74b9832a48134488c4df"
+
+    ShareSDK {
+        //平台配置信息
+        devInfo {
+            SinaWeibo {
+                appKey "494633059"
+                appSecret "8cfc6181f749ecbc2c2a2d447aa269db"
+                callbackUri "http://www.sharesdk.cn"
+                shareByAppClient false
+            }
+            Wechat {
+                appId "wx9695411753c04965"
+                appSecret "d49de9d87ff36632257da01fb43178c6"
+            }
+            WechatMoments  {
+                appId "wx9695411753c04965"
+                appSecret "d49de9d87ff36632257da01fb43178c6"
+            }
+            WechatFavorite   {
+                appId "wx9695411753c04965"
+                appSecret "d49de9d87ff36632257da01fb43178c6"
+            }
+            QQ {
+                appId "100371282"
+                appKey "aed9b0303e3ed1e27bae87c33761161d"
+                shareByAppClient true
+            }
+            QZone  {
+                appId "100371282"
+                appKey "aed9b0303e3ed1e27bae87c33761161d"
+                shareByAppClient true
+            }
+        }
+    }
+
+}
+
 repositories {
     flatDir {
         dirs 'libs'
