@@ -47,15 +47,17 @@
 
     <!-- 腾讯定位 sdk 要求的权限 (结束) -->
     <application
-        android:name="com.fanwe.hybrid.app.App"
+        android:name="com.szruito.goldfields.app.App"
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
         tools:ignore="GoogleAppIndexingWarning">
-        <!--android:name="com.fanwe.hybrid.activity.FullscreenActivity"-->
+
+        <!-- android:name="com.szruito.goldfields.activity.TestActivity" -->
         <activity
-            android:name="com.fanwe.hybrid.activity.TestActivity"
+            android:name="com.szruito.goldfields.activity.MainActivity"
+            android:exported="true"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:label="黄金原野"
             android:screenOrientation="portrait"
@@ -68,7 +70,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.fanwe.hybrid.utils.ApkInstallReceiver">
+        <receiver android:name="com.szruito.goldfields.utils.ApkInstallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
@@ -77,7 +79,7 @@
         <!-- 解决android 7.0 以上版本自动更新不安装问题 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.fanwe.hybrid.fileprovider"
+            android:authorities="com.szruito.goldfields.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -86,46 +88,54 @@
         </provider>
 
         <!-- 网络状态监听广播 -->
-        <receiver android:name="com.fanwe.hybrid.netstate.TANetworkStateReceiver">
+        <receiver android:name="com.szruito.goldfields.netstate.TANetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.gzcpc.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 
-        <!-- 广告轮播页面 -->
+        <!-- 广告轮播页面 InitActivity-->
+        <!-- 全屏测试页面 FullsreenActivity-->
 
 
-        <!-- 主页面 -->
+        <!--&lt;!&ndash; 主页面 &ndash;&gt;-->
+        <!--<activity-->
+            <!--android:name="com.szruito.goldfields.activity.MainActivity"-->
+            <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
+            <!--android:launchMode="singleTask"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />-->
+
+        <!-- shareSDK begin -->
         <activity
-            android:name="com.fanwe.hybrid.activity.MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:launchMode="singleTask"
+            android:name="com.mob.tools.MobUIShell"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-
-        <!--
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
-        -->
-
-
-        <!--
-        <activity
-            android:name="com.fanwe.hybrid.activity.FullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_fullscreen"
-            android:theme="@style/FullscreenTheme">
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <data android:scheme="tencent1104646053" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        -->
+        <!-- shareSDK end -->
+
+
 
         <activity
-            android:name="com.fanwe.hybrid.activity.WebActivity"
+            android:name="com.szruito.goldfields.wxapi.WXEntryActivity"
+            android:exported="true">
+
+        </activity>
+
+
+        <activity
+            android:name="com.szruito.goldfields.activity.WebActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="login"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -140,12 +150,12 @@
         </activity>
 
         <service
-            android:name="com.fanwe.hybrid.activity.ContactIntentService"
-            android:exported="false"></service>
-
+            android:name="com.szruito.goldfields.activity.ContactIntentService"
+            android:exported="false" />
         <service
-            android:name="com.fanwe.hybrid.service.AppUpgradeService"
-            android:exported="false"></service>
+            android:name="com.szruito.goldfields.service.AppUpgradeService"
+            android:exported="false" />
+
     </application>
 
 </manifest>

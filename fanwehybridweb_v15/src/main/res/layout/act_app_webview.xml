@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="@dimen/base_height_head" />
 
-    <com.fanwe.hybrid.webview.CustomWebView
+    <com.szruito.goldfields.webview.CustomWebView
         android:id="@+id/webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
