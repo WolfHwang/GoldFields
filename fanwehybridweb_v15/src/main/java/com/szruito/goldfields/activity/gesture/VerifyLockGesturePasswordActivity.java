@@ -25,7 +25,7 @@ import com.szruito.goldfields.model.LoginSuccessModel;
 
 import java.util.List;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 public class VerifyLockGesturePasswordActivity extends BaseActivity
 {

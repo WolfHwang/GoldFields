@@ -48,7 +48,16 @@
         <!--<item name="android:backgroundDimEnabled">true</item>&lt;!&ndash;模糊&ndash;&gt;-->
     <!--</style>-->
 
-    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="FullScreen" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <item name="colorPrimary">@color/res_main_color</item>
+        <item name="colorAccent">@color/res_main_color</item>
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
+    <style name="FullScreenNormal" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 

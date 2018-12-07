@@ -30,7 +30,7 @@ import org.xutils.x;
 
 import java.util.List;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 public class App extends FApplication {
     private static App mInstance;

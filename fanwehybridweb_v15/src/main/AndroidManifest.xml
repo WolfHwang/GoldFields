@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!-- 修改之处一包名package 内置版本号versionCode 外置版本号versionName -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="cn.fanwe.yi">
+    package="com.szruito.goldfields">
 
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -51,17 +51,17 @@
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+        android:theme="@style/FullScreenNormal"
         tools:ignore="GoogleAppIndexingWarning">
 
         <!-- android:name="com.szruito.goldfields.activity.TestActivity" -->
         <activity
-            android:name="com.szruito.goldfields.activity.MainActivity"
-            android:exported="true"
+            android:name="com.szruito.goldfields.activity.SplashActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
+            android:exported="true"
             android:label="黄金原野"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            android:theme="@style/FullScreen"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -95,17 +95,25 @@
             </intent-filter>
         </receiver>
 
-        <!-- 广告轮播页面 InitActivity-->
-        <!-- 全屏测试页面 FullsreenActivity-->
+        <!-- 广告轮播页面 InitAdvActivity -->
+        <!-- 全屏测试页面 FullsreenActivity -->
 
 
-        <!--&lt;!&ndash; 主页面 &ndash;&gt;-->
-        <!--<activity-->
-            <!--android:name="com.szruito.goldfields.activity.MainActivity"-->
-            <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
-            <!--android:launchMode="singleTask"-->
-            <!--android:screenOrientation="portrait"-->
-            <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />-->
+        <!-- &lt;!&ndash; 主页面 &ndash;&gt; -->
+        <activity
+            android:name="com.szruito.goldfields.activity.MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenNormal" />
+
+        <activity
+            android:name="com.szruito.goldfields.activity.InitAdvActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenNormal" />
+
 
         <!-- shareSDK begin -->
         <activity
@@ -125,29 +133,14 @@
         </activity>
         <!-- shareSDK end -->
 
-
-
         <activity
             android:name="com.szruito.goldfields.wxapi.WXEntryActivity"
-            android:exported="true">
-
-        </activity>
-
-
+            android:exported="true"></activity>
         <activity
             android:name="com.szruito.goldfields.activity.WebActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="login"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-            -->
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
 
         <service
             android:name="com.szruito.goldfields.activity.ContactIntentService"

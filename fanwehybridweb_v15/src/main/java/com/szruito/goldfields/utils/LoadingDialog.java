@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.wang.avi.AVLoadingIndicatorView;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 public class LoadingDialog extends Dialog {
 

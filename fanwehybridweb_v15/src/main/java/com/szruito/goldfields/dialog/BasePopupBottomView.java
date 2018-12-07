@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.PopupWindow;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 
 /**

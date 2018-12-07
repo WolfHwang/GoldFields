@@ -12,7 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.utils.SDIntentUtil;

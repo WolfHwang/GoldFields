@@ -10,7 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 import com.fanwe.gesture.customview.LockPatternView;
 import com.fanwe.gesture.customview.LockPatternView.Cell;

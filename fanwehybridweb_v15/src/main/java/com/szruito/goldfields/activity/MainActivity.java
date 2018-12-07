@@ -27,6 +27,9 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.classic.common.MultipleStatusView;
+import com.github.ybq.android.spinkit.SpinKitView;
+import com.github.ybq.android.spinkit.sprite.Sprite;
+import com.github.ybq.android.spinkit.style.Wave;
 import com.szruito.goldfields.bean.LoginBackData;
 import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.constant.Constant.JsFunctionName;
@@ -60,7 +63,8 @@ import com.tencent.smtt.sdk.WebView;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
+
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import static com.szruito.goldfields.constant.Constant.PERMISS_ALL;
@@ -108,7 +112,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     private String failLocationUrl = "file:///android_asset/new_no_network.html";
 
     private String user_token;
-    private boolean isNormalQuit;
     private boolean isLogout = false;
     String[] permissions = {
             Manifest.permission.READ_CONTACTS,
@@ -179,7 +182,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
     //检查是否有异常登录情况
     private void checkNormalQuit() {
-        isNormalQuit = (boolean) SPUtils.getParam(MainActivity.this, "isNormalQuit", false);
         user_token = (String) SPUtils.getParam(MainActivity.this, "token", "");
         if (!user_token.equals("")) {
             MainHelper.getInstance().checkNormalQuit(MainActivity.this, user_token);
@@ -235,6 +237,11 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     }
 
     private void init() {
+        //初始化加载界面
+        SpinKitView spinKitView = loadingLayout.findViewById(R.id.spin_kit);
+        Sprite wave = new Wave();
+        spinKitView.setIndeterminateDrawable(wave);
+
         mWebViewCustom.addJavascriptInterface(new AppJsHandler(this, mWebViewCustom));
         getIntentInfo();
 //        initErrorPage();
@@ -258,6 +265,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                         @Override
                         public void run() {
                             if (MainHelper.getInstance().isNetworkAvailable(MainActivity.this)) {
+                                checkNormalQuit();
                                 webParentView.removeAllViews();
                                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                                         LinearLayout.LayoutParams.MATCH_PARENT);
@@ -629,9 +637,9 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 String url = mWebViewCustom.getOriginalUrl();
-                System.out.println("urlll:" + url + " -- urllllength:" + url.length());
 
-                if (!url.isEmpty()) {   //获取Webview中的一些特殊页面，作物理回退键的处理
+                if (url != null) {   //获取Webview中的一些特殊页面，作物理回退键的处理
+                    System.out.println("urlll:" + url + " -- urllllength:" + url.length());
                     if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate") | url.contains("info/index")) {
                         if (mWebViewCustom.canGoBack()) {
                             mWebViewCustom.evaluateJavascript("javascript:jumpJs()", new com.tencent.smtt.sdk.ValueCallback<String>() {
@@ -664,6 +672,9 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     } else {
                         mWebViewCustom.goBack();
                     }
+                } else {
+                    Toast.makeText(MainActivity.this, "网络问题，请稍后尝试", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             default:
                 return false;
