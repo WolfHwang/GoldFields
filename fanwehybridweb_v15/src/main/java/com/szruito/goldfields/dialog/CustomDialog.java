@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 /**
  * author：Administrator on 2018/11/28 16:01

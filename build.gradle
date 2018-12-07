@@ -16,6 +16,7 @@ buildscript {
 
         //ShareSDK配置第一步
         classpath "com.mob.sdk:MobSDK:2018.0319.1724"
+        classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0-rc2'
     }
 }
 allprojects {

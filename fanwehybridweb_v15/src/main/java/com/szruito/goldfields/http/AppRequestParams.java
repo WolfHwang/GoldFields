@@ -10,7 +10,7 @@ import com.fanwe.lib.utils.context.FPackageUtil;
 import com.fanwe.library.adapter.http.model.SDRequestParams;
 import com.fanwe.library.utils.SDViewUtil;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 
 /**

@@ -19,7 +19,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import java.io.ByteArrayOutputStream;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 import static com.szruito.goldfields.wxapi.WXEntryActivity.SHARE_TYPE.Type_WXSceneSession;
 import static com.szruito.goldfields.wxapi.WXEntryActivity.SHARE_TYPE.Type_WXSceneTimeline;

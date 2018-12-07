@@ -102,8 +102,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.fanwe.yi.R;
-import cn.fanwe.yi.wxapi.WXPayEntryActivity.RespErrCode;
+import com.szruito.goldfields.R;
+import com.szruito.goldfields.wxapi.WXPayEntryActivity.RespErrCode;
 
 import static com.szruito.goldfields.event.EventTag.EVENT_APNS;
 import static com.szruito.goldfields.event.EventTag.EVENT_CLIPBOARDTEXT;

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 public class SDProgressDialog extends Dialog
 {

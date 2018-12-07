@@ -11,7 +11,7 @@ import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.service.AppUpgradeService;
 import com.szruito.goldfields.constant.ApkConstant;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 public class TestActivity extends AppCompatActivity implements View.OnClickListener {

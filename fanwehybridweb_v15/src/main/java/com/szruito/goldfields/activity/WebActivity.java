@@ -20,7 +20,7 @@ import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.dao.InitActModelDao;
 import com.szruito.goldfields.model.InitActModel;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 public class WebActivity extends BaseActivity {
     private CustomWebView mWebViewCustom;

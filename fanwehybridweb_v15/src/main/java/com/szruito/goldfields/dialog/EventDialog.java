@@ -23,7 +23,7 @@ import com.szruito.goldfields.bean.EventModel;
 
 import java.util.Calendar;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 
 /**

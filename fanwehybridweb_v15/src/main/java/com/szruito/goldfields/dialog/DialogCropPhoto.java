@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 import com.szruito.goldfields.model.CutPhotoModel;
 import com.szruito.goldfields.utils.SDImageUtil;

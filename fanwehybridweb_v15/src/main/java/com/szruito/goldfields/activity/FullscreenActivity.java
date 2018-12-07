@@ -24,7 +24,7 @@ import com.orhanobut.logger.Logger;
 import com.szruito.goldfields.bean.EventModel;
 import com.szruito.goldfields.constant.Constant;
 
-import cn.fanwe.yi.R;
+import com.szruito.goldfields.R;
 
 import static com.szruito.goldfields.constant.Constant.PERMISS_ALL;
 
