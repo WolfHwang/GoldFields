@@ -47,7 +47,7 @@
 
     <!-- 腾讯定位 sdk 要求的权限 (结束) -->
     <application
-        android:name="com.szruito.goldfields.app.App"
+        android:name=".app.App"
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
@@ -56,7 +56,7 @@
 
         <!-- android:name="com.szruito.goldfields.activity.TestActivity" -->
         <activity
-            android:name="com.szruito.goldfields.activity.SplashActivity"
+            android:name=".activity.SplashActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:exported="true"
             android:label="黄金原野"
@@ -70,7 +70,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.szruito.goldfields.utils.ApkInstallReceiver">
+        <receiver android:name=".utils.ApkInstallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
@@ -88,7 +88,7 @@
         </provider>
 
         <!-- 网络状态监听广播 -->
-        <receiver android:name="com.szruito.goldfields.netstate.TANetworkStateReceiver">
+        <receiver android:name=".netstate.TANetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.gzcpc.conn.CONNECTIVITY_CHANGE" />
@@ -101,19 +101,17 @@
 
         <!-- &lt;!&ndash; 主页面 &ndash;&gt; -->
         <activity
-            android:name="com.szruito.goldfields.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/FullScreenNormal" />
-
         <activity
-            android:name="com.szruito.goldfields.activity.InitAdvActivity"
+            android:name=".activity.InitAdvActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/FullScreenNormal" />
-
 
         <!-- shareSDK begin -->
         <activity
@@ -134,19 +132,19 @@
         <!-- shareSDK end -->
 
         <activity
-            android:name="com.szruito.goldfields.wxapi.WXEntryActivity"
-            android:exported="true"></activity>
+            android:name=".wxapi.WXEntryActivity"
+            android:exported="true" />
         <activity
-            android:name="com.szruito.goldfields.activity.WebActivity"
+            android:name=".activity.WebActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="login"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <service
-            android:name="com.szruito.goldfields.activity.ContactIntentService"
+            android:name=".activity.ContactIntentService"
             android:exported="false" />
         <service
-            android:name="com.szruito.goldfields.service.AppUpgradeService"
+            android:name=".service.AppUpgradeService"
             android:exported="false" />
 
     </application>

@@ -21,8 +21,8 @@ android {
         targetSdkVersion 26
 //        flavorDimensions "versionCode"
         //noinspection HighAppVersionCode
-        versionCode 2018120601
-        versionName "1.0.16"
+        versionCode 2018120801
+        versionName "1.0.17"
     }
 
     splits {
@@ -151,6 +151,9 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
     implementation 'com.github.ybq:Android-SpinKit:1.2.0'
+
+    //---------------引导页集成------------------
+    implementation 'cn.bingoogolapple:bga-banner:2.2.5'
 
     //----------------微信分享-------------------
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'

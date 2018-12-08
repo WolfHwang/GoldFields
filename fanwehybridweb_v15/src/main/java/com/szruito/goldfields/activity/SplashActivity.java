@@ -14,15 +14,15 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//隐藏状态栏
 
-        Thread myThread=new Thread(){//创建子线程
+        Thread myThread = new Thread() {//创建子线程
             @Override
             public void run() {
-                try{
+                try {
                     sleep(1000);//使程序休眠一秒
-                    Intent it=new Intent(getApplicationContext(),MainActivity.class);//启动MainActivity
+                    Intent it = new Intent(getApplicationContext(), InitAdvActivity.class);//启动MainActivity
                     startActivity(it);
                     finish();//关闭当前活动
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
