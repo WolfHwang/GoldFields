@@ -4,7 +4,8 @@
     <!-- text -->
     <color name="text_primary">#333333</color>
     <color name="text_secondary">#666666</color> <!-- comn_gray -->
-
+    <color name="colorPrimary2Dark">#6BBEB8</color>
+    <color name="colorPrimaryDark">#5DA49F</color>
     <!--重写LibraryFanwe里的colors-->
 
     <!-- 主题颜色 -->

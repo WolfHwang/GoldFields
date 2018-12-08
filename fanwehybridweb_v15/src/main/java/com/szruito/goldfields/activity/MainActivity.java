@@ -165,22 +165,23 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.act_main);
+        //状态栏透明化
         setTranslucent(this);
+        //检查是否有异常登录情况
         checkNormalQuit();
 
         mIsExitApp = true;
         x.view().inject(this);
+        //初次进入应用后的版本更新处理（这里有个bug Tag住）
         if ((Boolean) SPUtils.getParam(MainActivity.this, "needUpgrade", true)) {
             MainHelper.getInstance().updateApp2(MainActivity.this);
         }
         init();
     }
 
-    //检查是否有异常登录情况
     private void checkNormalQuit() {
         user_token = (String) SPUtils.getParam(MainActivity.this, "token", "");
         if (!user_token.equals("")) {
