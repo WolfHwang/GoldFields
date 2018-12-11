@@ -1,14 +1,20 @@
 package com.szruito.goldfields.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.fanwe.lib.cache.FDisk;
+import android.widget.TextView;
+import com.orhanobut.logger.Logger;
 import com.szruito.goldfields.R;
-import com.szruito.goldfields.constant.Constant;
 import com.szruito.goldfields.utils.SPUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import cn.bingoogolapple.bgabanner.BGABanner;
 import cn.bingoogolapple.bgabanner.BGALocalImageSize;
@@ -20,11 +26,17 @@ import cn.bingoogolapple.bgabanner.BGALocalImageSize;
  */
 public class InitAdvActivity extends BaseActivity {
     private BGABanner mContentBanner;
+    private TextView mTvGuideSkip;
+    private int[] picsLayout = {R.layout.layout_hello, R.layout.layout_hello2, R.layout.layout_hello3, R.layout.layout_hello4, R.layout.layout_hello5};
+    private int i;
+    private int count = 5;
+    private Button mBtnSkip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boolean isFirst = (boolean) SPUtils.getParam(InitAdvActivity.this, "isFirst", true);
+        Random r = new Random();
 
         boolean is_open_adv = getResources().getBoolean(R.bool.is_open_adv);
         if (isFirst && is_open_adv) {
@@ -33,11 +45,48 @@ public class InitAdvActivity extends BaseActivity {
             setContentView(R.layout.act_init_adv_list);
             initView();
         } else {
-            Intent it = new Intent(InitAdvActivity.this, MainActivity.class);
-            startActivity(it);
+            i = r.nextInt(10);
+            Logger.i("随机数是:" + i);
+            if (i < 5) {
+                setContentView(R.layout.act_init_adv_list);
+                initView2();
+            } else {
+                Intent it = new Intent(InitAdvActivity.this, MainActivity.class);
+                startActivity(it);
+            }
         }
     }
 
+    private void initView2() {
+        mContentBanner = findViewById(R.id.banner_guide_content);
+        mTvGuideSkip = findViewById(R.id.tv_guide_skip);
+        mTvGuideSkip.setVisibility(View.INVISIBLE);
+        View view = View.inflate(InitAdvActivity.this, picsLayout[i], null);
+        mBtnSkip = view.findViewById(R.id.btn_skip);
+        mBtnSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(InitAdvActivity.this, MainActivity.class));
+                finish();
+            }
+        });
+        handler.sendEmptyMessageDelayed(0, 1000);
+
+
+        List<View> views = new ArrayList<>();
+        views.add(view);
+        mContentBanner.setData(views);
+    }
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            if (msg.what == 0) {
+                mBtnSkip.setText("跳过 (" + getCount() + ")");
+                handler.sendEmptyMessageDelayed(0, 1000);
+            }
+        }
+    };
 
     private void initView() {
         mContentBanner = findViewById(R.id.banner_guide_content);
@@ -65,4 +114,13 @@ public class InitAdvActivity extends BaseActivity {
     }
 
 
+    public int getCount() {
+        count--;
+        if (count == 0) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        return count;
+    }
 }
