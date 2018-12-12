@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.orhanobut.logger.Logger;
 import com.szruito.goldfields.R;
 import com.szruito.goldfields.utils.SPUtils;
@@ -18,7 +19,6 @@ import java.util.Random;
 
 import cn.bingoogolapple.bgabanner.BGABanner;
 import cn.bingoogolapple.bgabanner.BGALocalImageSize;
-
 
 /**
  * @author 作者 lam
@@ -48,6 +48,7 @@ public class InitAdvActivity extends BaseActivity {
             i = r.nextInt(10);
             Logger.i("随机数是:" + i);
             if (i < 5) {
+                //随机概率会出现广告页
                 setContentView(R.layout.act_init_adv_list);
                 initView2();
             } else {
@@ -112,7 +113,6 @@ public class InitAdvActivity extends BaseActivity {
             }
         });
     }
-
 
     public int getCount() {
         count--;

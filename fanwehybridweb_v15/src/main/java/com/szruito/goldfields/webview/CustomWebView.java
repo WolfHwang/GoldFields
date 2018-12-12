@@ -12,7 +12,6 @@ import android.util.Log;
 
 import com.szruito.goldfields.jshandler.BaseJsHandler;
 import com.fanwe.library.utils.LogUtil;
-import com.szruito.goldfields.jshandler.BaseJsHandler;
 import com.tencent.smtt.sdk.WebSettings;
 
 import java.io.File;
@@ -34,8 +33,6 @@ public class CustomWebView extends X5WebView {
         super(context, attrs);
         init();
     }
-
-
 
     public void setListenerWebViewClient(WebViewClientListener listener) {
         webViewClient.setListener(listener);

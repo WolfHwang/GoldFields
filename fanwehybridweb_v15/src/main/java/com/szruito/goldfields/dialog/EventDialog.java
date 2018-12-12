@@ -14,12 +14,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.szruito.goldfields.activity.FullscreenActivity;
 import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.bean.EventModel;
 import com.szruito.goldfields.utils.DateFormatUtil;
-import com.szruito.goldfields.app.App;
-import com.szruito.goldfields.bean.EventModel;
 
 import java.util.Calendar;
 
