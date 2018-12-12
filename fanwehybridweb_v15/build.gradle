@@ -21,8 +21,8 @@ android {
         targetSdkVersion 26
 //        flavorDimensions "versionCode"
         //noinspection HighAppVersionCode
-        versionCode 2018120801
-        versionName "1.0.17"
+        versionCode 2018121201
+        versionName "1.0.18"
     }
 
     splits {
@@ -94,9 +94,13 @@ MobSDK {
             Wechat {
                 appId "wx9695411753c04965"
                 appSecret "d49de9d87ff36632257da01fb43178c6"
+                enable true
+                BypassApproval false
             }
             WechatMoments {
                 appId "wx9695411753c04965"
+                BypassApproval false
+                enable true
                 appSecret "d49de9d87ff36632257da01fb43178c6"
             }
             WechatFavorite {
