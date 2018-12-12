@@ -59,7 +59,7 @@
         android:layout_below="@+id/btn_url_company"
         android:layout_centerHorizontal="true"
         android:background="@drawable/common_btn_golden_bg_selector"
-        android:text="家里"
+        android:text="分享测试"
         android:textColor="@color/white" />
 
 </RelativeLayout>

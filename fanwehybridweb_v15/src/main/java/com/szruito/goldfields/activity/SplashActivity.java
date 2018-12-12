@@ -5,8 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.WindowManager;
 
-import com.szruito.goldfields.R;
-
 public class SplashActivity extends AppCompatActivity {
 
     @Override

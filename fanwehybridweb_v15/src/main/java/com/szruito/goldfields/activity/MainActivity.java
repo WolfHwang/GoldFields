@@ -30,6 +30,7 @@ import com.classic.common.MultipleStatusView;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.sprite.Sprite;
 import com.github.ybq.android.spinkit.style.Wave;
+import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.bean.LoginBackData;
 import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.constant.Constant.JsFunctionName;
@@ -39,7 +40,6 @@ import com.szruito.goldfields.event.SDBaseEvent;
 import com.szruito.goldfields.jshandler.AppJsHandler;
 import com.szruito.goldfields.model.CutPhotoModel;
 import com.szruito.goldfields.netstate.TANetWorkUtil;
-import com.szruito.goldfields.service.AppUpgradeService;
 import com.szruito.goldfields.utils.IntentUtil;
 import com.szruito.goldfields.utils.LoadingDialog;
 import com.szruito.goldfields.utils.SDImageUtil;
@@ -50,12 +50,7 @@ import com.szruito.goldfields.webview.WebChromeClientListener;
 import com.fanwe.lib.utils.context.FPackageUtil;
 import com.fanwe.library.utils.LogUtil;
 import com.orhanobut.logger.Logger;
-import com.szruito.goldfields.bean.LoginBackData;
 import com.szruito.goldfields.event.EventTag;
-import com.szruito.goldfields.event.SDBaseEvent;
-import com.szruito.goldfields.model.CutPhotoModel;
-import com.szruito.goldfields.utils.IntentUtil;
-import com.szruito.goldfields.utils.LoadingDialog;
 import com.tencent.smtt.export.external.interfaces.WebResourceError;
 import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.sdk.WebView;
@@ -71,21 +66,6 @@ import static com.szruito.goldfields.constant.Constant.PERMISS_ALL;
 import static com.szruito.goldfields.constant.Constant.PERMISS_CAMERA;
 import static com.szruito.goldfields.constant.Constant.PERMISS_CONTACT;
 import static com.szruito.goldfields.constant.Constant.PERMISS_SMS;
-import static com.szruito.goldfields.event.EventTag.EVENT_CLIPBOARDTEXT;
-import static com.szruito.goldfields.event.EventTag.EVENT_CLOSE_POPWINDOW;
-import static com.szruito.goldfields.event.EventTag.EVENT_CUTPHOTO;
-import static com.szruito.goldfields.event.EventTag.EVENT_IS_EXIST_INSTALLED;
-import static com.szruito.goldfields.event.EventTag.EVENT_LOAD_CONTACT;
-import static com.szruito.goldfields.event.EventTag.EVENT_LOGIN_SUCCESS;
-import static com.szruito.goldfields.event.EventTag.EVENT_LOGOUT_SUCCESS;
-import static com.szruito.goldfields.event.EventTag.EVENT_ONPEN_NETWORK;
-import static com.szruito.goldfields.event.EventTag.EVENT_REFRESH_RELOAD;
-import static com.szruito.goldfields.event.EventTag.EVENT_RELOAD_WEBVIEW;
-import static com.szruito.goldfields.event.EventTag.LOADING;
-import static com.szruito.goldfields.event.EventTag.PHONE_INVITE;
-import static com.szruito.goldfields.event.EventTag.SHOW_TOAST;
-import static com.szruito.goldfields.event.EventTag.UPDATE;
-import static com.szruito.goldfields.event.EventTag.SMS_INVITE;
 
 public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     public static final String SAVE_CURRENT_URL = "url";
@@ -242,10 +222,15 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         SpinKitView spinKitView = loadingLayout.findViewById(R.id.spin_kit);
         Sprite wave = new Wave();
         spinKitView.setIndeterminateDrawable(wave);
+        boolean isFirstLoading = (boolean) SPUtils.getParam(MainActivity.this, "isFirstLoading", true);
+        if (isFirstLoading) {
+            SPUtils.setParam(MainActivity.this, "isFirstLoading", false);
+            Toast.makeText(MainActivity.this, "初次加载数据，可能会花费几分钟...", Toast.LENGTH_LONG).show();
+        }
 
         mWebViewCustom.addJavascriptInterface(new AppJsHandler(this, mWebViewCustom));
         getIntentInfo();
-//        initErrorPage();
+        initErrorPage();
         initWebView();
     }
 
@@ -266,12 +251,12 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                         @Override
                         public void run() {
                             if (MainHelper.getInstance().isNetworkAvailable(MainActivity.this)) {
-                                checkNormalQuit();
+//                                checkNormalQuit();
                                 webParentView.removeAllViews();
                                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                                         LinearLayout.LayoutParams.MATCH_PARENT);
                                 webParentView.addView(mWebViewCustom, layoutParams);
-                                mWebViewCustom.get("http://fields.gold/?v=1.0.187.1");
+                                mWebViewCustom.get("http://www.fields.gold");
                                 dialog.dismiss();
                                 Toast.makeText(getApplicationContext(), "网络连接成功", Toast.LENGTH_SHORT).show();
                             } else {
@@ -298,16 +283,20 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             @Override
             public void onReceivedError(com.tencent.smtt.sdk.WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
-                //6.0以下执行 （网络错误的回调）
                 Logger.i("onReceivedError: ------->errorCode" + errorCode + ":" + description);
-//                showErrorPage();//网络未连接
+                //6.0以下执行 （网络错误的回调）
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    return;
+                }
+                // 在这里显示自定义错误页
+                showErrorPage();//网络未连接
             }
 
             @Override
             public void onReceivedError(WebView webView, WebResourceRequest webResourceRequest, WebResourceError webResourceError) {
                 super.onReceivedError(webView, webResourceRequest, webResourceError);
                 //6.0以上执行 （网络错误的回调）
-                Logger.i("onReceivedError: ");
+                Logger.i("onReceivedError: " + webResourceRequest.getUrl().toString());
                 showErrorPage();//显示错误页面
             }
 
@@ -413,7 +402,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     //移除加载网页错误时，默认的提示信息
     private void showErrorPage() {
         webParentView.removeAllViews();
-        initErrorPage();
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         webParentView.addView(mErrorView, 0, layoutParams); //添加自定义的错误提示的View
@@ -490,7 +478,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             case EventTag.EVENT_REFRESH_RELOAD:
                 if (TANetWorkUtil.isNetworkConnected(getApplicationContext())) {
                     Toast.makeText(MainActivity.this, "重新加载成功", Toast.LENGTH_SHORT).show();
-                    mWebViewCustom.get("http://fields.gold/?v=1.0.187.1");
+                    mWebViewCustom.get("http://www.fields.gold");
                 } else {
                     Toast.makeText(MainActivity.this, "请检查网络连接", Toast.LENGTH_SHORT).show();
                 }
@@ -662,9 +650,10 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                                 Toast.makeText(MainActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
                             } else {
                                 LogUtil.d("已经双击退出exit");
-                                user_token = (String) SPUtils.getParam(MainActivity.this, "token", "");
-                                SPUtils.setParam(MainActivity.this, "isNormalQuit", true);
-                                MainHelper.getInstance().quitApp(MainActivity.this, user_token);
+//                                user_token = (String) SPUtils.getParam(MainActivity.this, "token", "");
+//                                SPUtils.setParam(MainActivity.this, "isNormalQuit", true);
+//                                MainHelper.getInstance().quitApp(MainActivity.this, user_token);
+                                App.getApplication().exitApp(false);
                             }
                             mExitTime = System.currentTimeMillis();
                         } else {
