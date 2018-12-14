@@ -20,6 +20,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,6 +33,7 @@ import com.github.ybq.android.spinkit.sprite.Sprite;
 import com.github.ybq.android.spinkit.style.Wave;
 import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.bean.LoginBackData;
+import com.szruito.goldfields.bean.ShareData;
 import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.constant.Constant.JsFunctionName;
 import com.szruito.goldfields.dialog.BotPhotoPopupView;
@@ -60,6 +62,9 @@ import org.xutils.x;
 
 import com.szruito.goldfields.R;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import static com.szruito.goldfields.constant.Constant.PERMISS_ALL;
@@ -78,7 +83,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     @ViewInject(R.id.cus_webview)
     private CustomWebView mWebViewCustom;
     @ViewInject(R.id.loading_layout)
-    private FrameLayout loadingLayout;
+    private RelativeLayout loadingLayout;
     private RelativeLayout webParentView;
     private View mErrorView; //加载错误的视图
     private MultipleStatusView mMultipleStatusView;
@@ -220,12 +225,20 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     private void init() {
         //初始化加载界面
         SpinKitView spinKitView = loadingLayout.findViewById(R.id.spin_kit);
+        Button mBtnWait = loadingLayout.findViewById(R.id.btn_wait);
         Sprite wave = new Wave();
         spinKitView.setIndeterminateDrawable(wave);
+
         boolean isFirstLoading = (boolean) SPUtils.getParam(MainActivity.this, "isFirstLoading", true);
         if (isFirstLoading) {
             SPUtils.setParam(MainActivity.this, "isFirstLoading", false);
-            Toast.makeText(MainActivity.this, "初次加载数据，可能会花费几分钟...", Toast.LENGTH_LONG).show();
+//            Toast toast = Toast.makeText(MainActivity.this, "初次加载数据，可能会花费几分钟...", Toast.LENGTH_LONG);
+            mBtnWait.setVisibility(View.VISIBLE);
+            mBtnWait.setText("初次加载数据，可能会花费几分钟...");
+
+        } else {
+            mBtnWait.setVisibility(View.VISIBLE);
+            mBtnWait.setText("正在加载数据中...");
         }
 
         mWebViewCustom.addJavascriptInterface(new AppJsHandler(this, mWebViewCustom));
@@ -443,19 +456,22 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 OnekeyShare oks = new OnekeyShare();
                 //关闭sso授权
                 oks.disableSSOWhenAuthorize();
-
-                // title标题，微信、QQ和QQ空间等平台使用
-                oks.setTitle("分享至");
-                // titleUrl QQ和QQ空间跳转链接
-                oks.setTitleUrl("http://sharesdk.cn");
-                // text是分享文本，所有平台都需要这个字段
-                oks.setText("我是分享文本");
+                ShareData sdata = (ShareData) event.data;
+                String url = sdata.getUrl();
+                String code = sdata.getCode();
+                Logger.i("ShareData:" + url + ":" + code);
+                MainHelper.getInstance().getShareImage(MainActivity.this, url, code);
+//                // title标题，微信、QQ和QQ空间等平台使用
+//                oks.setTitle("黄金原野，专为你自己打造的区块链价值平台！");
+//                // titleUrl QQ和QQ空间跳转链接
+//                oks.setTitleUrl("https://fir.im/goldfields");
+//                 text是分享文本，所有平台都需要这个字段
+//                oks.setText("我正在使用《黄金原野APP》，快来跟我一起使用吧");
+//                oks.setText("text");
                 // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-                oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
-                // url在微信、微博，Facebook等平台中使用
-                oks.setUrl("http://sharesdk.cn");
-                // comment是我对这条分享的评论，仅在人人网使用
-                oks.setComment("我是测试评论文本");
+                oks.setImagePath("/sdcard/shareImage/share.png");//确保SDcard下面存在此张图片
+//                 url在微信、微博，Facebook等平台中使用
+//                oks.setUrl("https://fir.im/goldfields");
                 // 启动分享GUI
                 oks.show(this);
                 break;
