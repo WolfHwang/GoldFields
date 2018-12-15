@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/share"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/mIV"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="185dp"
+        android:src="@drawable/qrcode" />
+
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="106dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="18dp"
+        android:gravity="center_horizontal"
+        android:text="KEEPBZ"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/tv_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="#581845" />
+
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="171dp"
+            android:text="11"
+            android:textColor="#E74C3C" />
+    </RelativeLayout>
+
+</LinearLayout>

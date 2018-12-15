@@ -113,7 +113,6 @@ public class EventTag {
      */
     public static final int LOADING = 22;
 
-    public static final int SHOW_TOAST = 25;
 
     public static final int UPDATE = 26;
 

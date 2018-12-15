@@ -4,14 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.bean.QuitAppInfo;
@@ -21,6 +25,7 @@ import com.szruito.goldfields.utils.AppInnerDownLoder;
 import com.szruito.goldfields.utils.CheckQuitUtils;
 import com.szruito.goldfields.utils.CheckUpdateUtils;
 import com.szruito.goldfields.utils.IntentUtil;
+import com.szruito.goldfields.utils.QRCodeUtil;
 import com.szruito.goldfields.utils.SPUtils;
 import com.fanwe.lib.utils.context.FPackageUtil;
 import com.orhanobut.logger.Logger;
@@ -29,7 +34,12 @@ import com.szruito.goldfields.bean.QuitAppInfo;
 import com.szruito.goldfields.bean.UpdateAppInfo;
 import com.szruito.goldfields.utils.CheckUpdateUtils;
 import com.szruito.goldfields.utils.IntentUtil;
+import com.szruito.goldfields.view.ShareView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -266,10 +276,7 @@ public class MainHelper {
         return list.size() > 0;
     }
 
-
     /******************************  退出  ************************************/
-
-
     public void quitApp(Context context, String user_token) {
         final String _user_token = user_token;
         Logger.i("拿到的token是:" + _user_token);
@@ -292,9 +299,9 @@ public class MainHelper {
         }
     }
 
-    public void checkNormalQuit(Context context,String user_token){
+    public void checkNormalQuit(Context context, String user_token) {
         final String _user_token = user_token;
-        if (isNetworkAvailable(context)){
+        if (isNetworkAvailable(context)) {
             CheckQuitUtils.checkQuit(_user_token, new CheckQuitUtils.quitCallBack() {
                 @Override
                 public void onSuccess(QuitAppInfo quitAppInfo) {
@@ -315,6 +322,45 @@ public class MainHelper {
         Intent chooser = IntentUtil.createChooserIntent(IntentUtil.createCameraIntent());
         chooser.putExtra(Intent.EXTRA_INTENT, intentSysAction);
         return chooser;
+    }
+
+    public void getShareImage(Context context, String url, String invCode, String inviteNum, String inviteTal) {
+        //生成二维码图片
+        Bitmap bitmap = QRCodeUtil.createQRCodeBitmap(url, 450, 450);
+        //绘制自定义分享图片
+        ShareView shareView = new ShareView(context);
+        shareView.setInfo(invCode);
+        shareView.setMyImage(bitmap);
+        shareView.setNum(inviteNum);
+        shareView.setTotal(inviteTal);
+        //创建分享图片
+        Bitmap shareImage = shareView.createImage();
+        //保存到本地路径
+        File appDir = new File(Environment.getExternalStorageDirectory(), "shareImage");
+        if (!appDir.exists()) {
+            appDir.mkdir();
+        }
+        String fileName = "share.png";
+        File file = new File(appDir, fileName);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            shareImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 其次把文件插入到系统图库
+        try {
+            MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // 最后通知图库更新
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(file.getAbsolutePath())));
+//        Toast.makeText(context, "已保存截图至相册", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -388,7 +434,6 @@ public class MainHelper {
     }
 
     public void dealwithPermiss(final Activity context, String permission) {
-
         if (!ActivityCompat.shouldShowRequestPermissionRationale(context, permission)) {
             new CustomDialog(context).setTitle("操作提示").
                     setMessage("注意：当前缺少必要权限！\r\n" +

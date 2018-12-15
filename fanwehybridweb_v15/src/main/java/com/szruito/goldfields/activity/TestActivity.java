@@ -128,7 +128,6 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         btnUrlColleague.setOnClickListener(this);
         btnUrlCompany.setOnClickListener(this);
         btnUrlHome.setOnClickListener(this);
-
     }
 
     @Override

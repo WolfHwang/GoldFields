@@ -32,6 +32,8 @@ import java.util.List;
 
 import com.szruito.goldfields.R;
 
+import cn.jpush.android.api.JPushInterface;
+
 public class App extends FApplication {
     private static App mInstance;
     public static Context sContext;
@@ -60,11 +62,19 @@ public class App extends FApplication {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
         }
-        regToWx();
-        regToShareSDK();
+        regToWx();  //集成微信
+        regToShareSDK(); //集成ShareSDK
+        regToJPush();   //集成极光
         sContext = this;
         super.onCreate();
         init();
+    }
+
+    private void regToJPush() {
+        //设置调试模式
+        JPushInterface.setDebugMode(true);
+        //init 初始化SDK
+        JPushInterface.init(this);
     }
 
     private void regToShareSDK() {

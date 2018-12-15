@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.szruito.goldfields">
+    <!-- Required -->
+    <permission
+        android:name="com.szruito.goldfields.permission.JPUSH_MESSAGE"
+        android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -10,7 +14,6 @@
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
-    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission
@@ -44,6 +47,18 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- 通过网络得到粗略位置 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Required -->
+    <uses-permission android:name="com.szruito.goldfields.permission.JPUSH_MESSAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+
+    <!-- Optional. Required for location feature -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 用于开启 debug 版本的应用在 6.0 系统上的层叠窗口权限 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission
+        android:name="android.permission.REAL_GET_TASKS"
+        tools:ignore="ProtectedPermissions" />
 
     <!-- 腾讯定位 sdk 要求的权限 (结束) -->
     <application
@@ -56,7 +71,7 @@
 
         <!-- android:name="com.szruito.goldfields.activity.TestActivity" -->
         <activity
-            android:name=".activity.SplashActivity"
+            android:name=".activity.TestActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:exported="true"
             android:label="黄金原野"
@@ -76,6 +91,7 @@
             </intent-filter>
         </receiver>
 
+
         <!-- 解决android 7.0 以上版本自动更新不安装问题 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -90,14 +106,12 @@
         <!-- 网络状态监听广播 -->
         <receiver android:name=".netstate.TANetworkStateReceiver">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action
+                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                    tools:ignore="BatteryLife" />
                 <action android:name="android.gzcpc.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
-        <!-- 广告轮播页面 InitAdvActivity -->
-        <!-- 全屏测试页面 FullsreenActivity -->
-
 
         <!-- &lt;!&ndash; 主页面 &ndash;&gt; -->
         <activity
@@ -146,6 +160,105 @@
         <service
             android:name=".service.AppUpgradeService"
             android:exported="false" />
+
+
+        <!-- JPush极光推送 -->
+        <!-- User defined. 用户自定义的广播接收器 注册广播. 用于极光推送 -->
+        <receiver
+            android:name=".service.MyReiverer"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="1000">
+            <intent-filter>
+                <!-- Required 用户注册SDK的intent -->
+                <action android:name="cn.jpush.android.intent.REGISTRATION" />
+                <!-- Required 用户接收SDK消息的intent -->
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+                <!-- Required 用户接收SDK通知栏信息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+                <!-- Required 用户打开自定义通知栏的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+                <!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION" />
+                <action android:name="cn.jpush.android.intent.UNREGISTRATION" />
+
+                <category android:name="com.szruito.goldfields" />
+            </intent-filter>
+        </receiver>
+        <!-- Required SDK 核心功能-->
+        <!-- 可配置android:process参数将PushService放在其他进程中 -->
+        <service
+            android:name="cn.jpush.android.service.PushService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTER" />
+                <action android:name="cn.jpush.android.intent.REPORT" />
+                <action android:name="cn.jpush.android.intent.PushService" />
+                <action android:name="cn.jpush.android.intent.PUSH_TIME" />
+            </intent-filter>
+        </service>
+        <receiver android:name="cn.jpush.android.service.AlarmReceiver" />
+
+        <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
+        <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
+        <service
+            android:name="cn.jpush.android.service.DaemonService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.DaemonService" />
+                <category android:name="com.helloworld.jpushdemo" />
+            </intent-filter>
+        </service>
+
+        <!-- Required SDK核心功能-->
+        <receiver
+            android:name="cn.jpush.android.service.PushReceiver"
+            android:enabled="true">
+            <intent-filter android:priority="1000">
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
+                <category android:name="com.helloworld.jpushdemo" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <!-- Optional -->
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Required SDK核心功能-->
+        <activity
+            android:name="cn.jpush.android.ui.PushActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:theme="@android:style/Theme.NoTitleBar">
+            <intent-filter>
+                <action android:name="cn.jpush.android.ui.PushActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.helloworld.jpushdemo" />
+            </intent-filter>
+        </activity>
+
+        <!-- Required since 3.0.7 -->
+        <!-- 新的tag/alias接口结果返回需要开发者配置一个自定的广播 -->
+        <!-- 该广播需要继承JPush提供的JPushMessageReceiver类, 并如下新增一个 Intent-Filter -->
+        <receiver
+            android:name=".service.MyJPushMessageReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
+                <category android:name="com.helloworld.jpushdemo" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
