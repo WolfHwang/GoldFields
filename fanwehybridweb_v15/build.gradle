@@ -23,6 +23,18 @@ android {
         //noinspection HighAppVersionCode
         versionCode 2018121201
         versionName "1.0.18"
+
+        ndk {
+            //选择要添加的对应 cpu 类型的 .so 库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : applicationId,
+                JPUSH_APPKEY : "62bc1f3a202d8d5efb413b9c", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+        ]
     }
 
     splits {
@@ -62,20 +74,6 @@ android {
         }
     }
 
-/*    applicationVariants.all { variant ->
-        variant.outputs.all {
-            def fileName = "GoldFields-${defaultConfig.versionCode}-${defaultConfig.versionName}-${releaseTime()}"
-            if (variant.buildType.name == 'release') {
-                fileName += '.apk'
-            } else if (variant.buildType.name == 'debug') {
-                fileName += '_debug.apk'
-            } else {
-                fileName += '_other.apk'
-            }
-            outputFileName = fileName
-            variant.packageApplication.outputDirectory = new File("./apk")
-        }
-    }*/
 }
 
 MobSDK {
@@ -123,6 +121,7 @@ MobSDK {
 }
 
 repositories {
+    jcenter()
     flatDir {
         dirs 'libs'
     }
@@ -155,11 +154,14 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
     implementation 'com.github.ybq:Android-SpinKit:1.2.0'
-
+    implementation 'com.google.zxing:core:3.3.3'
     //---------------引导页集成------------------
     implementation 'cn.bingoogolapple:bga-banner:2.2.5'
     //----------------微信分享-------------------
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+    //----------------极光推送-------------------
+    compile 'cn.jiguang.sdk:jpush:3.1.6'  // 此处以JPush 3.1.6 版本为例。
+    compile 'cn.jiguang.sdk:jcore:1.2.5'  // 此处以JCore 1.2.5 版本为例。
     //----------com.fanwe.android start----------
     compile 'com.github.zj565061763:libcore:f195636c5e'
     compile 'com.github.zj565061763:dialog:1.0.15'
