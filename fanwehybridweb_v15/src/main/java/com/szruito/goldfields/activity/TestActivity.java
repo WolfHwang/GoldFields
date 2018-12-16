@@ -150,10 +150,11 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_url_home:
                 //自动生成分享图片
-                String registrationID = JPushInterface.getRegistrationID(this);
-                Toast.makeText(this, "id:" + registrationID, Toast.LENGTH_LONG).show();
-                SPUtils.setParam(this, "JPushRegistrationId", "13065ffa4e52e991658");
-//                getShareImage(TestActivity.this, "http://www.baidu.com", "Lara Croft");
+//                String registrationID = JPushInterface.getRegistrationID(this);
+//                Toast.makeText(this, "id:" + registrationID, Toast.LENGTH_LONG).show();
+//                SPUtils.setParam(this, "JPushRegistrationId", "13065ffa4e52e991658");
+                getShareImage(TestActivity.this, "http://www.baidu.com", "Lara Croft");
+
                 break;
         }
     }
@@ -165,6 +166,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         ShareView shareView = new ShareView(context);
         shareView.setInfo(invCode);
         shareView.setMyImage(bitmap);
+        shareView.setMyImage2(bitmap);
         //创建分享图片
         Bitmap shareImage = shareView.createImage();
         //保存到本地路径

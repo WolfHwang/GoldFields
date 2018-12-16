@@ -148,6 +148,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+
         //设置状态栏透明化
         setTranslucent(this);
         //清除登录状态
@@ -435,21 +437,19 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     }
                 }, 1500);
                 break;
-            case EventTag.SHARE:
+            case EventTag.GET_IMAGE:
                 ShareData sdata = (ShareData) event.data;
                 String url = sdata.getUrl();
-                String code = sdata.getCode();
-                String inviteNum = sdata.getInviteNum();
-                String inviteTal = sdata.getInviteTotal();
-                Logger.i("ShareData:" + url + ":" + code);
                 //获取自定义分享图片并保存在本地路径
-                MainHelper.getInstance().getShareImage(MainActivity.this, url, code, inviteNum, inviteTal);
-
+                MainHelper.getInstance().getShareImage(MainActivity.this, url);
+                break;
+            case EventTag.SHARE:
+                //分享
                 OnekeyShare oks = new OnekeyShare();
                 //关闭sso授权
                 oks.disableSSOWhenAuthorize();
                 // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-                oks.setImagePath(Environment.getExternalStorageDirectory().getPath() + "/shareImage/share.png");//确保SDcard下面存在此张图片
+                oks.setImagePath(Environment.getExternalStorageDirectory().getPath() + "/shareImage/share.jpg");//确保SDcard下面存在此张图片
                 // 启动分享GUI
                 oks.show(this);
                 break;

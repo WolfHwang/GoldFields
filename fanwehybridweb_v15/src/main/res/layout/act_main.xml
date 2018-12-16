@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_fl"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <!--android:background="@color/red"-->
 
@@ -13,13 +13,14 @@
         android:id="@+id/cus_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layerType="hardware"
         android:scrollbars="horizontal" />
 
     <!--加载提示的loading图-->
     <include
+        layout="@layout/loading_anim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        layout="@layout/loading_anim"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>

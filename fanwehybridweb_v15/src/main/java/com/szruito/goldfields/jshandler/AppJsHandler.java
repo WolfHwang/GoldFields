@@ -260,9 +260,14 @@ public class AppJsHandler extends BaseJsHandler {
     }
 
     @JavascriptInterface
-    public void share(String url, String code, String inviteNum, String inviteTotal) {
-        ShareData data = new ShareData(url, code,inviteNum,inviteTotal);
-        FEventBus.getDefault().post(new SDBaseEvent(data, EventTag.SHARE));
+    public void getImage(String url) {
+        ShareData data = new ShareData(url);
+        FEventBus.getDefault().post(new SDBaseEvent(data, EventTag.GET_IMAGE));
+    }
+
+    @JavascriptInterface
+    public void share() {
+        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.SHARE));
     }
 
     @JavascriptInterface

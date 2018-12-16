@@ -120,5 +120,7 @@ public class EventTag {
 
     public static final int PHONE_INVITE = 28;
 
-    public static final int SHARE = 29;
+    public static final int GET_IMAGE = 29;
+
+    public static final int SHARE = 30;
 }
