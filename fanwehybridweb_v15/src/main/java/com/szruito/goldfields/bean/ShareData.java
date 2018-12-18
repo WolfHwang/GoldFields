@@ -1,19 +1,18 @@
 package com.szruito.goldfields.bean;
 
 public class ShareData {
-    private String url; //注册地址
+    private String jsonObject;
 
-    public ShareData(String url) {
-        this.url = url;
-
+    public String getJsonObject() {
+        return jsonObject;
     }
 
-    public String getUrl() {
-        return url;
+    public void setJsonObject(String jsonObject) {
+        this.jsonObject = jsonObject;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public ShareData(String jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }
 

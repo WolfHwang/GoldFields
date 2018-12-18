@@ -16,6 +16,7 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.widget.Toast;
 
 import com.szruito.goldfields.app.App;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -326,6 +328,102 @@ public class MainHelper {
         return chooser;
     }
 
+    public boolean savePicture(Context context, String base64DataStr) {
+        // 1.去掉base64中的前缀
+        String base64Str = base64DataStr.substring(base64DataStr.indexOf(",") + 1, base64DataStr.length());
+        // 获取手机相册的路径地址
+        String galleryPath = Environment.getExternalStorageDirectory()
+                + File.separator + Environment.DIRECTORY_DCIM
+                + File.separator + "Camera" + File.separator;
+        //创建文件来保存，第二个参数是文件名称，可以根据自己来命名
+        File file = new File(galleryPath, System.currentTimeMillis() + ".png");
+        String fileName = file.toString();
+        // 3. 解析保存图片
+        byte[] data = Base64.decode(base64Str, Base64.DEFAULT);
+
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] < 0) {
+                data[i] += 256;
+            }
+        }
+        OutputStream os = null;
+        try {
+            os = new FileOutputStream(fileName);
+            os.write(data);
+            os.flush();
+            os.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            //通知相册更新
+            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            Uri uri = Uri.fromFile(file);
+            intent.setData(uri);
+            context.sendBroadcast(intent);
+
+            Toast.makeText(context, "图片已保存在相册中", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void getBase64(Context context, String base64) {
+        File appDir = new File(Environment.getExternalStorageDirectory(), "shareImage64");
+        String fileName = "share64.jpg";
+        File file = new File(appDir, fileName);
+
+        Bitmap bitmap = stringToBitmap(base64);
+        if (!appDir.exists()) {
+            appDir.mkdir();
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 其次把文件插入到系统图库
+        try {
+            MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // 最后通知图库更新
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(file.getAbsolutePath())));
+//        Toast.makeText(context, "已保存截图至相册", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private Bitmap stringtoBitmap(String string) {
+        //将字符串转换成Bitmap类型
+        Bitmap bitmap = null;
+        try {
+            byte[] bitmapArray;
+            bitmapArray = Base64.decode(string, Base64.DEFAULT);
+            bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+
+    public Bitmap stringToBitmap(String string) {
+        Bitmap bitmap = null;
+        try {
+            byte[] bitmapArray = Base64.decode(string.split(",")[1], Base64.DEFAULT);
+            bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+
     public void getShareImage(Context context, String url) {
         //保存到本地路径
         File appDir = new File(Environment.getExternalStorageDirectory(), "shareImage");
@@ -343,7 +441,6 @@ public class MainHelper {
             //绘制自定义分享图片
             ShareView shareView = new ShareView(context);
             shareView.setMyImage(bitmap);
-            shareView.setMyImage2(bitmap);
             //创建分享图片
             Bitmap shareImage = shareView.createImage();
 //            compressImage(shareImage); //一次压缩
