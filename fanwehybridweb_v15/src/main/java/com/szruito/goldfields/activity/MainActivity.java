@@ -43,6 +43,7 @@ import com.szruito.goldfields.event.SDBaseEvent;
 import com.szruito.goldfields.jshandler.AppJsHandler;
 import com.szruito.goldfields.model.CutPhotoModel;
 import com.szruito.goldfields.netstate.TANetWorkUtil;
+import com.szruito.goldfields.utils.DataCleanManager;
 import com.szruito.goldfields.utils.IntentUtil;
 import com.szruito.goldfields.utils.LoadingDialog;
 import com.szruito.goldfields.utils.SDImageUtil;
@@ -56,6 +57,8 @@ import com.orhanobut.logger.Logger;
 import com.szruito.goldfields.event.EventTag;
 import com.tencent.smtt.export.external.interfaces.WebResourceError;
 import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
+import com.tencent.smtt.sdk.CookieManager;
+import com.tencent.smtt.sdk.CookieSyncManager;
 import com.tencent.smtt.sdk.WebView;
 
 import org.xutils.view.annotation.ViewInject;
@@ -91,6 +94,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     private String mCameraFilePath;
     private String mCurrentUrl;
     private CutPhotoModel mCut_model;
+    private boolean isDeleteCache;
     private String failLocationUrl = "file:///android_asset/new_no_network.html";
 
     private String user_token;
@@ -108,6 +112,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     private String phone;
     private String username;
     private boolean needUpgrade;
+    private String errorUrl;
 
     /**
      * 销毁保存当前URL
@@ -149,12 +154,19 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        try {
+            Logger.i("清除缓存前：" + DataCleanManager.getCacheSize(MainActivity.this.getCacheDir()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         //设置状态栏透明化
         setTranslucent(this);
         //清除登录状态
         checkNormalQuit();
 
+        isDeleteCache = false;
         mIsExitApp = true;
         x.view().inject(this);
         //初次进入应用后的版本更新处理（这里有个bug Tag住）
@@ -250,7 +262,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         if (mErrorView == null) {
             mErrorView = View.inflate(this, R.layout.layout_load_error, null);
             mMultipleStatusView = mErrorView.findViewById(R.id.multiple_status_view);
-            final Dialog dialog = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle);
+            final Dialog dialog = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle, "加载中...");
             mMultipleStatusView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -264,6 +276,10 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                                         LinearLayout.LayoutParams.MATCH_PARENT);
                                 webParentView.addView(mWebViewCustom, layoutParams);
+                                if (!errorUrl.isEmpty() && errorUrl.contains("/mine/center")) {
+                                    dialog.dismiss();
+                                    return;
+                                }
                                 mWebViewCustom.get("http://www.fields.gold");
                                 dialog.dismiss();
                                 Toast.makeText(getApplicationContext(), "网络连接成功", Toast.LENGTH_SHORT).show();
@@ -303,7 +319,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             public void onReceivedError(WebView webView, WebResourceRequest webResourceRequest, WebResourceError webResourceError) {
                 super.onReceivedError(webView, webResourceRequest, webResourceError);
                 //6.0以上执行 （网络错误的回调）
-                Logger.i("onReceivedError: " + webResourceRequest.getUrl().toString());
+                Logger.i("onReceivedError: " + webView.getUrl());
+                errorUrl = webView.getUrl();
                 showErrorPage();//显示错误页面
             }
 
@@ -427,7 +444,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 break;
             case EventTag.UPDATE:
                 Logger.i("更新App----ZEROwolf");
-                final Dialog dialog = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle);
+                final Dialog dialog = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle, "加载中...");
                 dialog.show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -443,13 +460,33 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 //获取自定义分享图片并保存在本地路径
                 MainHelper.getInstance().getShareImage(MainActivity.this, url);
                 break;
+            case EventTag.DELETE_CACHE:
+                final Dialog dialog2 = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle, "正在清除...");
+                dialog2.show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        isDeleteCache = true;
+                        Toast.makeText(MainActivity.this, "已清除缓存！", Toast.LENGTH_SHORT).show();
+                        dialog2.dismiss();
+                    }
+                }, 1500);
+                break;
             case EventTag.SHARE:
                 //分享
                 OnekeyShare oks = new OnekeyShare();
                 //关闭sso授权
                 oks.disableSSOWhenAuthorize();
+                oks.setTitle("标题");
+                // titleUrl是标题的网络链接，仅在Linked-in,QQ和QQ空间使用
+                oks.setTitleUrl("https://www.baidu.com/");
+                // text是分享文本，所有平台都需要这个字段
+                oks.setText("我是分享文本");
+                oks.setUrl("https://www.baidu.com/");
+                //分享网络图片，新浪微博分享网络图片需要通过审核后申请高级写入接口，否则请注释掉测试新浪微博
+//                oks.setImageUrl("http://f1.sharesdk.cn/imgs/2014/02/26/owWpLZo_638x960.jpg");
                 // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-                oks.setImagePath(Environment.getExternalStorageDirectory().getPath() + "/shareImage/share.jpg");//确保SDcard下面存在此张图片
+                oks.setImagePath(Environment.getExternalStorageDirectory().getPath() + "/shareImage/suoltu.jpg");//确保SDcard下面存在此张图片
                 // 启动分享GUI
                 oks.show(this);
                 break;
@@ -541,7 +578,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     }
 
     private void loading() {
-        final Dialog dialog = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle);
+        final Dialog dialog = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle, "加载中...");
         dialog.show();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -637,6 +674,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                         if (System.currentTimeMillis() - mExitTime > 2000) {
                             Toast.makeText(MainActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
                         } else {
+                            //是否点击了清除缓存，若是，退出前清除掉Webview缓存
+                            checkDeleteCache();
                             LogUtil.d("已经双击退出exit");
                             App.getApplication().exitApp(false);
                         }
@@ -650,6 +689,31 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 }
             default:
                 return false;
+        }
+    }
+
+    private void checkDeleteCache() {
+        if (isDeleteCache) {
+            //webview缓存
+            //清空所有Cookie
+            CookieSyncManager.createInstance(getApplicationContext());  //Create a singleton CookieSyncManager within a context
+            CookieManager cookieManager = CookieManager.getInstance(); // the singleton CookieManager instance
+            cookieManager.removeAllCookie();// Removes all cookies.
+            CookieSyncManager.getInstance().sync(); // forces sync manager to sync now
+
+            mWebViewCustom.setWebChromeClient(null);
+            mWebViewCustom.setWebViewClient(null);
+            mWebViewCustom.getSettings().setJavaScriptEnabled(false);
+            mWebViewCustom.clearCache(true);
+            mWebViewCustom.clearHistory();
+
+            //安卓自带缓存
+            try {
+                DataCleanManager.cleanInternalCache(MainActivity.this);
+                Logger.i("清除缓存后：" + DataCleanManager.getCacheSize(MainActivity.this.getCacheDir()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -23,14 +23,15 @@ public class LoadingDialog extends Dialog {
      * @param context
      * @param theme// 去除顶部蓝色线条
      */
-    public LoadingDialog(Context context, int theme) {
+    public LoadingDialog(Context context, int theme, String text) {
         super(context, theme);
         /**设置对话框背景透明*/
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setContentView(R.layout.custom_loading_view);
-        loadingbg = (RelativeLayout) findViewById(R.id.loadingbg);
-        avi = (AVLoadingIndicatorView) findViewById(R.id.avi);
-        messagetv = (TextView) findViewById(R.id.message);
+        loadingbg = findViewById(R.id.loadingbg);
+        avi = findViewById(R.id.avi);
+        messagetv = findViewById(R.id.message);
+        messagetv.setText(text);
     }
 
     /**

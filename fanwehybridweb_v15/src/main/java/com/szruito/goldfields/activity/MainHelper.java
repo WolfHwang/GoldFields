@@ -245,7 +245,6 @@ public class MainHelper {
         }).show();
     }
 
-
     private boolean canDownloadState(Context context) {
         try {
             int state = context.getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");

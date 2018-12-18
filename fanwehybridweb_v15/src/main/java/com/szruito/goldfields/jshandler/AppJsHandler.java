@@ -116,62 +116,6 @@ public class AppJsHandler extends BaseJsHandler {
     public void loadContacts() {
         FEventBus.getDefault().post(new SDBaseEvent("", EventTag.EVENT_LOAD_CONTACT));
     }
-/*
-
-    @JavascriptInterface
-    public void login_success(String json) {
-        App.getApplication().mLockPatternUtils.clearLock();
-
-        LoginSuccessModel model = JSON.parseObject(json, LoginSuccessModel.class);
-        model.setUserid(model.getId());
-        model.setIs_current(1);
-        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_session_id), model.getSess_id());
-        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_name), model.getUser_name());
-        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_id), model.getUserid());
-        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_pwd), model.getPatternpassword());
-        LoginSuccessModel loginSuccessModel = LoginSuccessModelDao.queryModelCurrentLogin();
-        if (loginSuccessModel != null) {
-            if (loginSuccessModel.getUserid() == model.getUserid()) {
-                model.setPatternpassword(loginSuccessModel.getPatternpassword());
-                LoginSuccessModelDao.insertOrUpdateModel2(model);
-            } else {
-                LoginSuccessModelDao.insertOrUpdateModel2(model);
-            }
-        } else {
-            LoginSuccessModelDao.insertOrUpdateModel2(model);
-        }
-
-        FEventBus.getDefault().post(new SDBaseEvent(model, EventTag.EVENT_LOGIN_SUCCESS));
-
-    public void login_success(String token) {
-
-//        App.getApplication().mLockPatternUtils.clearLock();
-
-//        LoginSuccessModel model = JSON.parseObject(json, LoginSuccessModel.class);
-//        model.setUserid(model.getId());
-//        model.setIs_current(1);
-//        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_session_id), model.getSess_id());
-//        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_name), model.getUser_name());
-//        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_id), model.getUserid());
-//        FDisk.openInternalCache().cacheString().put(getActivity().getString(R.string.config_user_pwd), model.getPatternpassword());
-//        LoginSuccessModel loginSuccessModel = LoginSuccessModelDao.queryModelCurrentLogin();
-//        if (loginSuccessModel != null) {
-//            if (loginSuccessModel.getUserid() == model.getUserid()) {
-//                model.setPatternpassword(loginSuccessModel.getPatternpassword());
-//                LoginSuccessModelDao.insertOrUpdateModel2(model);
-//            } else {
-//                LoginSuccessModelDao.insertOrUpdateModel2(model);
-//            }
-//        } else {
-//            LoginSuccessModelDao.insertOrUpdateModel2(model);
-//        }
-
-
-        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.EVENT_LOGIN_SUCCESS));
-
-        FEventBus.getDefault().post(new SDBaseEvent(token, EventTag.EVENT_LOGIN_SUCCESS));
-    }
-*/
 
     /**
      * 大多数客户服务端退出登录用的是这个方法
@@ -278,6 +222,11 @@ public class AppJsHandler extends BaseJsHandler {
     @JavascriptInterface
     public void phoneInvite(String phone) {
         FEventBus.getDefault().post(new SDBaseEvent(phone, EventTag.PHONE_INVITE));
+    }
+
+    @JavascriptInterface
+    public void deleteCache() {
+        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.DELETE_CACHE));
     }
 
     @JavascriptInterface
