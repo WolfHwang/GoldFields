@@ -2,22 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="70dp"
         android:text="选择URL测试"
-        android:textSize="50dp"/>
+        android:textSize="50dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="120dp"
-        android:textColor="@color/gray_deep"
         android:text=""
-        android:textSize="40dp"/>
+        android:textColor="@color/gray_deep"
+        android:textSize="40dp" />
 
     <Button
         android:id="@+id/btn_url_online"
@@ -32,10 +33,10 @@
     <Button
         android:id="@+id/btn_url_colleague"
         android:layout_width="250dp"
-        android:layout_marginTop="10dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_url_online"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:background="@drawable/common_btn_golden_bg_selector"
         android:text="同事"
         android:textColor="@color/white" />
@@ -43,10 +44,10 @@
     <Button
         android:id="@+id/btn_url_company"
         android:layout_width="250dp"
-        android:layout_marginTop="10dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/btn_url_colleague"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:background="@drawable/common_btn_golden_bg_selector"
         android:text="公司"
         android:textColor="@color/white" />
@@ -54,12 +55,21 @@
     <Button
         android:id="@+id/btn_url_home"
         android:layout_width="250dp"
-        android:layout_marginTop="10dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_url_company"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:background="@drawable/common_btn_golden_bg_selector"
-        android:text="分享测试"
+        android:text="极光推送测试"
         android:textColor="@color/white" />
+
+    <ImageView
+        android:id="@+id/iv_qrcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_url_home"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone" />
 
 </RelativeLayout>

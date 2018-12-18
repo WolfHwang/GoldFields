@@ -1,45 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?><!--加载提示图-->
 
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/loading_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/loading_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <com.github.ybq.android.spinkit.SpinKitView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.github.ybq.android.spinkit.SpinKitView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/spin_kit"
         style="@style/SpinKitView.Large.Circle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center_horizontal"
         app:SpinKit_Color="@color/colorAccent" />
 
-    <!--<ImageView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:contentDescription="@null"-->
-            <!--android:scaleType="centerCrop"-->
-            <!--android:src="@drawable/beijing" />-->
+    <Button
+        android:id="@+id/btn_wait"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="500dp"
+        android:background="@drawable/toast_customer_style"
+        android:text="请稍候"
+        android:textColor="@color/white" />
 
-        <!--<ImageView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:contentDescription="@null"-->
-            <!--android:scaleType="centerCrop"-->
-            <!--android:src="@drawable/loading_anim" />-->
-
-        <!--&lt;!&ndash;loading提示图&ndash;&gt;-->
-        <!--<TextView-->
-            <!--android:id="@+id/loading_tv"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="bottom|center_horizontal"-->
-            <!--android:layout_marginBottom="3dp"-->
-            <!--android:gravity="center"-->
-            <!--android:text="@string/please_wait"-->
-            <!--android:textColor="#ffffff" />-->
-
-    </FrameLayout>
+</RelativeLayout>
