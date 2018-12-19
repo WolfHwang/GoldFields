@@ -32,6 +32,7 @@ import com.classic.common.MultipleStatusView;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.sprite.Sprite;
 import com.github.ybq.android.spinkit.style.Wave;
+import com.google.gson.JsonObject;
 import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.bean.LoginBackData;
 import com.szruito.goldfields.bean.ShareData;
@@ -320,17 +321,24 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 super.onReceivedError(webView, webResourceRequest, webResourceError);
                 //6.0以上执行 （网络错误的回调）
                 Logger.i("onReceivedError: " + webView.getUrl());
+                Logger.i("onReceivedErrorCode: " + webResourceError.getErrorCode());
                 errorUrl = webView.getUrl();
                 showErrorPage();//显示错误页面
             }
 
             //刷新后WebView退出不了,重定向的解决方法
             @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-                WebView.HitTestResult hitTestResult = webView.getHitTestResult();
-                //hitTestResult==null解决重定向问题(刷新后不能退出的bug)
-                return !TextUtils.isEmpty(url) && hitTestResult == null || super.shouldOverrideUrlLoading(webView, url);
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                // 重写此方法表明点击网页里面的链接还是在当前的webview里跳转，不另跳浏览器
+                // 在2.3上面不加这句话，可以加载出页面，在4.0上面必须要加入，不然出现白屏
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    view.loadUrl(url);
+                    mWebViewCustom.stopLoading();
+                    return true;
+                }
+                return false;
             }
+
 
             @Override
             public void onPageStarted(com.tencent.smtt.sdk.WebView view, String url, Bitmap favicon) {
@@ -348,6 +356,13 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     @Override
                     public void onReceiveValue(String s) {
                         Logger.i("齐天大圣" + s);
+                    }
+                });
+
+                view.evaluateJavascript("javascript:test()", new com.tencent.smtt.sdk.ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String s) {
+                        Logger.i("张口就来" + s);
                     }
                 });
                 String[] split = url.split("/");
@@ -377,7 +392,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         DefaultWebChromeClient defaultWebChromeClient = new DefaultWebChromeClient();
         defaultWebChromeClient.setListener(new WebChromeClientListener() {
             @Override
-            public void openFileChooser(com.tencent.smtt.sdk.ValueCallback<Uri> uploadFile, String acceptType, String capture) {
+            public void openFileChooser(com.tencent.smtt.sdk.ValueCallback<Uri> uploadFile, String
+                    acceptType, String capture) {
                 if (mUploadMessage != null)
                     return;
                 mUploadMessage = uploadFile;
@@ -412,12 +428,19 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         //获取父容器
         webParentView = (RelativeLayout) mWebViewCustom.getParent();
 
-        if (MainHelper.getInstance().isNetworkAvailable(this)) {
+        if (MainHelper.getInstance().
+
+                isNetworkAvailable(this))
+
+        {
             mWebViewCustom.get(url);
-        } else {
+        } else
+
+        {
             //登录界面的断网处理
             mWebViewCustom.get(failLocationUrl);
         }
+
     }
 
     //移除加载网页错误时，默认的提示信息
@@ -454,12 +477,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     }
                 }, 1500);
                 break;
-            case EventTag.GET_IMAGE:
-                ShareData sdata = (ShareData) event.data;
-                String url = sdata.getUrl();
-                //获取自定义分享图片并保存在本地路径
-                MainHelper.getInstance().getShareImage(MainActivity.this, url);
-                break;
             case EventTag.DELETE_CACHE:
                 final Dialog dialog2 = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle, "正在清除...");
                 dialog2.show();
@@ -467,8 +484,9 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                     @Override
                     public void run() {
                         isDeleteCache = true;
-                        Toast.makeText(MainActivity.this, "已清除缓存！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "缓存已清除！", Toast.LENGTH_SHORT).show();
                         dialog2.dismiss();
+                        mWebViewCustom.get("http://www.fields.gold");
                     }
                 }, 1500);
                 break;
@@ -528,6 +546,17 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 SPUtils.setParam(MainActivity.this, "token", token);
                 SPUtils.setParam(MainActivity.this, "username", phoneNum);
                 ContactIntentService.startActionContact(this);
+                break;
+            case EventTag.GET_IMAGE:
+                ShareData shareData = (ShareData) event.data;
+//                JSONObject jsonObject1 = shareData.getJsonObject();
+//                String base64 = (String) jsonObject1.get("url");
+                String s = shareData.getJsonObject();
+                Logger.i("base6464646" + s);
+                //获取自定义分享图片并保存在本地路径
+//                MainHelper.getInstance().getShareImage(MainActivity.this, url);
+//                MainHelper.getInstance().getBase64(MainActivity.this, base64);
+                MainHelper.getInstance().savePicture(MainActivity.this, s);
                 break;
             case EventTag.EVENT_LOGOUT_SUCCESS: //退出登录成功
                 isLogout = true;
@@ -720,6 +749,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     @Override
     protected void onDestroy() {
         LogUtil.d("应用已经退出");
+        checkDeleteCache();
         super.onDestroy();
     }
 

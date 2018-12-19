@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.szruito.goldfields.R;
 import com.szruito.goldfields.utils.PhoneUtils;
@@ -16,13 +15,12 @@ public class ShareView extends LinearLayout {
 
     private final int IMAGE_WIDTH = PhoneUtils.px2dp(getContext(), 1772);
     private final int IMAGE_HEIGHT = PhoneUtils.px2dp(getContext(), 8324);
+    // 长图的宽度，默认为屏幕宽度
+    private int longPictureWidth;
     private Context context;
 
-    private TextView tvInfo;
-    private TextView tvNum;
-    private TextView tvTal;
     private ImageView mImageView;
-    private ImageView mImageView2;
+    private LinearLayout mLL;
 
     public ShareView(@NonNull Context context) {
 
@@ -32,16 +30,13 @@ public class ShareView extends LinearLayout {
 
     private void init(Context context) {
         this.context = context;
+
         View layout = View.inflate(getContext(), R.layout.share_view_layout, this);
-        tvInfo = layout.findViewById(R.id.tv_info);
-        tvNum = layout.findViewById(R.id.tv_num);
-        tvTal = layout.findViewById(R.id.tv_total);
 
         mImageView = layout.findViewById(R.id.mIV);
-        mImageView2 = layout.findViewById(R.id.mIV2);
+        mLL  = layout.findViewById(R.id.ll_qrcode);
 
         layoutView(mImageView);
-        layoutView(mImageView2);
     }
 
     /**
@@ -58,29 +53,21 @@ public class ShareView extends LinearLayout {
         v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
     }
 
+    private Bitmap getLinearLayoutBitmap(LinearLayout linearLayout, int w, int h) {
+        Bitmap originBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(originBitmap);
+        linearLayout.draw(canvas);
+        return null;
+    }
+
     /**
      * 设置相关信息
      *
-     * @param info
+     * @param bitmap
      */
-    public void setInfo(String info) {
-        tvInfo.setText(info);
-    }
-
-    public void setNum(String num) {
-        tvNum.setText(num);
-    }
-
-    public void setTotal(String total) {
-        tvTal.setText(total);
-    }
 
     public void setMyImage(Bitmap bitmap) {
         mImageView.setImageBitmap(bitmap);
-    }
-
-    public void setMyImage2(Bitmap bitmap) {
-        mImageView2.setImageBitmap(bitmap);
     }
 
     /**
@@ -98,7 +85,7 @@ public class ShareView extends LinearLayout {
 
         layout(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 
-        Bitmap bitmap = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.RGB_565);
 
         Canvas canvas = new Canvas(bitmap);
         draw(canvas);

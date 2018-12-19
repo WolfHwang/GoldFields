@@ -1,8 +1,6 @@
 package com.szruito.goldfields.activity;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,21 +12,16 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.service.AppUpgradeService;
-import com.szruito.goldfields.constant.ApkConstant;
 
 import com.szruito.goldfields.R;
 import com.szruito.goldfields.utils.NotificationsUtils;
 import com.szruito.goldfields.utils.QRCodeUtil;
-import com.szruito.goldfields.utils.SPUtils;
-import com.szruito.goldfields.view.MyImageView;
 import com.szruito.goldfields.view.ShareView;
 
 import java.io.File;
@@ -39,7 +32,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import cn.jpush.android.api.JPushInterface;
-import cn.sharesdk.onekeyshare.OnekeyShare;
 
 public class TestActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btnUrlOnline;
@@ -68,7 +60,6 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(Settings.ACTION_SETTINGS);
             startActivity(intent);
         }
-
         //        MainHelper.getInstance().updateApp(TestActivity.this);
         initView();
     }
@@ -154,7 +145,6 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 //                Toast.makeText(this, "id:" + registrationID, Toast.LENGTH_LONG).show();
 //                SPUtils.setParam(this, "JPushRegistrationId", "13065ffa4e52e991658");
                 getShareImage(TestActivity.this, "http://www.baidu.com", "Lara Croft");
-
                 break;
         }
     }
@@ -164,9 +154,6 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         Bitmap bitmap = QRCodeUtil.createQRCodeBitmap(url, 450, 450);
         //绘制自定义分享图片
         ShareView shareView = new ShareView(context);
-        shareView.setInfo(invCode);
-        shareView.setMyImage(bitmap);
-        shareView.setMyImage2(bitmap);
         //创建分享图片
         Bitmap shareImage = shareView.createImage();
         //保存到本地路径
