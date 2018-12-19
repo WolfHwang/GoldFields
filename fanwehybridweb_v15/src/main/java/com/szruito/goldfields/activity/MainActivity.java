@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.telephony.PhoneNumberUtils;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -32,7 +31,6 @@ import com.classic.common.MultipleStatusView;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.sprite.Sprite;
 import com.github.ybq.android.spinkit.style.Wave;
-import com.google.gson.JsonObject;
 import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.bean.LoginBackData;
 import com.szruito.goldfields.bean.ShareData;
@@ -78,6 +76,9 @@ import static com.szruito.goldfields.constant.Constant.PERMISS_SMS;
 public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     public static final String SAVE_CURRENT_URL = "url";
     public static final String EXTRA_URL = "extra_url";
+    public static final String SHARE_TAG_ONE = "tag1";
+    public static final String SHARE_TAG_TWO = "tag2";
+    public static final String SHARE_TAG_THREE = "tag3";
     public static final int FILECHOOSER_RESULTCODE = 1;// 选择照片
 
     @ViewInject(R.id.ll_fl)
@@ -160,7 +161,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         //设置状态栏透明化
         setTranslucent(this);
@@ -249,7 +249,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             mBtnWait.setVisibility(View.VISIBLE);
             mBtnWait.setText("正在加载数据中...");
         }
-
         mWebViewCustom.addJavascriptInterface(new AppJsHandler(this, mWebViewCustom));
         getIntentInfo();
         initErrorPage();
@@ -338,7 +337,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 }
                 return false;
             }
-
 
             @Override
             public void onPageStarted(com.tencent.smtt.sdk.WebView view, String url, Bitmap favicon) {
@@ -491,22 +489,36 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 }, 1500);
                 break;
             case EventTag.SHARE:
+                ShareData shareData = (ShareData) event.data;
+                String tag = shareData.getTag();
+                String url = shareData.getUrl();
                 //分享
                 OnekeyShare oks = new OnekeyShare();
                 //关闭sso授权
                 oks.disableSSOWhenAuthorize();
-                oks.setTitle("标题");
-                // titleUrl是标题的网络链接，仅在Linked-in,QQ和QQ空间使用
-                oks.setTitleUrl("https://www.baidu.com/");
-                // text是分享文本，所有平台都需要这个字段
-                oks.setText("我是分享文本");
-                oks.setUrl("https://www.baidu.com/");
-                //分享网络图片，新浪微博分享网络图片需要通过审核后申请高级写入接口，否则请注释掉测试新浪微博
-//                oks.setImageUrl("http://f1.sharesdk.cn/imgs/2014/02/26/owWpLZo_638x960.jpg");
-                // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-                oks.setImagePath(Environment.getExternalStorageDirectory().getPath() + "/shareImage/suoltu.jpg");//确保SDcard下面存在此张图片
-                // 启动分享GUI
-                oks.show(this);
+                switch (tag) {
+                    case SHARE_TAG_ONE:
+                        MainHelper.getInstance().getShareImage(MainActivity.this, url, tag);
+                        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+                        oks.setImagePath(Environment.getExternalStorageDirectory().getPath() + "/shareImage/tag1.jpg");//确保SDcard下面存在此张图片
+                        // 启动分享GUI
+                        oks.show(this);
+                        break;
+                    case SHARE_TAG_TWO:
+                        MainHelper.getInstance().getShareImage(MainActivity.this, url, tag);
+                        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+                        oks.setImagePath(Environment.getExternalStorageDirectory().getPath() + "/shareImage/tag2.jpg");//确保SDcard下面存在此张图片
+                        // 启动分享GUI
+                        oks.show(this);
+                        break;
+                    case SHARE_TAG_THREE:
+                        MainHelper.getInstance().getShareImage(MainActivity.this, url, tag);
+                        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+                        oks.setImagePath(Environment.getExternalStorageDirectory().getPath() + "/shareImage/tag3.jpg");//确保SDcard下面存在此张图片
+                        // 启动分享GUI
+                        oks.show(this);
+                        break;
+                }
                 break;
             case EventTag.SMS_INVITE:
                 phone = (String) event.data;
@@ -546,17 +558,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 SPUtils.setParam(MainActivity.this, "token", token);
                 SPUtils.setParam(MainActivity.this, "username", phoneNum);
                 ContactIntentService.startActionContact(this);
-                break;
-            case EventTag.GET_IMAGE:
-                ShareData shareData = (ShareData) event.data;
-//                JSONObject jsonObject1 = shareData.getJsonObject();
-//                String base64 = (String) jsonObject1.get("url");
-                String s = shareData.getJsonObject();
-                Logger.i("base6464646" + s);
-                //获取自定义分享图片并保存在本地路径
-//                MainHelper.getInstance().getShareImage(MainActivity.this, url);
-//                MainHelper.getInstance().getBase64(MainActivity.this, base64);
-                MainHelper.getInstance().savePicture(MainActivity.this, s);
                 break;
             case EventTag.EVENT_LOGOUT_SUCCESS: //退出登录成功
                 isLogout = true;

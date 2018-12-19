@@ -60,7 +60,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:background="@drawable/common_btn_golden_bg_selector"
-        android:text="极光推送测试"
+        android:text="选择地址"
         android:textColor="@color/white" />
 
     <ImageView

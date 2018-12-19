@@ -11,10 +11,10 @@ import android.widget.LinearLayout;
 import com.szruito.goldfields.R;
 import com.szruito.goldfields.utils.PhoneUtils;
 
-public class ShareView extends LinearLayout {
+public class ShareView2 extends LinearLayout {
 
     private final int IMAGE_WIDTH = 750;
-    private final int IMAGE_HEIGHT = 1450;
+    private final int IMAGE_HEIGHT = 1350;
     // 长图的宽度，默认为屏幕宽度
     private int longPictureWidth;
     private Context context;
@@ -22,7 +22,7 @@ public class ShareView extends LinearLayout {
     private ImageView mImageView;
     private LinearLayout mLL;
 
-    public ShareView(@NonNull Context context) {
+    public ShareView2(@NonNull Context context) {
 
         super(context);
         init(context);
@@ -31,7 +31,7 @@ public class ShareView extends LinearLayout {
     private void init(Context context) {
         this.context = context;
 
-        View layout = View.inflate(getContext(), R.layout.share_view_layout, this);
+        View layout = View.inflate(getContext(), R.layout.share_view_layout2, this);
 
         mImageView = layout.findViewById(R.id.mIV);
         mLL = layout.findViewById(R.id.ll_qrcode);

@@ -1,12 +1,7 @@
 package com.szruito.goldfields.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,20 +9,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.szruito.goldfields.constant.ApkConstant;
+import com.szruito.goldfields.dialog.CustomEditDialog;
 import com.szruito.goldfields.service.AppUpgradeService;
 
 import com.szruito.goldfields.R;
 import com.szruito.goldfields.utils.NotificationsUtils;
-import com.szruito.goldfields.utils.QRCodeUtil;
-import com.szruito.goldfields.view.ShareView;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,7 +48,6 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(Settings.ACTION_SETTINGS);
             startActivity(intent);
         }
-        //        MainHelper.getInstance().updateApp(TestActivity.this);
         initView();
     }
 
@@ -140,48 +127,24 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.btn_url_home:
-                //自动生成分享图片
+                //Tag Here（JPush极光推送）
 //                String registrationID = JPushInterface.getRegistrationID(this);
 //                Toast.makeText(this, "id:" + registrationID, Toast.LENGTH_LONG).show();
 //                SPUtils.setParam(this, "JPushRegistrationId", "13065ffa4e52e991658");
-                getShareImage(TestActivity.this, "http://www.baidu.com", "Lara Croft");
+                final CustomEditDialog dialog = new CustomEditDialog(TestActivity.this);
+                dialog.setSingle(false).setOnClickBottomListener(new CustomEditDialog.OnClickBottomListener() {
+                    @Override
+                    public void onPositiveClick() {
+                        //这个dialog里边已经做了处理，不用交给外面来监听
+                    }
+                    @Override
+                    public void onNegtiveClick() {
+                        com.orhanobut.logger.Logger.i("取消");
+                        dialog.dismiss();
+                    }
+                }).show();
                 break;
         }
-    }
-
-    public void getShareImage(Context context, String url, String invCode) {
-        //生成二维码图片
-        Bitmap bitmap = QRCodeUtil.createQRCodeBitmap(url, 450, 450);
-        //绘制自定义分享图片
-        ShareView shareView = new ShareView(context);
-        //创建分享图片
-        Bitmap shareImage = shareView.createImage();
-        //保存到本地路径
-        File appDir = new File(Environment.getExternalStorageDirectory(), "shareImage");
-        if (!appDir.exists()) {
-            appDir.mkdir();
-        }
-        String fileName = "share.png";
-        File file = new File(appDir, fileName);
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            shareImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            fos.flush();
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // 其次把文件插入到系统图库
-        try {
-            MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        // 最后通知图库更新
-        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(file.getAbsolutePath())));
-        Toast.makeText(TestActivity.this, "已保存截图至相册", Toast.LENGTH_SHORT).show();
     }
 
     @Override

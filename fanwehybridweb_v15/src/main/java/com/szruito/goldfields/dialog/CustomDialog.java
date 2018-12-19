@@ -152,11 +152,11 @@ public class CustomDialog extends Dialog {
      * 初始化界面控件
      */
     private void initView() {
-        negtiveBn = (Button) findViewById(R.id.negtive);
-        positiveBn = (Button) findViewById(R.id.positive);
-        titleTv = (TextView) findViewById(R.id.title);
-        messageTv = (TextView) findViewById(R.id.message);
-        imageIv = (ImageView) findViewById(R.id.image);
+        negtiveBn = findViewById(R.id.negtive);
+        positiveBn = findViewById(R.id.positive);
+        titleTv = findViewById(R.id.title);
+        messageTv = findViewById(R.id.message);
+        imageIv = findViewById(R.id.image);
         columnLineView = findViewById(R.id.column_line);
     }
 
