@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="750px"
-    android:layout_height="1450px"
-    android:background="@drawable/tag1"
+    android:layout_height="1351px"
     android:layout_gravity="center_horizontal"
+    android:background="@drawable/tag3"
     android:orientation="vertical">
 
     <LinearLayout

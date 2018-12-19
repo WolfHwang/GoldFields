@@ -96,15 +96,6 @@ public class AppJsHandler extends BaseJsHandler {
     }
 
     @JavascriptInterface
-    public void getImage(String jsonUrl) {
-
-//        JSONObject jsonObject = JSON.parseObject(jsonUrl);
-        ShareData data = new ShareData(jsonUrl);
-
-        FEventBus.getDefault().post(new SDBaseEvent(data, EventTag.GET_IMAGE));
-    }
-
-    @JavascriptInterface
     public void login_success(String json, String phone) {
         Logger.i("login_successJSON:" + json);
         Logger.i("login_successPHONE:" + phone);
@@ -212,8 +203,9 @@ public class AppJsHandler extends BaseJsHandler {
 
 
     @JavascriptInterface
-    public void share() {
-        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.SHARE));
+    public void share(String url, String tag) {
+        ShareData data = new ShareData(url,tag);
+        FEventBus.getDefault().post(new SDBaseEvent(data, EventTag.SHARE));
     }
 
     @JavascriptInterface

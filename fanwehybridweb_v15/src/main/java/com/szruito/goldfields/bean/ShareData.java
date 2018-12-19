@@ -1,18 +1,36 @@
 package com.szruito.goldfields.bean;
 
 public class ShareData {
-    private String jsonObject;
+    private String url;
+    private String tag;
 
-    public String getJsonObject() {
-        return jsonObject;
+    public ShareData(String url, String tag) {
+        this.url = url;
+        this.tag = tag;
     }
 
-    public void setJsonObject(String jsonObject) {
-        this.jsonObject = jsonObject;
+    public String getUrl() {
+        return url;
     }
 
-    public ShareData(String jsonObject) {
-        this.jsonObject = jsonObject;
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    @Override
+    public String toString() {
+        return "ShareData{" +
+                "url='" + url + '\'' +
+                ", tag='" + tag + '\'' +
+                '}';
     }
 }
 
