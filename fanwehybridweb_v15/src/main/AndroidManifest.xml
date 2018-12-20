@@ -73,7 +73,7 @@
 
         <!-- android:name="com.szruito.goldfields.activity.TestActivity" -->
         <activity
-            android:name=".activity.TestActivity"
+            android:name=".activity.SplashActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:exported="true"
             android:label="黄金原野"
@@ -92,7 +92,6 @@
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
-
 
         <!-- 解决android 7.0 以上版本自动更新不安装问题 -->
         <provider
