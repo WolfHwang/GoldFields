@@ -162,7 +162,6 @@
             android:name=".service.AppUpgradeService"
             android:exported="false" />
 
-
         <!-- JPush极光推送 -->
         <!-- User defined. 用户自定义的广播接收器 注册广播. 用于极光推送 -->
         <receiver
