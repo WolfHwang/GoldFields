@@ -165,8 +165,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-
-
+    
     /**
      * 隐藏底部虚拟按键，且全屏
      */
