@@ -1,12 +1,17 @@
 package com.szruito.goldfields.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -16,16 +21,22 @@ import com.szruito.goldfields.service.AppUpgradeService;
 
 import com.szruito.goldfields.R;
 import com.szruito.goldfields.utils.NotificationsUtils;
+
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import cn.jpush.android.api.JPushInterface;
+
+import static com.mob.tools.utils.ResHelper.getScreenHeight;
 
 public class TestActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btnUrlOnline;
     private Button btnUrlColleague;
     private Button btnUrlCompany;
     private Button btnUrlHome;
+    private Button btnCustom;
     private ImageView ivQrcode;
     private Intent intent;
 
@@ -100,12 +111,14 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         btnUrlColleague = findViewById(R.id.btn_url_colleague);
         btnUrlCompany = findViewById(R.id.btn_url_company);
         btnUrlHome = findViewById(R.id.btn_url_home);
+        btnCustom = findViewById(R.id.btn_custom);
         ivQrcode = findViewById(R.id.iv_qrcode);
 
         btnUrlOnline.setOnClickListener(this);
         btnUrlColleague.setOnClickListener(this);
         btnUrlCompany.setOnClickListener(this);
         btnUrlHome.setOnClickListener(this);
+        btnCustom.setOnClickListener(this);
     }
 
     @Override
@@ -137,6 +150,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                     public void onPositiveClick() {
                         //这个dialog里边已经做了处理，不用交给外面来监听
                     }
+
                     @Override
                     public void onNegtiveClick() {
                         com.orhanobut.logger.Logger.i("取消");
@@ -144,7 +158,59 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }).show();
                 break;
+            case R.id.btn_custom:
+                int bottomKeyboardHeight = getBottomKeyboardHeight();
+                com.orhanobut.logger.Logger.i("虚拟按键高度:" + bottomKeyboardHeight);
+                hideBottomMenu();
+                break;
         }
+    }
+
+
+    /**
+     * 隐藏底部虚拟按键，且全屏
+     */
+    private void hideBottomMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+            com.orhanobut.logger.Logger.i("隐藏了喔");
+        }
+    }
+
+    public int getBottomKeyboardHeight() {
+        int screenHeight = getAccurateScreenDpi()[1];
+        com.orhanobut.logger.Logger.i("屏幕高度:" + screenHeight);
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int heightDifference = screenHeight - dm.heightPixels;
+        return heightDifference;
+    }
+
+    /**
+     * 获取精确的屏幕大小
+     */
+    public int[] getAccurateScreenDpi() {
+        int[] screenWH = new int[2];
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        try {
+            Class<?> c = Class.forName("android.view.Display");
+            Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+            method.invoke(display, dm);
+            screenWH[0] = dm.widthPixels;
+            screenWH[1] = dm.heightPixels;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return screenWH;
     }
 
     @Override

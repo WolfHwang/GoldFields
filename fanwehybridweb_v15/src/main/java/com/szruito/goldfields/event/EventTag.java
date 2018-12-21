@@ -119,6 +119,8 @@ public class EventTag {
 
     public static final int PHONE_INVITE = 28;
 
+    public static final int SHARE_URL = 29;
+
     public static final int SHARE = 30;
 
     public static final int DELETE_CACHE = 31;

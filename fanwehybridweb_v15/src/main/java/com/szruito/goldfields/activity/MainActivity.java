@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -15,7 +16,9 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.telephony.PhoneNumberUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -65,8 +68,15 @@ import org.xutils.x;
 
 import com.szruito.goldfields.R;
 
-import cn.sharesdk.onekeyshare.OnekeyShare;
+import java.lang.reflect.Method;
 
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
+import cn.sharesdk.wechat.friends.Wechat;
+
+import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE;
+import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 import static com.szruito.goldfields.constant.Constant.PERMISS_ALL;
 import static com.szruito.goldfields.constant.Constant.PERMISS_CAMERA;
 import static com.szruito.goldfields.constant.Constant.PERMISS_CONTACT;
@@ -152,6 +162,16 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     }
 
     @Override
+    protected void onStart() {
+        if ((boolean) SPUtils.getParam(MainActivity.this, "checkHasNavigationBar", false)) {
+            hideBottomMenu();//隐藏底部
+        } else {
+            //无需隐藏
+        }
+        super.onStart();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
@@ -165,7 +185,9 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         //设置状态栏透明化
         setTranslucent(this);
         //清除登录状态
-        checkNormalQuit();
+//        checkNormalQuit();
+        //检查是否有虚拟底部导航,保存在本地
+        SPUtils.setParam(MainActivity.this, "checkHasNavigationBar", checkHasNavigationBar());
 
         isDeleteCache = false;
         mIsExitApp = true;
@@ -176,6 +198,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             MainHelper.getInstance().updateApp2(MainActivity.this);
         }
         init();
+
+        Logger.i("是否存在底部导航：" + checkHasNavigationBar());
     }
 
     //检查是否有异常登录情况
@@ -348,6 +372,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 if (!failLocationUrl.equals(url)) {
                     mCurrentUrl = url;
                 }
+                Logger.i("嘻嘻："+url);
                 username = (String) SPUtils.getParam(MainActivity.this, "username", "");
                 //记住账户
                 view.evaluateJavascript("javascript:rememberUsername(" + username + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
@@ -416,6 +441,11 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 super.onProgressChanged(view, newProgress);
                 if (newProgress == 100) {
                     loadingLayout.setVisibility(View.GONE);
+                    if ((boolean) SPUtils.getParam(MainActivity.this, "checkHasNavigationBar", false)) {
+                        hideBottomMenu();
+                    } else {
+                        //无需隐藏
+                    }
                 }
                 System.out.println("onProgressChanged" + view.getUrl());
             }
@@ -439,6 +469,54 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
             mWebViewCustom.get(failLocationUrl);
         }
 
+    }
+
+    /**
+     * 隐藏底部虚拟按键，且全屏
+     */
+    private void hideBottomMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 19) { // Android版本小于4.0或者没有底部虚拟导航栏
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else {
+            //Android4.0以上，所有手机都是可以显示虚拟底部导航的，只不过有些手机厂家屏蔽了
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            //| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN; //下面这种是处理全屏，包括状态栏的情况
+            decorView.setSystemUiVisibility(uiOptions);
+            Logger.i("隐藏了喔");
+        }
+    }
+
+    /**
+     * 判断是否存在虚拟按键
+     * 根据获取屏幕的高度来得到这个信息，在有虚拟导航栏和没有虚拟导航栏的高度是不一样的
+     *
+     * @return
+     */
+    public boolean checkHasNavigationBar() {
+        int dpi = 0;
+        int winHeight = getWindowManager().getDefaultDisplay().getHeight();
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        @SuppressWarnings("rawtypes")
+        Class c;
+        try {
+            c = Class.forName("android.view.Display");
+            @SuppressWarnings("unchecked")
+            Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+            method.invoke(display, dm);
+            dpi = dm.heightPixels;
+            if (winHeight < dpi) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     //移除加载网页错误时，默认的提示信息
@@ -519,6 +597,17 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                         oks.show(this);
                         break;
                 }
+                break;
+            case EventTag.SHARE_URL:
+                OnekeyShare oks2 = new OnekeyShare();
+                oks2.disableSSOWhenAuthorize();//关闭sso授权
+                oks2.setTitle("黄金原野——专为您打造的区块链价值共享平台！");
+                oks2.setUrl("https://fir.im/goldfields");
+                oks2.setText("我正在使用《黄金原野APP》，快来跟我一起使用吧！");
+                oks2.setImageUrl("https://wx2.sinaimg.cn/mw690/7e86a892gy1fyegsavaphj20u00u40u2.jpg");
+                oks2.setPlatform(Wechat.NAME);
+                oks2.show(this);
+
                 break;
             case EventTag.SMS_INVITE:
                 phone = (String) event.data;

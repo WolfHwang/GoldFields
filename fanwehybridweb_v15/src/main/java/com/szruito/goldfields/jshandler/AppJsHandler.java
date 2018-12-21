@@ -207,6 +207,10 @@ public class AppJsHandler extends BaseJsHandler {
         ShareData data = new ShareData(url,tag);
         FEventBus.getDefault().post(new SDBaseEvent(data, EventTag.SHARE));
     }
+    @JavascriptInterface
+    public void shareUrl() {
+        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.SHARE_URL));
+    }
 
     @JavascriptInterface
     public void smsInvite(String phone) {
