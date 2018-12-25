@@ -372,7 +372,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 if (!failLocationUrl.equals(url)) {
                     mCurrentUrl = url;
                 }
-                Logger.i("嘻嘻："+url);
+                Logger.i("嘻嘻：" + url);
                 username = (String) SPUtils.getParam(MainActivity.this, "username", "");
                 //记住账户
                 view.evaluateJavascript("javascript:rememberUsername(" + username + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
