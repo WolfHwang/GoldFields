@@ -14,7 +14,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.mob.MobSDK;
 import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.dialog.CustomEditDialog;
 import com.szruito.goldfields.service.AppUpgradeService;
@@ -23,15 +25,17 @@ import com.szruito.goldfields.R;
 import com.szruito.goldfields.utils.NotificationsUtils;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import cn.jpush.android.api.JPushInterface;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.sina.weibo.SinaWeibo;
 
-import static com.mob.tools.utils.ResHelper.getScreenHeight;
-
-public class TestActivity extends AppCompatActivity implements View.OnClickListener {
+public class TestActivity extends AppCompatActivity implements View.OnClickListener,PlatformActionListener {
     private Button btnUrlOnline;
     private Button btnUrlColleague;
     private Button btnUrlCompany;
@@ -159,13 +163,48 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                 }).show();
                 break;
             case R.id.btn_custom:
-                int bottomKeyboardHeight = getBottomKeyboardHeight();
-                com.orhanobut.logger.Logger.i("虚拟按键高度:" + bottomKeyboardHeight);
-                hideBottomMenu();
+//                int bottomKeyboardHeight = getBottomKeyboardHeight();
+//                com.orhanobut.logger.Logger.i("虚拟按键高度:" + bottomKeyboardHeight);
+//                hideBottomMenu();
+
+                Platform sina = ShareSDK.getPlatform(SinaWeibo.NAME);
+//                sina.removeAccount(true);
+                doAuthorize(sina);
                 break;
         }
     }
-    
+
+    /**
+     * 授权的代码
+     */
+    public void doAuthorize(Platform platform) {
+        if (platform != null) {
+            platform.setPlatformActionListener(this);
+            if (platform.isAuthValid()) {
+                platform.removeAccount(true);
+                return;
+            }
+            platform.SSOSetting(false);
+            platform.authorize();
+        }
+    }
+
+    @Override
+    public void onComplete(final Platform platform, int i, final HashMap<String, Object> hashMap) {
+        String token = platform.getDb().getToken();
+        Log.d(TAG, "LoginXinLang -->> onComplete! HashMap:" + hashMap + ":token:" + token);
+    }
+
+    @Override
+    public void onError(Platform platform, int i, Throwable throwable) {
+        com.orhanobut.logger.Logger.i("LoginXinLang: -->> onError! throwable:" + throwable.toString());
+    }
+
+    @Override
+    public void onCancel(Platform platform, int i) {
+        com.orhanobut.logger.Logger.i("LoginXinLang: -->> onCancel! ");
+    }
+
     /**
      * 隐藏底部虚拟按键，且全屏
      */

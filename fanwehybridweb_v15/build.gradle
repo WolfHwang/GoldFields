@@ -85,8 +85,10 @@ MobSDK {
             SinaWeibo {
                 appKey "494633059"
                 appSecret "8cfc6181f749ecbc2c2a2d447aa269db"
+                redirectUrl "http://www.sharesdk.cn"
                 callbackUri "http://www.sharesdk.cn"
-                shareByAppClient false
+                shareByAppClient true
+                enable true
             }
             Wechat {
                 appId "wx9695411753c04965"
@@ -105,13 +107,13 @@ MobSDK {
                 appSecret "d49de9d87ff36632257da01fb43178c6"
             }
             QQ {
-                appId "100371282"
-                appKey "aed9b0303e3ed1e27bae87c33761161d"
+                appId "101534177"
+                appKey "d8f7aea347089b64f9d7d635d4faf137"
                 shareByAppClient true
             }
             QZone {
-                appId "100371282"
-                appKey "aed9b0303e3ed1e27bae87c33761161d"
+                appId "101534177"
+                appKey "d8f7aea347089b64f9d7d635d4faf137"
                 shareByAppClient true
             }
         }
