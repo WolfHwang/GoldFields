@@ -7,7 +7,7 @@ public class Constant {
     public static final int PERMISS_CAMERA = 2;          //添加拍摄存储权限成功后的回调request
     public static final int PERMISS_SMS = 3;          //添加发送短信成功后的回调request
 
-    public static final String APK_AES_KEY = "FANWE5LMUQC889ZC";
+    public static final String MOB_SHARESDK_APPKEY = "292251efc9b4e";
 
     public static final class DeviceType {
         public static final String DEVICE_ANDROID = "android";

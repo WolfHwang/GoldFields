@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -34,10 +33,12 @@ import com.classic.common.MultipleStatusView;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.sprite.Sprite;
 import com.github.ybq.android.spinkit.style.Wave;
+import com.mob.MobSDK;
 import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.bean.LoginBackData;
 import com.szruito.goldfields.bean.ShareData;
 import com.szruito.goldfields.constant.ApkConstant;
+import com.szruito.goldfields.constant.Constant;
 import com.szruito.goldfields.constant.Constant.JsFunctionName;
 import com.szruito.goldfields.dialog.BotPhotoPopupView;
 import com.szruito.goldfields.dialog.DialogCropPhoto.OnCropBitmapListner;
@@ -69,13 +70,15 @@ import org.xutils.x;
 import com.szruito.goldfields.R;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.PlatformDb;
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 import cn.sharesdk.wechat.friends.Wechat;
 
-import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE;
 import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 import static com.szruito.goldfields.constant.Constant.PERMISS_ALL;
 import static com.szruito.goldfields.constant.Constant.PERMISS_CAMERA;
@@ -83,12 +86,15 @@ import static com.szruito.goldfields.constant.Constant.PERMISS_CONTACT;
 import static com.szruito.goldfields.constant.Constant.PERMISS_SMS;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-public class MainActivity extends BaseActivity implements OnCropBitmapListner {
+public class MainActivity extends BaseActivity implements OnCropBitmapListner, PlatformActionListener {
     public static final String SAVE_CURRENT_URL = "url";
     public static final String EXTRA_URL = "extra_url";
     public static final String SHARE_TAG_ONE = "tag1";
     public static final String SHARE_TAG_TWO = "tag2";
     public static final String SHARE_TAG_THREE = "tag3";
+    public static final String SINA_WEIBO_NAME = "SinaWeibo";
+    public static final String QQ_NAME = "QQ";
+    public static final String WECHAT_NAME = "Wechat";
     public static final int FILECHOOSER_RESULTCODE = 1;// 选择照片
 
     @ViewInject(R.id.ll_fl)
@@ -125,6 +131,13 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     private String username;
     private boolean needUpgrade;
     private String errorUrl;
+    private String token;
+    private String gender;
+    private String icon;
+    private String userId;
+    private String name;
+    private String platformName;
+    private String pingTaiName;
 
     /**
      * 销毁保存当前URL
@@ -181,6 +194,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        MobSDK.init(this, Constant.MOB_SHARESDK_APPKEY);
 
         //设置状态栏透明化
         setTranslucent(this);
@@ -372,7 +386,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 if (!failLocationUrl.equals(url)) {
                     mCurrentUrl = url;
                 }
-                Logger.i("嘻嘻："+url);
+                Logger.i("嘻嘻：" + url);
                 username = (String) SPUtils.getParam(MainActivity.this, "username", "");
                 //记住账户
                 view.evaluateJavascript("javascript:rememberUsername(" + username + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
@@ -393,7 +407,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                 if (split.length > 2) {
                     endUrl = endUrl + split[split.length - 2] + "/" + split[split.length - 1];
                 }
-
                 switch (endUrl) {
                     case "/user/setup":
                         String json = "{'version':'" + MainHelper.getInstance().getVersionName(MainActivity.this) + "'}";
@@ -404,7 +417,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                             }
                         });
                         break;
-
                     default:
                         break;
                 }
@@ -455,20 +467,12 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
         mWebViewCustom.setWebChromeClient(defaultWebChromeClient);
         //获取父容器
         webParentView = (RelativeLayout) mWebViewCustom.getParent();
-
-        if (MainHelper.getInstance().
-
-                isNetworkAvailable(this))
-
-        {
+        if (MainHelper.getInstance().isNetworkAvailable(this)) {
             mWebViewCustom.get(url);
-        } else
-
-        {
+        } else {
             //登录界面的断网处理
             mWebViewCustom.get(failLocationUrl);
         }
-
     }
 
     /**
@@ -552,6 +556,19 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
                         dialog.dismiss();
                     }
                 }, 1500);
+                break;
+            case EventTag.MOB_LOGIN:
+                pingTaiName = (String) event.data;
+                final Dialog dialog1 = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle, "请求中...");
+                dialog1.show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Platform platform = ShareSDK.getPlatform(pingTaiName);
+                        doAuthorize(platform);
+                        dialog1.dismiss();
+                    }
+                }, 1000);
                 break;
             case EventTag.DELETE_CACHE:
                 final Dialog dialog2 = new LoadingDialog(MainActivity.this, R.style.MyDialogStyle, "正在清除...");
@@ -847,5 +864,67 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner {
     protected void onStop() {
         LogUtil.d("应用已经stop");
         super.onStop();
+    }
+
+    private void doAuthorize(Platform platform) {
+        if (platform != null) {
+            platform.removeAccount(true);   //清除本地授权缓存
+            platform.SSOSetting(false);     //设置SSO，false表示SSO生效
+            platform.setPlatformActionListener(this);
+            if (!platform.isClientValid()) {    //判断客户端是否存在
+                Toast.makeText(MainActivity.this, "请安装相关客户端", Toast.LENGTH_SHORT).show();
+            }
+            if (platform.isAuthValid()) {    //判断是否已经授权
+                Toast.makeText(MainActivity.this, "已经授权过了", Toast.LENGTH_SHORT).show();
+            }
+            platform.showUser(null);    //要数据不要功能，主要体现在不会重复出现授权界面
+            //platform.authorize();     //要功能不要数据
+        }
+    }
+
+    @Override
+    public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+        if (i == Platform.ACTION_USER_INFOR) {
+            PlatformDb platDB = platform.getDb();//获取平台数据DB
+            token = platDB.getToken();
+            gender = platDB.getUserGender();
+            icon = platDB.getUserIcon();
+            userId = platDB.getUserId();
+            name = platDB.getUserName();
+            platformName = platDB.getPlatformNname();
+        }
+
+        switch (platformName) {
+            case SINA_WEIBO_NAME:
+                Logger.i("授权过了的userID:" + userId + "|name:" + name + "|headerImageUrl" + icon);
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebViewCustom.evaluateJavascript("javascript:checkLogin('" + userId + "','" + name + "','" + icon + "')", new com.tencent.smtt.sdk.ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String s) {
+                                Logger.i("新浪回调：" + s);
+                            }
+                        });
+                    }
+                });
+                break;
+            case QQ_NAME:
+                break;
+            case WECHAT_NAME:
+                break;
+        }
+        Logger.i("授权成功1" + "名字是：" + name + "——性别是：" + gender + "——头像是："
+                + icon + "——用户id是：" + userId + "——token是：" + token);
+    }
+
+    @Override
+    public void onError(Platform platform, int i, Throwable throwable) {
+        Logger.i("授权失败！" + throwable.toString());
+    }
+
+    @Override
+    public void onCancel(Platform platform, int i) {
+        Logger.i("授权取消！");
     }
 }

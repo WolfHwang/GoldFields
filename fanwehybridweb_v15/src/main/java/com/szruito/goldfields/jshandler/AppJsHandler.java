@@ -201,6 +201,12 @@ public class AppJsHandler extends BaseJsHandler {
         FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.UPDATE));
     }
 
+    @JavascriptInterface
+    public void mobLogin(String name) {
+        FEventBus.getDefault().post(new SDBaseEvent(name, EventTag.MOB_LOGIN));
+    }
+
+
 
     @JavascriptInterface
     public void share(String url, String tag) {

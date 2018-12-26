@@ -124,4 +124,7 @@ public class EventTag {
     public static final int SHARE = 30;
 
     public static final int DELETE_CACHE = 31;
+
+    public static final int MOB_LOGIN = 32;
+
 }
