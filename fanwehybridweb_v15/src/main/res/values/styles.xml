@@ -9,7 +9,7 @@
     </style>
 
     <style name="AppThemeInit" parent="AppTheme">
-        <item name="android:windowBackground">@drawable/wel</item>
+        <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
     <style name="CustomDialog" parent="android:style/Theme.Dialog">

@@ -1,4 +1,4 @@
-package com.szruito.goldfields.utils;
+package com.szruito.goldfields.dialog;
 
 import android.app.Dialog;
 import android.content.Context;

@@ -1,7 +1,8 @@
 package com.szruito.goldfields.event;
 
 /**
- * Created by ljh on 2018/3/29.
+ * Created by lhq on 2018/06/29.
+ * 接受各种事件并传递事件
  */
 
 public class EventTag {
@@ -9,122 +10,56 @@ public class EventTag {
      * 退出app事件
      */
     public static final int EVENT_EXIT_APP = 0;
-
-    /**
-     * 微信支付回调发送事件
-     */
-    public static final int EVENT_WX_PAY_JS_BACK = 1;
-    /**
-     * 微信登录返回信息给PC
-     */
-    public static final int EVENT_WX_LOGIN_JS_BACK = 2;
-
-    // 本地html的EVENT事件===========================
-    /**
-     * 打开网络
-     */
-    public static final int EVENT_ONPEN_NETWORK = 3;
     /**
      * 刷新重载
      */
-    public static final int EVENT_REFRESH_RELOAD = 4;
-    // 本地html发送的EVENT事件===========================
-    // 服务端调用本地发送的EVENT事件===========================
-    /**
-     * 退出账户成功
-     */
-    public static final int EVENT_LOGOUT_SUCCESS = 5;
+    public static final int EVENT_REFRESH_RELOAD = 1;
     /**
      * 登录成功
      */
-    public static final int EVENT_LOGIN_SUCCESS = 6;
+    public static final int EVENT_LOGIN_SUCCESS = 2;
     /**
      * 加载通讯录
      */
-    public static final int EVENT_LOAD_CONTACT = 101;
-
-    /**
-     * 关闭Activiti并刷新url
-     */
-    public static final int EVENT_FINSHI_ACTIVITY = 7;
-    /**
-     * 支付SDK
-     */
-    public static final int EVENT_PAY_SDK = 8;
-    /**
-     * 刷新MainActvity url
-     */
-    public static final int EVENT_ONCONFIRM = 9;
+    public static final int EVENT_LOAD_CONTACT = 3;
     /**
      * 打开方式WEBVIEW打开或者浏览器打开
      */
-    public static final int EVENT_OPEN_TYPE = 10;
-    /**
-     * 打开二维码扫描
-     */
-    public static final int EVENT_QR_CODE_SCAN = 11;
-    /**
-     * 打开二维码扫描_2
-     */
-    public static final int EVENT_QR_CODE_SCAN_2 = 12;
+    public static final int EVENT_OPEN_TYPE = 4;
     /**
      * 剪切图片
      */
-    public static final int EVENT_CUTPHOTO = 13;
+    public static final int EVENT_CUTPHOTO = 5;
     /**
-     * 剪切文本
+     * App更新
      */
-    public static final int EVENT_CLIPBOARDTEXT = 14;
+    public static final int UPDATE = 6;
     /**
-     * 获取经纬度
+     * 短信邀请
      */
-    public static final int TENCENT_LOCATION_MAP = 15;
+    public static final int SMS_INVITE = 7;
     /**
-     * 反编译地址
+     * 电话邀请
      */
-    public static final int TENCENT_LOCATION_ADDRESS = 16;
+    public static final int PHONE_INVITE = 8;
     /**
-     * 推送APNS
+     * 微信分享链接
      */
-    public static final int EVENT_APNS = 17;
+    public static final int SHARE_URL = 9;
+    /**
+     * 多平台分享（图片）
+     */
+    public static final int SHARE = 10;
+    /**
+     * 清除应用缓存
+     */
+    public static final int DELETE_CACHE = 11;
     /**
      * 第三方登录
      */
-    public static final int EVENT_LOGIN_SDK = 18;
+    public static final int MOB_LOGIN = 12;
     /**
-     * 判断微信是否安装
+     * 第三方授权解绑
      */
-    public static final int EVENT_IS_EXIST_INSTALLED = 19;
-    /**
-     * 点击分享弹出指定分享未完成
-     */
-    public static final int EVENT_JS_SHARE_SDK = 20;
-    /**
-     * 分答刷新页面
-     */
-    public static final int EVENT_RELOAD_WEBVIEW = 21;
-    /**
-     * 调用JS方法
-     */
-    public static final int EVENT_CLOSE_POPWINDOW = 23;
-    /**
-     * 商品编辑，分类选择
-     */
-    public static final int LOADING = 22;
-
-
-    public static final int UPDATE = 26;
-
-    public static final int SMS_INVITE = 27;
-
-    public static final int PHONE_INVITE = 28;
-
-    public static final int SHARE_URL = 29;
-
-    public static final int SHARE = 30;
-
-    public static final int DELETE_CACHE = 31;
-
-    public static final int MOB_LOGIN = 32;
-
+    public static final int MOB_UNLOCK = 13;
 }
