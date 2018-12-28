@@ -472,10 +472,10 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                     }
                 }, 1000);
                 break;
-            case EventTag.MOB_UNLOCK:
+            case EventTag.MOB_UNLOCK:   //解除第三方绑定
                 UnLockPTName = (String) event.data;
                 Platform platform = ShareSDK.getPlatform(pingTaiName);
-                if (platform != null){
+                if (platform != null) {
                     platform.removeAccount(true);   //清除本地授权缓存
                 }
                 break;
@@ -765,6 +765,17 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                 });
                 break;
             case WECHAT_NAME:
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebViewCustom.evaluateJavascript("javascript:checkLogin('" + userId + "','" + name + "','" + icon + "','" + platformName + "')", new com.tencent.smtt.sdk.ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String s) {
+                                Logger.i("微信回调" + s);
+                            }
+                        });
+                    }
+                });
                 break;
         }
         Logger.i("授权成功1" + "名字是：" + name + "——性别是：" + gender + "——头像是："
