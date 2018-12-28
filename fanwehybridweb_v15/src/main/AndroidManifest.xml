@@ -71,11 +71,8 @@
         android:theme="@style/FullScreenNormal"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <!--<activity-->
-            <!--android:name=".activity.TestActivity"-->
-            <!--android:theme="@style/FullScreenNormal" />-->
         <activity
-            android:name=".activity.TestActivity"
+            android:name=".activity.SplashActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:exported="true"
             android:label="黄金原野"

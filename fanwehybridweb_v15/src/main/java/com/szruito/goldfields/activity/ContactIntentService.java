@@ -14,10 +14,6 @@ import com.szruito.goldfields.utils.ContactUtils;
 import com.szruito.goldfields.utils.SPUtils;
 import com.fanwe.library.utils.LogUtil;
 import com.orhanobut.logger.Logger;
-import com.szruito.goldfields.bean.CheckContactsInfo;
-import com.szruito.goldfields.http.HttpMethods;
-import com.szruito.goldfields.utils.ContactUtils;
-import com.szruito.goldfields.utils.SPUtils;
 
 import java.util.ArrayList;
 
@@ -25,16 +21,11 @@ import rx.Observable;
 import rx.Subscriber;
 
 /**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
+ * 通讯录联系人开启服务
  */
 public class ContactIntentService extends IntentService {
     private static final String ACTION_FOO = "com.szruito.goldfields.activity.action.Contact";
 
-    private static final String EXTRA_TOKEN = "com.szruito.goldfields.activity.extra.Contact";
     private static Context sContext;
 
     public ContactIntentService() {
@@ -53,34 +44,20 @@ public class ContactIntentService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_FOO.equals(action)) {
-
                 if (ContextCompat.checkSelfPermission(sContext,
                         Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-
                     LogUtil.d("已经授权");
                     final ArrayList<ContactBean> contactsArrayList = ContactUtils.getAllContacts(sContext);
-//                    SPUtils.setParam(context, SPUtils.CONTACT_COUNT, beanArrayList.size());
-
                     int contactCount = (int) SPUtils.getParam(sContext, SPUtils.CONTACT_COUNT, 0);
-
-
                     if (contactCount != contactsArrayList.size()) {
-
-//                        JSONArray json = new JSONArray();
-//                        json.addAll(contactsArrayList);
                         String data = JSON.toJSONString(contactsArrayList);
-
                         if (MainHelper.getInstance().isNetworkAvailable(sContext)) {
-
                             String token = (String) SPUtils.getParam(sContext, "token", "");
-
                             Observable<CheckContactsInfo> observable = HttpMethods.getInstance()
                                     .getApi().check(data, token);
-
                             HttpMethods.getInstance().toSubscribe(observable, new Subscriber<CheckContactsInfo>() {
                                 @Override
                                 public void onCompleted() {
-
                                 }
 
                                 @Override

@@ -17,6 +17,7 @@ import com.fanwe.library.app.FApplication;
 import com.fanwe.library.utils.LogUtil;
 //import com.fanwei.jubaosdk.shell.FWPay;
 import com.mob.MobSDK;
+import com.szruito.goldfields.constant.Constant;
 import com.szruito.goldfields.dao.InitActModelDao;
 import com.szruito.goldfields.dao.LoginSuccessModelDao;
 import com.szruito.goldfields.event.EventTag;
@@ -44,14 +45,6 @@ public class App extends FApplication {
     // IWXAPI 是第三方app和微信通信的openApi接口
     private IWXAPI api;
 
-    private void regToWx() {
-        // 通过WXAPIFactory工厂，获取IWXAPI的实例
-        api = WXAPIFactory.createWXAPI(this, APP_ID, true);
-
-        // 将应用的appId注册到微信
-//        api.registerApp(APP_ID);
-    }
-
     public static App getApplication() {
         return mInstance;
     }
@@ -70,6 +63,14 @@ public class App extends FApplication {
         init();
     }
 
+    private void regToWx() {
+        // 通过WXAPIFactory工厂，获取IWXAPI的实例
+        api = WXAPIFactory.createWXAPI(this, APP_ID, true);
+
+        // 将应用的appId注册到微信
+//        api.registerApp(APP_ID);
+    }
+
     private void regToJPush() {
         //设置调试模式
         JPushInterface.setDebugMode(true);
@@ -78,7 +79,7 @@ public class App extends FApplication {
     }
 
     private void regToShareSDK() {
-        MobSDK.init(this);
+        MobSDK.init(this,Constant.MOB_SHARESDK_APPKEY);//注册一下shareSDK，这个方便云平台对数据进行管理
     }
 
     @Override
