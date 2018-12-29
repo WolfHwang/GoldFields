@@ -644,7 +644,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                 String url = mWebViewCustom.getOriginalUrl();
                 if (url != null) {      //回退指定页面：获取Webview中的一些特殊页面，作物理回退键的处理
                     System.out.println("urlll:" + url + " -- urllllength:" + url.length());
-                    if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate") | url.contains("info/index")) {
+                    if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate") | url.contains("info/index") |url.contains("user/chooseCN")) {
                         if (mWebViewCustom.canGoBack()) {
                             mWebViewCustom.evaluateJavascript("javascript:jumpJs()", new com.tencent.smtt.sdk.ValueCallback<String>() {
                                 @Override
@@ -656,7 +656,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                         return false;
                     }
                     if (url.contains("mine/center") || url.contains("mine/apply") || url.contains("user/center") || url.contains("login")
-                            | url.length() <= 42) {     //双击退出App：获取Webview中的一些特殊页面，作物理回退键的处理
+                            || url.length() <= 42) {     //双击退出App：获取Webview中的一些特殊页面，作物理回退键的处理
                         //清除用户登录状态及信息
                         if (System.currentTimeMillis() - mExitTime > 2000) {
                             Toast.makeText(MainActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();

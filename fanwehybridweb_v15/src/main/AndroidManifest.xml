@@ -72,7 +72,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".activity.SplashActivity"
+            android:name=".activity.TestActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:exported="true"
             android:label="黄金原野"
