@@ -21,8 +21,8 @@ android {
         targetSdkVersion 26
 //        flavorDimensions "versionCode"
         //noinspection HighAppVersionCode
-        versionCode 2018122701
-        versionName "1.0.27"
+        versionCode 2019010201
+        versionName "1.0.28"
 
         ndk {
             //选择要添加的对应 cpu 类型的 .so 库。
@@ -91,20 +91,20 @@ MobSDK {
                 enable true
             }
             Wechat {
-                appId "wx9695411753c04965"
-                appSecret "d49de9d87ff36632257da01fb43178c6"
+                appId "wxc29a16a0ca0a1763"
+                appSecret "e36c68fffbeff2b0dec6a8c1b5095177"
                 enable true
                 BypassApproval false
             }
             WechatMoments {
-                appId "wx9695411753c04965"
+                appId "wxc29a16a0ca0a1763"
                 BypassApproval false
                 enable true
-                appSecret "d49de9d87ff36632257da01fb43178c6"
+                appSecret "e36c68fffbeff2b0dec6a8c1b5095177"
             }
             WechatFavorite {
-                appId "wx9695411753c04965"
-                appSecret "d49de9d87ff36632257da01fb43178c6"
+                appId "wxc29a16a0ca0a1763"
+                appSecret "e36c68fffbeff2b0dec6a8c1b5095177"
             }
             QQ {
                 appId "101534177"

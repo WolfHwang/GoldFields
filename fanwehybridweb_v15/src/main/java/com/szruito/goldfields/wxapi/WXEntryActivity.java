@@ -1,124 +1,44 @@
 package com.szruito.goldfields.wxapi;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
+import cn.sharesdk.wechat.utils.WXAppExtendObject;
+import cn.sharesdk.wechat.utils.WXMediaMessage;
+import cn.sharesdk.wechat.utils.WechatHandlerActivity;
 
-import com.tencent.mm.opensdk.modelbase.BaseReq;
-import com.tencent.mm.opensdk.modelbase.BaseResp;
-import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+/** 微信客户端回调activity示例 */
+public class WXEntryActivity extends WechatHandlerActivity {
 
-import java.io.ByteArrayOutputStream;
-
-import com.szruito.goldfields.R;
-
-import static com.szruito.goldfields.wxapi.WXEntryActivity.SHARE_TYPE.Type_WXSceneSession;
-import static com.szruito.goldfields.wxapi.WXEntryActivity.SHARE_TYPE.Type_WXSceneTimeline;
-import static com.tencent.mm.opensdk.modelmsg.SendMessageToWX.Req.WXSceneSession;
-import static com.tencent.mm.opensdk.modelmsg.SendMessageToWX.Req.WXSceneTimeline;
-
-public class WXEntryActivity extends AppCompatActivity  implements IWXAPIEventHandler {
-    private IWXAPI iwxapi;
-    private String APP_ID = "wx9695411753c04965";
-    enum SHARE_TYPE {Type_WXSceneSession, Type_WXSceneTimeline}
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wxentry);
-        iwxapi = WXAPIFactory.createWXAPI(this, APP_ID, false);
-        iwxapi.handleIntent(getIntent(), this);
-        iwxapi.registerApp(APP_ID);
-    }
-    public void shareWXSceneSession(View view) {
-        share(Type_WXSceneSession);
-    }
-
-    public void shareWXSceneTimeline(View view) {
-        share(Type_WXSceneTimeline);
-    }
-
-    private void share(SHARE_TYPE type) {
-        WXWebpageObject webpageObject = new WXWebpageObject();
-        webpageObject.webpageUrl = "http://www.initobject.com/";
-        WXMediaMessage msg = new WXMediaMessage(webpageObject);
-        msg.title = "Hi,Tips";
-        msg.description = "这是一个校园应用";
-        Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.drawable.ic_add);
-        msg.thumbData = bmpToByteArray(thumb, true);
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = buildTransaction("Req");
-        req.message = msg;
-        switch (type) {
-            case Type_WXSceneSession:
-                req.scene = WXSceneSession;
-                break;
-            case Type_WXSceneTimeline:
-                req.scene = WXSceneTimeline;
-                break;
+    /**
+     * 处理微信发出的向第三方应用请求app message
+     * <p>
+     * 在微信客户端中的聊天页面有“添加工具”，可以将本应用的图标添加到其中
+     * 此后点击图标，下面的代码会被执行。Demo仅仅只是打开自己而已，但你可
+     * 做点其他的事情，包括根本不打开任何页面
+     */
+    public void onGetMessageFromWXReq(WXMediaMessage msg) {
+        if (msg != null) {
+            Intent iLaunchMyself = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            startActivity(iLaunchMyself);
         }
-        iwxapi.sendReq(req);
     }
 
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        iwxapi.handleIntent(intent, this);
-    }
-
-    @Override
-    public void onReq(BaseReq baseReq) {
-    }
-
-    @Override
-    public void onResp(BaseResp resp) {
-        String result;
-        switch (resp.errCode) {
-            case BaseResp.ErrCode.ERR_OK:
-                result = "分享成功";
-                break;
-            case BaseResp.ErrCode.ERR_USER_CANCEL:
-                result = "取消分享";
-                break;
-            case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                result = "分享被拒绝";
-                break;
-            default:
-                result = "发送返回";
-                break;
+    /**
+     * 处理微信向第三方应用发起的消息
+     * <p>
+     * 此处用来接收从微信发送过来的消息，比方说本demo在wechatpage里面分享
+     * 应用时可以不分享应用文件，而分享一段应用的自定义信息。接受方的微信
+     * 客户端会通过这个方法，将这个信息发送回接收方手机上的本demo中，当作
+     * 回调。
+     * <p>
+     * 本Demo只是将信息展示出来，但你可做点其他的事情，而不仅仅只是Toast
+     */
+    public void onShowMessageFromWXReq(WXMediaMessage msg) {
+        if (msg != null && msg.mediaObject != null
+                && (msg.mediaObject instanceof WXAppExtendObject)) {
+            WXAppExtendObject obj = (WXAppExtendObject) msg.mediaObject;
+            Toast.makeText(this, obj.extInfo, Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
-        finish();
-    }
-
-    private String buildTransaction(final String type) {
-        return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
-    }
-
-    public static byte[] bmpToByteArray(final Bitmap bmp, final boolean needRecycle) {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, output);
-        if (needRecycle) {
-            bmp.recycle();
-        }
-        byte[] result = output.toByteArray();
-        try {
-            output.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
 }
