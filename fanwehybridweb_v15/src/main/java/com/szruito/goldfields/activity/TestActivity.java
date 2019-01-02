@@ -32,10 +32,11 @@ import java.util.Set;
 import cn.jpush.android.api.JPushInterface;
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.PlatformDb;
 import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.sina.weibo.SinaWeibo;
+import cn.sharesdk.wechat.friends.Wechat;
 
-public class TestActivity extends AppCompatActivity implements View.OnClickListener,PlatformActionListener {
+public class TestActivity extends AppCompatActivity implements View.OnClickListener, PlatformActionListener {
     private Button btnUrlOnline;
     private Button btnUrlColleague;
     private Button btnUrlCompany;
@@ -45,6 +46,13 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     private Intent intent;
 
     public final static String TAG = "hzmdhzmd";
+    private String gender;
+    private String gender1;
+    private String icon;
+    private String userId;
+    private String name;
+    private String platformName;
+    private String token;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -167,9 +175,9 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 //                com.orhanobut.logger.Logger.i("虚拟按键高度:" + bottomKeyboardHeight);
 //                hideBottomMenu();
 
-                Platform sina = ShareSDK.getPlatform(SinaWeibo.NAME);
+                Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
 //                sina.removeAccount(true);
-                doAuthorize(sina);
+                doAuthorize(wechat);
                 break;
         }
     }
@@ -178,21 +186,32 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
      * 授权的代码
      */
     public void doAuthorize(Platform platform) {
-        if (platform != null) {
-            platform.setPlatformActionListener(this);
-            if (platform.isAuthValid()) {
-                platform.removeAccount(true);
-                return;
-            }
-            platform.SSOSetting(false);
-            platform.authorize();
+        platform.removeAccount(true);   //清除本地授权缓存
+        platform.SSOSetting(false);     //设置SSO，false表示SSO生效
+        platform.setPlatformActionListener(this);
+        if (!platform.isClientValid()) {    //判断客户端是否存在
+            Toast.makeText(TestActivity.this, "请安装相关客户端", Toast.LENGTH_SHORT).show();
         }
+        if (platform.isAuthValid()) {    //判断是否已经授权
+            Toast.makeText(TestActivity.this, "已经授权过了", Toast.LENGTH_SHORT).show();
+        }
+        platform.showUser(null);    //要数据不要功能，主要体现在不会重复出现授权界面
+        //platform.authorize();     //要功能不要数据
     }
 
     @Override
     public void onComplete(final Platform platform, int i, final HashMap<String, Object> hashMap) {
-        String token = platform.getDb().getToken();
         Log.d(TAG, "LoginXinLang -->> onComplete! HashMap:" + hashMap + ":token:" + token);
+        if (i == Platform.ACTION_USER_INFOR) {
+            PlatformDb platDB = platform.getDb();//获取平台数据DB
+            token = platDB.getToken();
+            gender1 = platDB.getUserGender();
+            icon = platDB.getUserIcon();
+            userId = platDB.getUserId();
+            name = platDB.getUserName();
+            platformName = platDB.getPlatformNname();
+        }
+        System.out.println("wx授权登录：" + platformName);
     }
 
     @Override

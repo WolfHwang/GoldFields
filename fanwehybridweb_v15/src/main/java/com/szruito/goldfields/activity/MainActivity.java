@@ -45,6 +45,7 @@ import com.szruito.goldfields.netstate.TANetWorkUtil;
 import com.szruito.goldfields.utils.DataCleanManager;
 import com.szruito.goldfields.utils.IntentUtil;
 import com.szruito.goldfields.dialog.LoadingDialog;
+import com.szruito.goldfields.utils.PhoneFormatCheckUtils;
 import com.szruito.goldfields.utils.SDImageUtil;
 import com.szruito.goldfields.utils.SPUtils;
 import com.szruito.goldfields.webview.CustomWebView;
@@ -104,7 +105,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
     private ValueCallback<Uri> mUploadMessage;
     private String mCameraFilePath, mCurrentUrl, user_token;
     private CutPhotoModel mCut_model;
-    private boolean isDeleteCache, isLogout, needUpgrade;
+    private boolean isLogout, needUpgrade;
+    private boolean isDeleteCache = false;
     private String failLocationUrl = "file:///android_asset/new_no_network.html";
 
     String[] permissions = {Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG,
@@ -121,7 +123,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
         setTranslucent(this);
         //checkNormalQuit();//清除登录状态
         checkBottomNav();//检查是否有虚拟底部导航,保存在本地
-        isDeleteCache = false;
         mIsExitApp = true;
         x.view().inject(this);
         //初次进入应用后的版本更新处理（这里有个bug Tag住）
@@ -348,7 +349,6 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                         Logger.i("rememberUsername" + s);
                     }
                 });
-
                 String[] split = url.split("/");
                 String endUrl = "/";
                 if (split.length > 2) {
@@ -569,8 +569,13 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                 String phoneNum = data.getPhone();
                 Logger.i("phoneNum:" + phoneNum);
 
+                String newStr = phoneNum.replaceAll("\"", "");
+                Logger.i("rememberUsername:" + newStr + PhoneFormatCheckUtils.isPhoneLegal(newStr));
+                if (PhoneFormatCheckUtils.isPhoneLegal(newStr)) {    //判断手机号码是否符合要求
+                    SPUtils.setParam(MainActivity.this, "username", phoneNum);
+                }
                 SPUtils.setParam(MainActivity.this, "token", token);
-                SPUtils.setParam(MainActivity.this, "username", phoneNum);
+
                 ContactIntentService.startActionContact(this);
                 break;
             case EventTag.EVENT_CUTPHOTO:   //拍照截图
@@ -644,7 +649,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                 String url = mWebViewCustom.getOriginalUrl();
                 if (url != null) {      //回退指定页面：获取Webview中的一些特殊页面，作物理回退键的处理
                     System.out.println("urlll:" + url + " -- urllllength:" + url.length());
-                    if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate") | url.contains("info/index") |url.contains("user/chooseCN")) {
+                    if (url.contains("cellbox/input") | url.contains("user/work") | url.contains("add?value") | url.contains("user/educate") | url.contains("info/index") | url.contains("user/chooseCN")) {
                         if (mWebViewCustom.canGoBack()) {
                             mWebViewCustom.evaluateJavascript("javascript:jumpJs()", new com.tencent.smtt.sdk.ValueCallback<String>() {
                                 @Override
@@ -736,6 +741,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
             name = platDB.getUserName();
             platformName = platDB.getPlatformNname();
         }
+        System.out.println("wx授权登录：" + platformName);
         switch (platformName) {
             case SINA_WEIBO_NAME:
                 Logger.i("授权过了的userID:" + userId + "|name:" + name + "|platformName" + platformName);
