@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.mob.MobSDK;
+import com.orhanobut.logger.Logger;
 import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.dialog.CustomEditDialog;
 import com.szruito.goldfields.service.AppUpgradeService;
@@ -165,18 +166,19 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onNegtiveClick() {
-                        com.orhanobut.logger.Logger.i("取消");
+                        Logger.i("取消");
                         dialog.dismiss();
                     }
                 }).show();
                 break;
             case R.id.btn_custom:
+                //测试虚拟键高度
 //                int bottomKeyboardHeight = getBottomKeyboardHeight();
 //                com.orhanobut.logger.Logger.i("虚拟按键高度:" + bottomKeyboardHeight);
 //                hideBottomMenu();
 
+                //测试微信登录
                 Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
-//                sina.removeAccount(true);
                 doAuthorize(wechat);
                 break;
         }

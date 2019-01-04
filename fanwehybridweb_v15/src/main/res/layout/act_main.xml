@@ -13,9 +13,10 @@
         android:id="@+id/cus_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layerType="hardware"
-        android:scrollbars="horizontal" />
-
+        android:layerType="software"
+        android:scrollbars="none" />
+    <!--android:layerType="hardware"
+            android:scrollbars="horizontal"-->
     <!--加载提示的loading图-->
     <include
         layout="@layout/loading_anim"

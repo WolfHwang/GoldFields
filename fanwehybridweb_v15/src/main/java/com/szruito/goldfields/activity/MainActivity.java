@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -37,11 +38,13 @@ import com.szruito.goldfields.constant.ApkConstant;
 import com.szruito.goldfields.constant.Constant;
 import com.szruito.goldfields.constant.Constant.JsFunctionName;
 import com.szruito.goldfields.dialog.BotPhotoPopupView;
+import com.szruito.goldfields.dialog.CustomDialog;
 import com.szruito.goldfields.dialog.DialogCropPhoto.OnCropBitmapListner;
 import com.szruito.goldfields.event.SDBaseEvent;
 import com.szruito.goldfields.jshandler.AppJsHandler;
 import com.szruito.goldfields.model.CutPhotoModel;
 import com.szruito.goldfields.netstate.TANetWorkUtil;
+import com.szruito.goldfields.utils.AppInnerDownLoder;
 import com.szruito.goldfields.utils.DataCleanManager;
 import com.szruito.goldfields.utils.IntentUtil;
 import com.szruito.goldfields.dialog.LoadingDialog;
@@ -590,6 +593,28 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                         clickll_head();
                     }
                 });
+                break;
+            case EventTag.EGG:
+                final CustomDialog mCDialog = new CustomDialog(MainActivity.this);
+                mCDialog.setTitle("提示")
+                        .setMessage("该模块尚未开发...")
+                        .setPositive("确定")
+                        .setNegtive("取消")
+                        .setSingle(false).setOnClickBottomListener(new CustomDialog.OnClickBottomListener() {
+                    @Override
+                    public void onPositiveClick() {
+                        mCDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onNegtiveClick() {
+                        Toast.makeText(MainActivity.this, "发现彩蛋！", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this, TestActivity.class);
+                        startActivity(intent);
+                        MainActivity.this.finish();
+                        mCDialog.dismiss();
+                    }
+                }).show();
                 break;
             default:
                 break;

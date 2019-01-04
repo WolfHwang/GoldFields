@@ -62,4 +62,8 @@ public class EventTag {
      * 第三方授权解绑
      */
     public static final int MOB_UNLOCK = 13;
+    /**
+     * 彩蛋
+     */
+    public static final int EGG = 14;
 }
