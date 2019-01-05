@@ -40,6 +40,7 @@ public class CustomEditDialog extends Dialog {
      * 底部是否只有一个按钮
      */
     private boolean isSingle = false;
+    private String url;
 
     public CustomEditDialog(@NonNull Context context) {
         super(context, R.style.CustomDialog);
@@ -50,6 +51,7 @@ public class CustomEditDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_edit_url);
+
         initView();
         refreshView();
         initEvent();
