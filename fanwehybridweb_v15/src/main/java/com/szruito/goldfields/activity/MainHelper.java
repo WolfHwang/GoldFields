@@ -27,6 +27,7 @@ import com.szruito.goldfields.app.App;
 import com.szruito.goldfields.bean.QuitAppInfo;
 import com.szruito.goldfields.bean.UpdateAppInfo;
 import com.szruito.goldfields.dialog.CustomDialog;
+import com.szruito.goldfields.dialog.UpdateCustomDialog;
 import com.szruito.goldfields.utils.AppInnerDownLoder;
 import com.szruito.goldfields.utils.CheckQuitUtils;
 import com.szruito.goldfields.utils.CheckUpdateUtils;
@@ -203,12 +204,12 @@ public class MainHelper {
 
     private void normalUpdate(final Context context, final String appName, final String downUrl, final String updateinfo) {
         Logger.i("弹框出现!");
-        final CustomDialog mCDialog = new CustomDialog(context);
+        final UpdateCustomDialog mCDialog = new UpdateCustomDialog(context);
         mCDialog.setTitle("检测到有新版本：" + appName)
                 .setMessage(updateinfo)
                 .setPositive("立即更新")
                 .setNegtive("暂不更新")
-                .setSingle(false).setOnClickBottomListener(new CustomDialog.OnClickBottomListener() {
+                .setSingle(false).setOnClickBottomListener(new UpdateCustomDialog.OnClickBottomListener() {
             @Override
             public void onPositiveClick() {
                 if (!canDownloadState(context)) {
@@ -235,11 +236,11 @@ public class MainHelper {
      * @param updateinfo
      */
     private void forceUpdate(final Context context, final String appName, final String downUrl, final String updateinfo) {
-        final CustomDialog mCDialog = new CustomDialog(context);
+        final UpdateCustomDialog mCDialog = new UpdateCustomDialog(context);
         mCDialog.setTitle(appName + "又更新咯！")
                 .setMessage(updateinfo)
                 .setPositive("立即更新")
-                .setSingle(true).setOnClickBottomListener(new CustomDialog.OnClickBottomListener() {
+                .setSingle(true).setOnClickBottomListener(new UpdateCustomDialog.OnClickBottomListener() {
             @Override
             public void onPositiveClick() {
                 if (!canDownloadState(context)) {
@@ -504,7 +505,6 @@ public class MainHelper {
     }
 
     /**
-     *
      * @param mobiles
      * @return 是否手机号码
      */
@@ -516,6 +516,7 @@ public class MainHelper {
         } else
             return mobiles.matches(telRegex);
     }
+
     /**
      * 判断是否存在虚拟按键
      * 根据获取屏幕的高度来得到这个信息，在有虚拟导航栏和没有虚拟导航栏的高度是不一样的
