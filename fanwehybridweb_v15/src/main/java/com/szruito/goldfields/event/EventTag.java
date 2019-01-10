@@ -66,4 +66,12 @@ public class EventTag {
      * 彩蛋
      */
     public static final int EGG = 14;
+    /**
+     * 监听视频播放开始
+     */
+    public static final int VIDEO_PLAY = 15;
+    /**
+     * 监听退出视频播放
+     */
+    public static final int VIDEO_QUIT = 16;
 }

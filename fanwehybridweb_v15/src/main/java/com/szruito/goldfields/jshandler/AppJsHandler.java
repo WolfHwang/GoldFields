@@ -108,6 +108,16 @@ public class AppJsHandler extends BaseJsHandler {
     }
 
     @JavascriptInterface
+    public void viderPlay() {
+        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.VIDEO_PLAY));
+    }
+
+    @JavascriptInterface
+    public void videoQuit() {
+        FEventBus.getDefault().post(new SDBaseEvent(null, EventTag.VIDEO_QUIT));
+    }
+
+    @JavascriptInterface
     public void smsInvite(String phone) {
         FEventBus.getDefault().post(new SDBaseEvent(phone, EventTag.SMS_INVITE));
     }

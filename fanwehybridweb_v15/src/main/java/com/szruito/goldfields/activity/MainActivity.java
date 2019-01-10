@@ -116,6 +116,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
             Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA, Manifest.permission.SEND_SMS,
             Manifest.permission.CALL_PHONE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,};
     private String phone, username, errorUrl, token, gender, icon, userId, name, platformName, pingTaiName, UnLockPTName;
+    private boolean isPlay = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -616,6 +617,18 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                     }
                 }).show();
                 break;
+            case EventTag.VIDEO_PLAY:
+                //代码级开启硬件加速
+                mWebViewCustom.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                Logger.i("硬件加速");
+                isPlay = false;
+                break;
+            case EventTag.VIDEO_QUIT:
+                //关闭硬件加速
+                Logger.i("取消硬件加速");
+                mWebViewCustom.setLayerType(View.LAYER_TYPE_SOFTWARE,null);
+                isPlay = true;
+                break;
             default:
                 break;
         }
@@ -687,6 +700,15 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                     }
                     if (url.contains("mine/center") || url.contains("mine/apply") || url.contains("user/center") || url.contains("login")
                             || url.length() <= 42) {     //双击退出App：获取Webview中的一些特殊页面，作物理回退键的处理
+                        if (!isPlay) {
+                            mWebViewCustom.evaluateJavascript("javascript:physicsBack()", new com.tencent.smtt.sdk.ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String s) {
+                                    System.out.println("physicsBack:" + s);
+                                }
+                            });
+                            return false;
+                        }
                         //清除用户登录状态及信息
                         if (System.currentTimeMillis() - mExitTime > 2000) {
                             Toast.makeText(MainActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
