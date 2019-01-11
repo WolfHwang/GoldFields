@@ -71,16 +71,17 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:background="@drawable/common_btn_golden_bg_selector"
-        android:text="测试按钮"
+        android:text="获取设备ID"
         android:textColor="@color/white" />
 
-    <ImageView
-        android:id="@+id/iv_qrcode"
+    <TextView
+        android:textIsSelectable="true"
+        android:id="@+id/tv_id"
         android:layout_width="wrap_content"
+        android:textSize="18sp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_url_home"
+        android:layout_below="@+id/btn_custom"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:visibility="gone" />
+        android:layout_marginTop="20dp" />
 
 </RelativeLayout>

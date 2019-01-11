@@ -107,10 +107,10 @@ public class MainHelper {
         return false;
     }
 
-
     public void updateApp(final Context context) {
         final int versionCode = FPackageUtil.getPackageInfo().versionCode;
-        CheckUpdateUtils.checkUpdate(versionCode, new CheckUpdateUtils.CheckCallBack() {
+        final String registrationId = (String) SPUtils.getParam(context,"registrationId","");
+        CheckUpdateUtils.checkUpdate(registrationId, new CheckUpdateUtils.CheckCallBack() {
             @Override
             public void onSuccess(UpdateAppInfo updateInfo) {
                 String isForce = updateInfo.getData().getLastfalse();//是否需要强制更新
@@ -146,7 +146,8 @@ public class MainHelper {
 
     public void updateApp2(final Context context) {
         final int versionCode = FPackageUtil.getPackageInfo().versionCode;
-        CheckUpdateUtils.checkUpdate(versionCode, new CheckUpdateUtils.CheckCallBack() {
+        final String registrationId = (String) SPUtils.getParam(context,"registrationId","");
+        CheckUpdateUtils.checkUpdate(registrationId, new CheckUpdateUtils.CheckCallBack() {
             @Override
             public void onSuccess(UpdateAppInfo updateInfo) {
                 String isForce = updateInfo.getData().getLastfalse();//是否需要强制更新
