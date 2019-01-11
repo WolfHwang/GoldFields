@@ -23,7 +23,7 @@ public interface HttpUtilsApi {
     @FormUrlEncoded
     @POST("api/app.util/version/find")
     Observable<UpdateAppInfo> update(
-            @Field("vetsionCode") int vetsionCode);
+            @Field("registrationId") String registrationId);
 //            @Query("appname") String appname,
 
     @FormUrlEncoded

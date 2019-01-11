@@ -6,6 +6,7 @@ import android.os.StrictMode;
 import android.support.multidex.MultiDex;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
+import android.widget.Toast;
 
 import com.fanwe.gesture.customview.LockPatternView.Cell;
 import com.fanwe.gesture.utils.LockPatternUtils;
@@ -23,6 +24,7 @@ import com.szruito.goldfields.dao.LoginSuccessModelDao;
 import com.szruito.goldfields.event.EventTag;
 import com.szruito.goldfields.event.SDBaseEvent;
 import com.szruito.goldfields.model.LoginSuccessModel;
+import com.szruito.goldfields.utils.SPUtils;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.smtt.sdk.QbSdk;
@@ -79,7 +81,7 @@ public class App extends FApplication {
     }
 
     private void regToShareSDK() {
-        MobSDK.init(this,Constant.MOB_SHARESDK_APPKEY);//注册一下shareSDK，这个方便云平台对数据进行管理
+        MobSDK.init(this, Constant.MOB_SHARESDK_APPKEY);//注册一下shareSDK，这个方便云平台对数据进行管理
     }
 
     @Override

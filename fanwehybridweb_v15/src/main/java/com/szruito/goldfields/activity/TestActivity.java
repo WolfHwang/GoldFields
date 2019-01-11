@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mob.MobSDK;
@@ -24,6 +25,7 @@ import com.szruito.goldfields.service.AppUpgradeService;
 
 import com.szruito.goldfields.R;
 import com.szruito.goldfields.utils.NotificationsUtils;
+import com.szruito.goldfields.utils.SPUtils;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnUrlCompany;
     private Button btnUrlHome;
     private Button btnCustom;
-    private ImageView ivQrcode;
+    private TextView tvRegistrationID;
     private Intent intent;
 
     public final static String TAG = "hzmdhzmd";
@@ -125,7 +127,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         btnUrlCompany = findViewById(R.id.btn_url_company);
         btnUrlHome = findViewById(R.id.btn_url_home);
         btnCustom = findViewById(R.id.btn_custom);
-        ivQrcode = findViewById(R.id.iv_qrcode);
+        tvRegistrationID = findViewById(R.id.tv_id);
 
         btnUrlOnline.setOnClickListener(this);
         btnUrlColleague.setOnClickListener(this);
@@ -178,8 +180,13 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 //                hideBottomMenu();
 
                 //测试微信登录
-                Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
-                doAuthorize(wechat);
+//                Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
+//                doAuthorize(wechat);
+
+                String registrationId = JPushInterface.getRegistrationID(this);
+                Toast.makeText(this, "id:" + registrationId, Toast.LENGTH_SHORT).show();
+                SPUtils.setParam(this, "registrationId", registrationId);
+                tvRegistrationID.setText(registrationId);
                 break;
         }
     }
