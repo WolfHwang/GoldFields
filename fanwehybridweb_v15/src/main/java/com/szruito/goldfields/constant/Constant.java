@@ -1,5 +1,7 @@
 package com.szruito.goldfields.constant;
 
+import com.szruito.goldfields.app.App;
+
 public class Constant {
     public static final int PERMISS_ALL = 0;          //添加通讯录权限成功后的回调request
     public static final int PERMISS_CONTACT = 1;          //添加通讯录权限成功后的回调request

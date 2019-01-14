@@ -119,6 +119,7 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
     private String phone, username, errorUrl, token, gender, icon, userId, name, platformName, pingTaiName, UnLockPTName;
     private boolean isPlay = true;
     private String registrationId;
+    private String appName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +140,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
         init();
         //获取设备ID
         registrationId = JPushInterface.getRegistrationID(this);
+        //获取应用程序名称
+        appName = MainHelper.getInstance().getAppName(MainActivity.this);
 //        Toast.makeText(this, "id:" + registrationID, Toast.LENGTH_LONG).show();
         SPUtils.setParam(this, "registrationId", registrationId);
         Logger.i("是否存在底部导航：" + MainHelper.getInstance().checkHasNavigationBar(MainActivity.this));
@@ -360,6 +363,21 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
                         Logger.i("rememberUsername" + s);
                     }
                 });
+//                view.evaluateJavascript("javascript:getAppName(" + appName + ")", new com.tencent.smtt.sdk.ValueCallback<String>() {
+//                    @Override
+//                    public void onReceiveValue(String s) {
+//                        Logger.i("getAppName" + s);
+//                    }
+//                });
+
+                //记住账户
+                view.evaluateJavascript("javascript:getAppName('" + appName +  "')", new com.tencent.smtt.sdk.ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String s) {
+                        Logger.i("appName" + s);
+                    }
+                });
+
                 String[] split = url.split("/");
                 String endUrl = "/";
                 if (split.length > 2) {

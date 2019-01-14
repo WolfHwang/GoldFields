@@ -1,6 +1,7 @@
 package com.szruito.goldfields.http;
 
 
+import com.szruito.goldfields.bean.AddGroupInfo;
 import com.szruito.goldfields.bean.CheckContactsInfo;
 import com.szruito.goldfields.bean.QuitAppInfo;
 import com.szruito.goldfields.bean.UpdateAppInfo;
@@ -23,6 +24,12 @@ public interface HttpUtilsApi {
     @FormUrlEncoded
     @POST("api/app.util/version/find")
     Observable<UpdateAppInfo> update(
+            @Field("registrationId") String registrationId);
+//            @Query("appname") String appname,
+
+    @FormUrlEncoded
+    @POST("/api/app.util/version/userAddGroup")
+    Observable<AddGroupInfo> addGroup(
             @Field("registrationId") String registrationId);
 //            @Query("appname") String appname,
 
