@@ -54,6 +54,31 @@
             android:textSize="14dp"
             tools:text="提示消息提示消息提示消息提示消息提示消息提示消息提示消息提示消息" />
 
+        <TextView
+            android:id="@+id/tv_check"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:lineSpacingExtra="3dp"
+            android:textSize="10dp"
+            android:text="可点击查看详情，申请获取更新内测版本的资格:"
+            android:lineSpacingMultiplier="1.2"
+            android:layout_gravity="center|left"/>
+
+        <TextView
+            android:id="@+id/tv_checkdetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center|left"
+            android:lineSpacingExtra="3dp"
+            android:text="查看详情"
+            android:lineSpacingMultiplier="1.2"
+            android:textColor="#008BDB"
+            android:textSize="14dp"
+            android:visibility="visible" />
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"

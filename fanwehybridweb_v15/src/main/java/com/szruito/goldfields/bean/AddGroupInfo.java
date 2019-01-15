@@ -4,7 +4,7 @@ package com.szruito.goldfields.bean;
  * Created by Administrator on 2017/7/10.
  */
 
-public class UpdateAppInfo {
+public class AddGroupInfo {
 
     /**
      * code : 200

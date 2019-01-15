@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.szruito.goldfields.R;
 
@@ -27,6 +28,10 @@ public class CustomDialog extends Dialog {
      * 显示的标题
      */
     private TextView titleTv;
+    /**
+     * 显示查看详情
+     */
+    private TextView checkdetailsTv;
 
     /**
      * 显示的消息
@@ -38,6 +43,7 @@ public class CustomDialog extends Dialog {
      */
     private Button negtiveBn, positiveBn;
 
+    private Context mContext;
     /**
      * 按钮之间的分割线
      */
@@ -45,12 +51,14 @@ public class CustomDialog extends Dialog {
 
     public CustomDialog(Context context) {
         super(context, R.style.CustomDialog);
+        this.mContext = context;
     }
 
     /**
      * 都是内容数据
      */
     private String message;
+    private String checkdetails;
     private String title;
     private String positive, negtive;
     private int imageResId = -1;
@@ -96,6 +104,15 @@ public class CustomDialog extends Dialog {
                 }
             }
         });
+        //设置点击详情后，向外界提供监听
+        checkdetailsTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onClickCheckListener != null) {
+                    onClickCheckListener.onCheckClick();
+                }
+            }
+        });
     }
 
     /**
@@ -109,8 +126,17 @@ public class CustomDialog extends Dialog {
         } else {
             titleTv.setVisibility(View.GONE);
         }
+        if (!TextUtils.isEmpty(checkdetails)) {
+            checkdetailsTv.setText(checkdetails);
+            checkdetailsTv.setVisibility(View.VISIBLE);
+        } else {
+            checkdetailsTv.setVisibility(View.GONE);
+        }
         if (!TextUtils.isEmpty(message)) {
             messageTv.setText(message);
+        }
+        if (!TextUtils.isEmpty(checkdetails)) {
+            checkdetailsTv.setText(checkdetails);
         }
         //如果设置按钮的文字
         if (!TextUtils.isEmpty(positive)) {
@@ -155,6 +181,7 @@ public class CustomDialog extends Dialog {
         negtiveBn = findViewById(R.id.negtive);
         positiveBn = findViewById(R.id.positive);
         titleTv = findViewById(R.id.title);
+        checkdetailsTv = findViewById(R.id.tv_checkdetails);
         messageTv = findViewById(R.id.message);
         imageIv = findViewById(R.id.image);
         columnLineView = findViewById(R.id.column_line);
@@ -170,6 +197,23 @@ public class CustomDialog extends Dialog {
         return this;
     }
 
+    /**
+     * 设置显示详情的事件点击
+     */
+    public OnClickCheckListener onClickCheckListener;
+
+    public CustomDialog setOnClickCheckListener(OnClickCheckListener onClickCheckListener) {
+        this.onClickCheckListener = onClickCheckListener;
+        return this;
+    }
+
+    public interface OnClickCheckListener {
+        /**
+         * 点击查看详情绑定事件
+         */
+        public void onCheckClick();
+    }
+
     public interface OnClickBottomListener {
         /**
          * 点击确定按钮事件
@@ -180,6 +224,15 @@ public class CustomDialog extends Dialog {
          * 点击取消按钮事件
          */
         public void onNegtiveClick();
+    }
+
+    public String getCheckdetails() {
+        return checkdetails;
+    }
+
+    public CustomDialog setCheckdetails(String checkdetails) {
+        this.checkdetails = checkdetails;
+        return this;
     }
 
     public String getMessage() {

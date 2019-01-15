@@ -22,22 +22,22 @@ public class UpdateCustomDialog extends Dialog {
      * 显示的图片
      */
     private ImageView imageIv;
-
     /**
      * 显示的标题
      */
     private TextView titleTv;
-
     /**
      * 显示的消息
      */
-    private TextView messageTv;
-
+    private TextView messageTv, checkTv;
+    /**
+     * 显示查看详情
+     */
+    private TextView checkdetailsTv;
     /**
      * 确认和取消按钮
      */
     private Button negtiveBn, positiveBn;
-
     /**
      * 按钮之间的分割线
      */
@@ -50,8 +50,9 @@ public class UpdateCustomDialog extends Dialog {
     /**
      * 都是内容数据
      */
-    private String message;
+    private String message, check;
     private String title;
+    private String checkdetails;
     private String positive, negtive;
     private int imageResId = -1;
 
@@ -96,6 +97,15 @@ public class UpdateCustomDialog extends Dialog {
                 }
             }
         });
+        //设置点击详情后，向外界提供监听
+        checkdetailsTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onClickCheckListener != null) {
+                    onClickCheckListener.onCheckClick();
+                }
+            }
+        });
     }
 
     /**
@@ -111,6 +121,18 @@ public class UpdateCustomDialog extends Dialog {
         }
         if (!TextUtils.isEmpty(message)) {
             messageTv.setText(message);
+        }
+        if (!TextUtils.isEmpty(check)) {
+            checkTv.setText(check);
+            checkTv.setVisibility(View.VISIBLE);
+        } else {
+            checkTv.setVisibility(View.GONE);
+        }
+        if (!TextUtils.isEmpty(checkdetails)) {
+            checkdetailsTv.setText(checkdetails);
+            checkdetailsTv.setVisibility(View.VISIBLE);
+        } else {
+            checkdetailsTv.setVisibility(View.GONE);
         }
         //如果设置按钮的文字
         if (!TextUtils.isEmpty(positive)) {
@@ -156,8 +178,10 @@ public class UpdateCustomDialog extends Dialog {
         positiveBn = findViewById(R.id.positive);
         titleTv = findViewById(R.id.title);
         messageTv = findViewById(R.id.message);
+        checkTv = findViewById(R.id.tv_check);
         imageIv = findViewById(R.id.image);
         columnLineView = findViewById(R.id.column_line);
+        checkdetailsTv = findViewById(R.id.tv_checkdetails);
     }
 
     /**
@@ -168,6 +192,23 @@ public class UpdateCustomDialog extends Dialog {
     public UpdateCustomDialog setOnClickBottomListener(OnClickBottomListener onClickBottomListener) {
         this.onClickBottomListener = onClickBottomListener;
         return this;
+    }
+
+    /**
+     * 设置显示详情的事件点击
+     */
+    public UpdateCustomDialog.OnClickCheckListener onClickCheckListener;
+
+    public UpdateCustomDialog setOnClickCheckListener(UpdateCustomDialog.OnClickCheckListener onClickCheckListener) {
+        this.onClickCheckListener = onClickCheckListener;
+        return this;
+    }
+
+    public interface OnClickCheckListener {
+        /**
+         * 点击查看详情绑定事件
+         */
+        public void onCheckClick();
     }
 
     public interface OnClickBottomListener {
@@ -188,6 +229,11 @@ public class UpdateCustomDialog extends Dialog {
 
     public UpdateCustomDialog setMessage(String message) {
         this.message = message;
+        return this;
+    }
+
+    public UpdateCustomDialog setCheck(String check) {
+        this.check = check;
         return this;
     }
 
@@ -233,6 +279,15 @@ public class UpdateCustomDialog extends Dialog {
 
     public UpdateCustomDialog setImageResId(int imageResId) {
         this.imageResId = imageResId;
+        return this;
+    }
+
+    public String getCheckdetails() {
+        return checkdetails;
+    }
+
+    public UpdateCustomDialog setCheckdetails(String checkdetails) {
+        this.checkdetails = checkdetails;
         return this;
     }
 
